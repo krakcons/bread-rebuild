@@ -19,11 +19,18 @@ export const convertAddress = (drupalAddress: any): ResourceAddressType => {
 	};
 };
 
+const commonTranslations = new Map<string, string>([["Free", "Gratuit"]]);
+
+const translate = (enValue: string, language: "en" | "fr") => {
+	if (language === "en") return enValue;
+	return commonTranslations.get(enValue) || enValue;
+};
+
 // Helper function to create localized fields
 export const createLocalizedField = (enValue: string): LocalizedFieldType => {
 	return {
 		en: enValue,
-		fr: "", // Since the source data is English-only, leaving French empty
+		fr: translate(enValue, "fr") || "",
 	};
 };
 
@@ -142,7 +149,22 @@ export const convertDrupalToResource = (drupalData: any): ResourceType => {
 				documentsRequired: "",
 				applicationProcess: drupalData.attributes.field_registration_notes || "",
 			},
-			fr: null,
+			fr: {
+				fees: translate(drupalData.attributes.field_price_description || "", "fr") || "",
+				hours: "",
+				topics: "",
+				twitter: null,
+				youtube: null,
+				facebook: null,
+				linkedin: null,
+				instagram: null,
+				languages: "",
+				eligibility: "",
+				recordOwner: "",
+				accessibility: drupalData.attributes.field_wheelchair_notes || "",
+				documentsRequired: "",
+				applicationProcess: drupalData.attributes.field_registration_notes || "",
+			},
 		},
 		result: null,
 	};

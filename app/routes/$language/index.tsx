@@ -7,13 +7,14 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useMemo, useState } from "react";
 import { Map, Marker, Popup } from "react-map-gl/maplibre";
 import { z } from "zod";
-import { convertDrupalToResource } from "../lib/bread";
-import { useDebounce } from "../lib/debounce";
-import { cn } from "../lib/utils";
-import meals from "./data.json";
+import { convertDrupalToResource } from "../../lib/bread";
+import { useDebounce } from "../../lib/debounce";
+import { getLocalizedField, getTranslations, setLanguage } from "../../lib/language";
+import { cn } from "../../lib/utils";
+import meals from "../data.json";
 
 const getMeals = createServerFn("GET", async () => {
-	const resources = meals.map(convertDrupalToResource);
+	const resources = meals.map((meal) => convertDrupalToResource(meal));
 	return resources;
 });
 
@@ -23,16 +24,20 @@ const SearchSchema = z.object({
 	free: z.boolean().optional(),
 });
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/$language/")({
 	component: Home,
 	validateSearch: SearchSchema,
+	beforeLoad: ({ params }) => {
+		setLanguage(params.language as "en" | "fr");
+	},
 	loader: async () => await getMeals(),
 });
 
 const Resource = ({ resource }: { resource: ResourceType }) => {
+	const { language } = Route.useParams();
 	return (
 		<div className="p-4 border border-gray-300 rounded-lg shadow-sm mb-4 hover:shadow-md transition-shadow flex-col flex gap-2">
-			<p className="text-xl font-semibold">{resource.name.en}</p>
+			<p className="text-xl font-semibold">{getLocalizedField(resource.name, language)}</p>
 			{/* Address section */}
 			{resource.address && (
 				<div className="text-gray-600 flex items-center gap-2">
@@ -50,10 +55,10 @@ const Resource = ({ resource }: { resource: ResourceType }) => {
 				</div>
 			))}
 			{/* Fees section */}
-			{resource.body.en.fees && (
+			{getLocalizedField(resource.body, language)?.fees && (
 				<div className="mb-2 text-gray-600 flex items-center gap-2">
 					<DollarSign size={20} />
-					{resource.body.en.fees}
+					{getLocalizedField(resource.body, language)?.fees}
 				</div>
 			)}
 		</div>
@@ -85,6 +90,7 @@ const STYLE: StyleSpecification = {
 };
 
 const MapMarker = ({ resource }: { resource: ResourceType }) => {
+	const { language } = Route.useParams();
 	const [popupOpen, setPopupOpen] = useState<boolean>(false);
 	return (
 		<>
@@ -123,7 +129,9 @@ const MapMarker = ({ resource }: { resource: ResourceType }) => {
 						<X size={18} />
 					</button>
 					<div className="flex flex-col gap-2 mt-4">
-						<p className="text-lg font-semibold">{resource.name.en}</p>
+						<p className="text-lg font-semibold">
+							{getLocalizedField(resource.name, language)}
+						</p>
 						{/* Address section */}
 						{resource.address && (
 							<div className="text-gray-600 text-sm flex items-center gap-2">
@@ -141,10 +149,10 @@ const MapMarker = ({ resource }: { resource: ResourceType }) => {
 							</div>
 						))}
 						{/* Fees section */}
-						{resource.body.en.fees && (
+						{getLocalizedField(resource.body, language)?.fees && (
 							<div className="mb-2 text-gray-600 text-sm flex items-center gap-2">
 								<DollarSign size={18} />
-								{resource.body.en.fees}
+								{getLocalizedField(resource.body, language)?.fees}
 							</div>
 						)}
 					</div>
@@ -157,31 +165,46 @@ const MapMarker = ({ resource }: { resource: ResourceType }) => {
 function Home() {
 	const navigate = Route.useNavigate();
 	const resources = Route.useLoaderData();
+	const { language } = Route.useParams();
 	const { tab = "list", free = false, query = "" } = Route.useSearch();
 	const { debouncedValue: debouncedQuery, isPending } = useDebounce(query, 500);
+	const translations = getTranslations(language);
 
 	const results = useMemo(() => {
 		return resources.filter(
 			(resource) =>
-				resource.name.en.toLowerCase().includes(debouncedQuery.toLowerCase()) &&
-				(free ? resource.body.en.fees === "Free" : true)
+				getLocalizedField(resource.name, language)
+					?.toLowerCase()
+					.includes(debouncedQuery.toLowerCase()) &&
+				(free ? getLocalizedField(resource.body, language)?.fees === "Free" : true)
 		);
 	}, [debouncedQuery, resources, free]);
 
 	return (
 		<div className="p-4 max-w-screen-md mx-auto flex flex-col">
 			<div className="flex flex-col py-4 gap-4">
-				<header className="flex items-center gap-4">
+				<header className="flex items-center gap-4 justify-between">
 					<span className="flex items-center gap-2">
 						<img src="/logo.png" alt="Bread Logo" className="w-12" />
 						<p className="text-primary font-semibold text-xl tracking-widest">BREAD</p>
 					</span>
+					<button
+						onClick={() => {
+							navigate({
+								to: Route.fullPath,
+								params: { language: language === "en" ? "fr" : "en" },
+							});
+						}}
+						className="h-10 w-10 rounded-full flex items-center justify-center border border-primary bg-primary/10"
+					>
+						{language === "en" ? "FR" : "EN"}
+					</button>
 				</header>
 				<div className="flex-1">
 					<div className="relative">
 						<input
 							type="text"
-							placeholder="Search"
+							placeholder={translations.search}
 							className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-300 h-12 focus:outline-blue-300 focus:outline-[1px]"
 							value={query}
 							onChange={(e) =>
@@ -209,7 +232,7 @@ function Home() {
 						)}
 					>
 						<List size={18} />
-						List
+						{translations.list}
 					</button>
 					<button
 						onClick={() => navigate({ search: (prev) => ({ ...prev, tab: "map" }) })}
@@ -219,13 +242,16 @@ function Home() {
 						)}
 					>
 						<MapPin size={18} />
-						Map
+						{translations.map}
 					</button>
 					<div className="w-px h-6 bg-gray-300" />
 					<button
 						onClick={() =>
 							navigate({
-								search: (prev) => ({ ...prev, free: prev.free ? undefined : true }),
+								search: (prev) => ({
+									...prev,
+									free: prev.free ? undefined : true,
+								}),
 							})
 						}
 						className={cn(
@@ -234,7 +260,7 @@ function Home() {
 						)}
 					>
 						<DollarSign size={18} />
-						Free
+						{translations.free}
 					</button>
 				</div>
 			</div>
