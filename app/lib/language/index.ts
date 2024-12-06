@@ -1,19 +1,6 @@
 import { createServerFn } from "@tanstack/start";
 import { getCookie, getEvent, getHeader, setCookie } from "vinxi/http";
-
-export const english = {
-	search: "Search",
-	free: "Free",
-	list: "List",
-	map: "Map",
-};
-
-export const french: typeof english = {
-	search: "Rechercher",
-	free: "Gratuit",
-	list: "Liste",
-	map: "Carte",
-};
+import { english, french } from "./messages";
 
 export const getTranslations = (language: string) => {
 	return language === "fr" ? french : english;
@@ -47,4 +34,20 @@ export const getLocalizedField = <T>(
 ): T | undefined | null => {
 	if (locale === "fr" && obj["fr"] !== "") return obj[locale];
 	else return obj["en"];
+};
+
+const commonTranslations = new Map<string, string>([
+	["Free", "Gratuit"],
+	["Mon", "Lun"],
+	["Tue", "Mar"],
+	["Wed", "Mer"],
+	["Thu", "Jeu"],
+	["Fri", "Ven"],
+	["Sat", "Sam"],
+	["Sun", "Dim"],
+]);
+
+export const translate = (enValue: string, language: "en" | "fr") => {
+	if (language === "en") return enValue;
+	return commonTranslations.get(enValue) || enValue;
 };

@@ -1,22 +1,18 @@
-import { getLocalizedField } from "@/lib/language";
+import { getLocalizedField, getTranslations } from "@/lib/language";
 import useSaved from "@/lib/saved";
 import { formatServiceAddress, ResourceType } from "@cords/sdk";
 import { Link, useParams } from "@tanstack/react-router";
 import { Bookmark, DollarSign, MapPin, PhoneCall } from "lucide-react";
-import "maplibre-gl/dist/maplibre-gl.css";
 
 export const Resource = ({ resource }: { resource: ResourceType }) => {
 	const { language } = useParams({
 		from: "/$language",
 	});
 	const saved = useSaved();
+	const translations = getTranslations(language);
 	return (
 		<Link
-			to="/$language/resource/$resourceId"
-			params={{
-				language,
-				resourceId: resource.id,
-			}}
+			to={`/${language}/resources/${resource.id}`}
 			className="p-4 border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow flex-col flex gap-2"
 		>
 			<p className="text-xl font-semibold">{getLocalizedField(resource.name, language)}</p>
@@ -29,11 +25,9 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 			)}
 			{/* Call section */}
 			{resource.phoneNumbers.map((phone) => (
-				<div className="text-gray-600 flex items-center gap-2">
+				<div key={phone.phone} className="text-gray-600 flex items-center gap-2">
 					<PhoneCall size={18} />
-					<Link key={phone.phone} href={`tel:${phone.phone}`}>
-						{phone.phone}
-					</Link>
+					<Link href={`tel:${phone.phone}`}>{phone.phone}</Link>
 				</div>
 			))}
 			{/* Fees section */}
@@ -47,13 +41,14 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 				<button
 					onClick={(e) => {
 						e.preventDefault();
+						e.stopPropagation();
 						if (saved.savedIds.includes(resource.id)) {
 							saved.setSavedIds(saved.savedIds.filter((id) => id !== resource.id));
 						} else {
 							saved.setSavedIds([...saved.savedIds, resource.id]);
 						}
 					}}
-					className="flex items-center gap-2 border border-gray-300 rounded-full px-2 py-1.5 hover:bg-gray-50/50 transition-colors"
+					className="flex items-center gap-2 border border-gray-300 rounded-full px-2.5 py-1.5 hover:bg-gray-50/50 transition-colors"
 				>
 					<Bookmark
 						size={18}
@@ -63,7 +58,9 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 								: "fill-none"
 						}
 					/>
-					{saved.savedIds.includes(resource.id) ? "Saved" : "Save"}
+					{saved.savedIds.includes(resource.id)
+						? translations.saved.saved
+						: translations.saved.save}
 				</button>
 			</div>
 		</Link>

@@ -1,0 +1,57 @@
+export const english = {
+	title: "Bread: Food Banks in Calgary",
+	description: "Bread is a directory of food resources in the greater Calgary area.",
+	search: "Search",
+	free: "Free",
+	list: "List",
+	map: "Map",
+	address: "Address",
+	fees: "Fees",
+	phoneTypes: {
+		phone: "Phone",
+	},
+	accessibility: "Accessibility",
+	applicationProcess: "Application Process",
+	additionalInfo: "Additional Information",
+	contact: "Contact",
+	email: "Email",
+	hours: "Hours",
+	saved: {
+		title: "Saved",
+		description:
+			"You can save resources here to find them later. Press the print button above to print out your saved resources.",
+		save: "Save",
+		saved: "Saved",
+	},
+	print: "Print",
+	viewMore: "View More",
+};
+
+export const french: typeof english = {
+	title: "Bread: Banques alimentaires à Calgary",
+	description: "Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
+	search: "Rechercher",
+	free: "Gratuit",
+	list: "Liste",
+	map: "Carte",
+	address: "Adresse",
+	fees: "Frais",
+	phoneTypes: {
+		phone: "Téléphone",
+	},
+	accessibility: "Accessibilité",
+	applicationProcess: "Processus d'application",
+	additionalInfo: "Informations supplémentaires",
+	contact: "Contact",
+	email: "Courriel",
+	hours: "Horaires",
+	saved: {
+		title: "Enregistrés",
+		description:
+			"Vous pouvez enregistrer des ressources ici pour les retrouver plus tard. Pressez le bouton d'impression ci-dessus pour imprimer vos ressources enregistrées.",
+		save: "Enregistrer",
+		saved: "Enregistré",
+	},
+	print: "Imprimer",
+	viewMore: "Voir plus",
+};

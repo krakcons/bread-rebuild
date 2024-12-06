@@ -1,6 +1,7 @@
 import { ResourceAddressType, ResourceType } from "@cords/sdk";
 import { createServerFn } from "@tanstack/start";
 import meals from "../routes/data.json";
+import { translate } from "./language";
 
 type LocalizedFieldType = {
 	en: string;
@@ -19,13 +20,6 @@ export const convertAddress = (drupalAddress: any): ResourceAddressType => {
 		lat: drupalAddress.field_geofield?.lat || null,
 		lng: drupalAddress.field_geofield?.lon || null,
 	};
-};
-
-const commonTranslations = new Map<string, string>([["Free", "Gratuit"]]);
-
-const translate = (enValue: string, language: "en" | "fr") => {
-	if (language === "en") return enValue;
-	return commonTranslations.get(enValue) || enValue;
 };
 
 // Helper function to create localized fields
@@ -60,17 +54,62 @@ const parseContactInfo = (notes: string): ContactInfo => {
 	return result;
 };
 
+const parseHours = (drupalData: any) => {
+	return (
+		[
+			drupalData.attributes.field_avail_mon_bool && {
+				day: "Mon",
+				open: `${(drupalData.attributes.field_avail_mon_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_mon_open_min ?? 0).toString().padStart(2, "0")}`,
+				close: `${(drupalData.attributes.field_avail_mon_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_mon_close_min ?? 0).toString().padStart(2, "0")}`,
+			},
+			drupalData.attributes.field_avail_tue_bool && {
+				day: "Tue",
+				open: `${(drupalData.attributes.field_avail_tue_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_tue_open_min ?? 0).toString().padStart(2, "0")}`,
+				close: `${(drupalData.attributes.field_avail_tue_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_tue_close_min ?? 0).toString().padStart(2, "0")}`,
+			},
+			drupalData.attributes.field_avail_wed_bool && {
+				day: "Wed",
+				open: `${(drupalData.attributes.field_avail_wed_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_wed_open_min ?? 0).toString().padStart(2, "0")}`,
+				close: `${(drupalData.attributes.field_avail_wed_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_wed_close_min ?? 0).toString().padStart(2, "0")}`,
+			},
+			drupalData.attributes.field_avail_thu_bool && {
+				day: "Thu",
+				open: `${(drupalData.attributes.field_avail_thu_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_thu_open_min ?? 0).toString().padStart(2, "0")}`,
+				close: `${(drupalData.attributes.field_avail_thu_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_thu_close_min ?? 0).toString().padStart(2, "0")}`,
+			},
+			drupalData.attributes.field_avail_fri_bool && {
+				day: "Fri",
+				open: `${(drupalData.attributes.field_avail_fri_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_fri_open_min ?? 0).toString().padStart(2, "0")}`,
+				close: `${(drupalData.attributes.field_avail_fri_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_fri_close_min ?? 0).toString().padStart(2, "0")}`,
+			},
+			drupalData.attributes.field_avail_sat_bool && {
+				day: "Sat",
+				open: `${(drupalData.attributes.field_avail_sat_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_sat_open_min ?? 0).toString().padStart(2, "0")}`,
+				close: `${(drupalData.attributes.field_avail_sat_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_sat_close_min ?? 0).toString().padStart(2, "0")}`,
+			},
+			drupalData.attributes.field_avail_sun_bool && {
+				day: "Sun",
+				open: `${(drupalData.attributes.field_avail_sun_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_sun_open_min ?? 0).toString().padStart(2, "0")}`,
+				close: `${(drupalData.attributes.field_avail_sun_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_sun_close_min ?? 0).toString().padStart(2, "0")}`,
+			},
+		]
+			.filter(Boolean)
+			.map((hour) => `${hour.day} ${hour.open} - ${hour.close}`)
+			.join("; ") + "; "
+	);
+};
+
 // Convert Drupal meal/pantry to ResourceType
 export const convertDrupalToResource = (drupalData: any): ResourceType => {
+	const contactInfo = parseContactInfo(drupalData.attributes.field_registration_notes);
+	const hours = parseHours(drupalData);
 	return {
 		id: drupalData.id,
 		// trim out any text before the first colon
 		name: createLocalizedField(drupalData.attributes.title.split(":")[1] || ""),
 		description: createLocalizedField(drupalData.attributes.field_description || ""),
 		website: createLocalizedField(drupalData.attributes.field_general_web_site || ""),
-		email: createLocalizedField(
-			parseContactInfo(drupalData.attributes.field_registration_notes).email || ""
-		),
+		email: createLocalizedField(contactInfo.email || ""),
 		address: convertAddress({
 			...drupalData.attributes.field_pickup_address,
 			field_geofield: drupalData.attributes.field_geofield,
@@ -81,14 +120,12 @@ export const convertDrupalToResource = (drupalData: any): ResourceType => {
 				field_geofield: drupalData.attributes.field_geofield,
 			}),
 		],
-		phoneNumbers: parseContactInfo(drupalData.attributes.field_registration_notes).phone
+		phoneNumbers: contactInfo.phone
 			? [
 					{
-						phone:
-							parseContactInfo(drupalData.attributes.field_registration_notes)
-								.phone || "",
+						phone: contactInfo.phone,
 						name: "Main",
-						type: "phone",
+						type: translate("phone", "en"),
 					},
 				]
 			: [],
@@ -97,47 +134,7 @@ export const convertDrupalToResource = (drupalData: any): ResourceType => {
 		body: {
 			en: {
 				fees: drupalData.attributes.field_price_description || "",
-				hours:
-					[
-						drupalData.attributes.field_avail_mon_bool && {
-							day: "Mon",
-							open: `${(drupalData.attributes.field_avail_mon_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_mon_open_min ?? 0).toString().padStart(2, "0")}`,
-							close: `${(drupalData.attributes.field_avail_mon_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_mon_close_min ?? 0).toString().padStart(2, "0")}`,
-						},
-						drupalData.attributes.field_avail_tue_bool && {
-							day: "Tue",
-							open: `${(drupalData.attributes.field_avail_tue_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_tue_open_min ?? 0).toString().padStart(2, "0")}`,
-							close: `${(drupalData.attributes.field_avail_tue_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_tue_close_min ?? 0).toString().padStart(2, "0")}`,
-						},
-						drupalData.attributes.field_avail_wed_bool && {
-							day: "Wed",
-							open: `${(drupalData.attributes.field_avail_wed_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_wed_open_min ?? 0).toString().padStart(2, "0")}`,
-							close: `${(drupalData.attributes.field_avail_wed_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_wed_close_min ?? 0).toString().padStart(2, "0")}`,
-						},
-						drupalData.attributes.field_avail_thu_bool && {
-							day: "Thu",
-							open: `${(drupalData.attributes.field_avail_thu_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_thu_open_min ?? 0).toString().padStart(2, "0")}`,
-							close: `${(drupalData.attributes.field_avail_thu_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_thu_close_min ?? 0).toString().padStart(2, "0")}`,
-						},
-						drupalData.attributes.field_avail_fri_bool && {
-							day: "Fri",
-							open: `${(drupalData.attributes.field_avail_fri_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_fri_open_min ?? 0).toString().padStart(2, "0")}`,
-							close: `${(drupalData.attributes.field_avail_fri_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_fri_close_min ?? 0).toString().padStart(2, "0")}`,
-						},
-						drupalData.attributes.field_avail_sat_bool && {
-							day: "Sat",
-							open: `${(drupalData.attributes.field_avail_sat_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_sat_open_min ?? 0).toString().padStart(2, "0")}`,
-							close: `${(drupalData.attributes.field_avail_sat_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_sat_close_min ?? 0).toString().padStart(2, "0")}`,
-						},
-						drupalData.attributes.field_avail_sun_bool && {
-							day: "Sun",
-							open: `${(drupalData.attributes.field_avail_sun_open_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_sun_open_min ?? 0).toString().padStart(2, "0")}`,
-							close: `${(drupalData.attributes.field_avail_sun_close_hour ?? 0).toString().padStart(2, "0")}${(drupalData.attributes.field_avail_sun_close_min ?? 0).toString().padStart(2, "0")}`,
-						},
-					]
-						.filter(Boolean)
-						.map((hour) => `${hour.day} ${hour.open} - ${hour.close}`)
-						.join("; ") + "; ",
+				hours,
 				topics: "",
 				twitter: null,
 				youtube: null,
@@ -149,11 +146,16 @@ export const convertDrupalToResource = (drupalData: any): ResourceType => {
 				recordOwner: "",
 				accessibility: drupalData.attributes.field_wheelchair_notes || "",
 				documentsRequired: "",
-				applicationProcess: drupalData.attributes.field_registration_notes || "",
+				applicationProcess:
+					!contactInfo.email &&
+					!contactInfo.phone &&
+					drupalData.attributes.field_registration_notes
+						? drupalData.attributes.field_registration_notes
+						: "",
 			},
 			fr: {
 				fees: translate(drupalData.attributes.field_price_description || "", "fr") || "",
-				hours: "",
+				hours,
 				topics: "",
 				twitter: null,
 				youtube: null,
@@ -165,7 +167,12 @@ export const convertDrupalToResource = (drupalData: any): ResourceType => {
 				recordOwner: "",
 				accessibility: drupalData.attributes.field_wheelchair_notes || "",
 				documentsRequired: "",
-				applicationProcess: drupalData.attributes.field_registration_notes || "",
+				applicationProcess:
+					!contactInfo.email &&
+					!contactInfo.phone &&
+					drupalData.attributes.field_registration_notes
+						? drupalData.attributes.field_registration_notes
+						: "",
 			},
 		},
 		result: null,
@@ -175,4 +182,9 @@ export const convertDrupalToResource = (drupalData: any): ResourceType => {
 export const getMeals = createServerFn("GET", async () => {
 	const resources = meals.map((meal) => convertDrupalToResource(meal));
 	return resources;
+});
+
+export const getMeal = createServerFn("GET", async (id: string) => {
+	const resource = meals.find((meal) => meal.id === id);
+	return resource ? convertDrupalToResource(resource) : null;
 });

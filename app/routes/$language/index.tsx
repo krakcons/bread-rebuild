@@ -1,14 +1,13 @@
+import { MapResource } from "@/components/MapResource";
 import { Resource } from "@/components/Resource";
 import { getMeals } from "@/lib/bread";
 import { getLocalizedField, getTranslations } from "@/lib/language";
+import { STYLE } from "@/lib/map";
 import { cn } from "@/lib/utils";
-import { formatServiceAddress, ResourceType } from "@cords/sdk";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { DollarSign, List, MapPin, PhoneCall, Search, Utensils, X } from "lucide-react";
-import { StyleSpecification } from "maplibre-gl";
+import { createFileRoute } from "@tanstack/react-router";
+import { DollarSign, List, MapPin, Search } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useState } from "react";
-import { Map, Marker, Popup } from "react-map-gl/maplibre";
+import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
 const SearchSchema = z.object({
@@ -37,104 +36,19 @@ export const Route = createFileRoute("/$language/")({
 						: true)
 		);
 	},
-});
-
-const STYLE: StyleSpecification = {
-	version: 8,
-	sources: {
-		"raster-tiles": {
-			type: "raster",
-			tiles: [
-				"https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
-				"https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
-				"https://c.tile.openstreetmap.org/{z}/{x}/{y}.png",
-			],
-			tileSize: 256,
-		},
+	meta: ({ params: { language } }) => {
+		const translations = getTranslations(language);
+		return [
+			{
+				title: translations.title,
+			},
+			{
+				name: "description",
+				content: translations.description,
+			},
+		];
 	},
-	layers: [
-		{
-			id: "osm-tiles",
-			type: "raster",
-			source: "raster-tiles",
-			minzoom: 0,
-			maxzoom: 19,
-		},
-	],
-};
-
-const MapMarker = ({ resource }: { resource: ResourceType }) => {
-	const { language } = Route.useParams();
-	const [popupOpen, setPopupOpen] = useState<boolean>(false);
-	return (
-		<>
-			<Marker
-				latitude={resource.address.lat}
-				longitude={resource.address.lng}
-				anchor="bottom"
-				onClick={() => {
-					setPopupOpen(true);
-					console.log("clicked");
-				}}
-			>
-				<div className="bg-white rounded-full p-2 shadow-sm">
-					<Utensils size={18} />
-				</div>
-			</Marker>
-			{popupOpen && (
-				<Popup
-					latitude={resource.address.lat}
-					longitude={resource.address.lng}
-					onClose={() => setPopupOpen(!popupOpen)}
-					anchor="bottom"
-					offset={36}
-					closeOnClick={false}
-					closeButton={false}
-					style={{
-						padding: 0,
-						borderRadius: 100,
-					}}
-					maxWidth="400px"
-				>
-					<button
-						className="absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer focus:outline-none"
-						onClick={() => setPopupOpen(false)}
-					>
-						<X size={18} />
-					</button>
-					<div className="flex flex-col gap-2 mt-4">
-						<p className="text-lg font-semibold">
-							{getLocalizedField(resource.name, language)}
-						</p>
-						{/* Address section */}
-						{resource.address && (
-							<div className="text-gray-600 text-sm flex items-center gap-2">
-								<MapPin size={18} />
-								{formatServiceAddress(resource.address)}
-							</div>
-						)}
-						{/* Call section */}
-						{resource.phoneNumbers.map((phone) => (
-							<div className="text-gray-600 text-sm flex items-center gap-2">
-								<PhoneCall size={16} />
-								<Link key={phone.phone} href={`tel:${phone.phone}`}>
-									{phone.phone}
-								</Link>
-							</div>
-						))}
-						{/* Fees section */}
-						{getLocalizedField(resource.body, language)?.fees && (
-							<div className="mb-2 text-gray-600 text-sm flex items-center gap-2">
-								<DollarSign size={18} />
-								{getLocalizedField(resource.body, language)?.fees}
-							</div>
-						)}
-					</div>
-				</Popup>
-			)}
-		</>
-	);
-};
+});
 
 function Home() {
 	const navigate = Route.useNavigate();
@@ -144,8 +58,8 @@ function Home() {
 	const translations = getTranslations(language);
 
 	return (
-		<div className="flex flex-col gap-4">
-			<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-3">
+			<div className="flex flex-col gap-3">
 				<div className="flex-1">
 					<div className="relative">
 						<input
@@ -220,18 +134,18 @@ function Home() {
 				</>
 			)}
 			{tab === "map" && (
-				<div className="rounded-lg overflow-hidden border border-gray-300">
+				<div className="rounded-lg overflow-hidden border border-gray-300 flex-1">
 					<Map
 						initialViewState={{
 							longitude: -114.0719,
 							latitude: 51.0447,
 							zoom: 9,
 						}}
-						style={{ width: "100%", height: 800 }}
+						style={{ width: "100%", height: "80vh" }}
 						mapStyle={STYLE}
 					>
 						{meals.map((resource) => (
-							<MapMarker key={resource.id} resource={resource} />
+							<MapResource key={resource.id} resource={resource} />
 						))}
 					</Map>
 				</div>

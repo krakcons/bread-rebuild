@@ -1,4 +1,4 @@
-import { setLanguage } from "@/lib/language";
+import { getTranslations, setLanguage } from "@/lib/language";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { Printer } from "lucide-react";
 
@@ -12,33 +12,39 @@ export const Route = createFileRoute("/$language")({
 function LayoutComponent() {
 	const { language } = Route.useParams();
 	const navigate = Route.useNavigate();
+	const translations = getTranslations(language);
 	return (
 		<div>
 			<div className="flex justify-center items-center border-b border-gray-300">
-				<header className="max-w-screen-md w-full flex items-center gap-4 justify-between py-3">
+				<header className="max-w-screen-md w-full flex items-center gap-4 justify-between py-3 px-4">
 					<Link to="/$language" className="flex items-center gap-2">
 						<img src="/logo.png" alt="Bread Logo" className="w-12" />
-						<p className="text-primary font-semibold text-xl tracking-widest">BREAD</p>
+						<p className="text-primary font-semibold hidden tracking-widest sm:block sm:text-xl">
+							BREAD
+						</p>
 					</Link>
-					<div className="flex items-center gap-4 no-print">
-						<Link to="/$language/saved">Saved</Link>
+					<div className="flex items-center gap-2 no-print">
+						<Link to="/$language/saved" className="pr-2">
+							{translations.saved.title}
+						</Link>
 						<button
 							onClick={() => {
 								window.print();
 							}}
-							className="px-4 py-2 rounded-full border border-gray-300 flex items-center gap-2"
+							className="flex items-center gap-2 border border-gray-300 rounded-full px-2.5 py-1.5 hover:bg-gray-50/50 transition-colors"
 						>
 							<Printer size={18} />
-							Print
+							{translations.print}
 						</button>
 						<button
 							onClick={() => {
 								navigate({
+									replace: true,
 									params: { language: language === "en" ? "fr" : "en" },
-									search: (prev) => ({ ...prev }),
+									search: (prev: any) => ({ ...prev }),
 								});
 							}}
-							className="h-10 w-10 rounded-full flex items-center justify-center border border-primary bg-primary/10"
+							className="h-10 w-10 rounded-full flex items-center justify-center border border-gray-300 hover:bg-gray-50/50 transition-colors"
 						>
 							{language === "en" ? "FR" : "EN"}
 						</button>

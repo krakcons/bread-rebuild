@@ -15,7 +15,7 @@ import { Route as LanguageImport } from './routes/$language'
 import { Route as IndexImport } from './routes/index'
 import { Route as LanguageIndexImport } from './routes/$language/index'
 import { Route as LanguageSavedImport } from './routes/$language/saved'
-import { Route as LanguageResourceResourceIdIndexImport } from './routes/$language/resource/$resourceId/index'
+import { Route as LanguageResourcesIdImport } from './routes/$language/resources/$id'
 
 // Create/Update Routes
 
@@ -39,11 +39,10 @@ const LanguageSavedRoute = LanguageSavedImport.update({
   getParentRoute: () => LanguageRoute,
 } as any)
 
-const LanguageResourceResourceIdIndexRoute =
-  LanguageResourceResourceIdIndexImport.update({
-    path: '/resource/$resourceId/',
-    getParentRoute: () => LanguageRoute,
-  } as any)
+const LanguageResourcesIdRoute = LanguageResourcesIdImport.update({
+  path: '/resources/$id',
+  getParentRoute: () => LanguageRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -77,11 +76,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LanguageIndexImport
       parentRoute: typeof LanguageImport
     }
-    '/$language/resource/$resourceId/': {
-      id: '/$language/resource/$resourceId/'
-      path: '/resource/$resourceId'
-      fullPath: '/$language/resource/$resourceId'
-      preLoaderRoute: typeof LanguageResourceResourceIdIndexImport
+    '/$language/resources/$id': {
+      id: '/$language/resources/$id'
+      path: '/resources/$id'
+      fullPath: '/$language/resources/$id'
+      preLoaderRoute: typeof LanguageResourcesIdImport
       parentRoute: typeof LanguageImport
     }
   }
@@ -92,13 +91,13 @@ declare module '@tanstack/react-router' {
 interface LanguageRouteChildren {
   LanguageSavedRoute: typeof LanguageSavedRoute
   LanguageIndexRoute: typeof LanguageIndexRoute
-  LanguageResourceResourceIdIndexRoute: typeof LanguageResourceResourceIdIndexRoute
+  LanguageResourcesIdRoute: typeof LanguageResourcesIdRoute
 }
 
 const LanguageRouteChildren: LanguageRouteChildren = {
   LanguageSavedRoute: LanguageSavedRoute,
   LanguageIndexRoute: LanguageIndexRoute,
-  LanguageResourceResourceIdIndexRoute: LanguageResourceResourceIdIndexRoute,
+  LanguageResourcesIdRoute: LanguageResourcesIdRoute,
 }
 
 const LanguageRouteWithChildren = LanguageRoute._addFileChildren(
@@ -110,14 +109,14 @@ export interface FileRoutesByFullPath {
   '/$language': typeof LanguageRouteWithChildren
   '/$language/saved': typeof LanguageSavedRoute
   '/$language/': typeof LanguageIndexRoute
-  '/$language/resource/$resourceId': typeof LanguageResourceResourceIdIndexRoute
+  '/$language/resources/$id': typeof LanguageResourcesIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$language/saved': typeof LanguageSavedRoute
   '/$language': typeof LanguageIndexRoute
-  '/$language/resource/$resourceId': typeof LanguageResourceResourceIdIndexRoute
+  '/$language/resources/$id': typeof LanguageResourcesIdRoute
 }
 
 export interface FileRoutesById {
@@ -126,7 +125,7 @@ export interface FileRoutesById {
   '/$language': typeof LanguageRouteWithChildren
   '/$language/saved': typeof LanguageSavedRoute
   '/$language/': typeof LanguageIndexRoute
-  '/$language/resource/$resourceId/': typeof LanguageResourceResourceIdIndexRoute
+  '/$language/resources/$id': typeof LanguageResourcesIdRoute
 }
 
 export interface FileRouteTypes {
@@ -136,20 +135,16 @@ export interface FileRouteTypes {
     | '/$language'
     | '/$language/saved'
     | '/$language/'
-    | '/$language/resource/$resourceId'
+    | '/$language/resources/$id'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/$language/saved'
-    | '/$language'
-    | '/$language/resource/$resourceId'
+  to: '/' | '/$language/saved' | '/$language' | '/$language/resources/$id'
   id:
     | '__root__'
     | '/'
     | '/$language'
     | '/$language/saved'
     | '/$language/'
-    | '/$language/resource/$resourceId/'
+    | '/$language/resources/$id'
   fileRoutesById: FileRoutesById
 }
 
@@ -187,7 +182,7 @@ export const routeTree = rootRoute
       "children": [
         "/$language/saved",
         "/$language/",
-        "/$language/resource/$resourceId/"
+        "/$language/resources/$id"
       ]
     },
     "/$language/saved": {
@@ -198,8 +193,8 @@ export const routeTree = rootRoute
       "filePath": "$language/index.tsx",
       "parent": "/$language"
     },
-    "/$language/resource/$resourceId/": {
-      "filePath": "$language/resource/$resourceId/index.tsx",
+    "/$language/resources/$id": {
+      "filePath": "$language/resources/$id.tsx",
       "parent": "/$language"
     }
   }
