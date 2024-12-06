@@ -171,6 +171,12 @@ function Home() {
 	return (
 		<div className="p-4 max-w-screen-md mx-auto flex flex-col">
 			<div className="flex flex-col py-4 gap-4">
+				<header className="flex items-center gap-4">
+					<span className="flex items-center gap-2">
+						<img src="/logo.png" alt="Bread Logo" className="w-12" />
+						<p className="text-primary font-semibold text-xl tracking-widest">BREAD</p>
+					</span>
+				</header>
 				<div className="flex-1">
 					<div className="relative">
 						<input
@@ -199,7 +205,7 @@ function Home() {
 						}
 						className={cn(
 							"px-4 py-2 rounded-md border border-gray-300 flex items-center gap-2",
-							tab === "list" ? "bg-blue-50 border-blue-300" : "bg-white"
+							tab === "list" ? "bg-primary/10 border-primary" : "bg-white"
 						)}
 					>
 						<List size={18} />
@@ -209,7 +215,7 @@ function Home() {
 						onClick={() => navigate({ search: (prev) => ({ ...prev, tab: "map" }) })}
 						className={cn(
 							"px-4 py-2 rounded-md border border-gray-300 flex items-center gap-2",
-							tab === "map" ? "bg-blue-50 border-blue-300" : "bg-white"
+							tab === "map" ? "bg-primary/10 border-primary" : "bg-white"
 						)}
 					>
 						<MapPin size={18} />
@@ -224,7 +230,7 @@ function Home() {
 						}
 						className={cn(
 							"px-4 py-2 rounded-md border border-gray-300 flex items-center gap-2",
-							free ? "bg-blue-50 border-blue-300" : "bg-white"
+							free ? "bg-primary/10 border-primary" : "bg-white"
 						)}
 					>
 						<DollarSign size={18} />
