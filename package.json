@@ -16,14 +16,25 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@cords/sdk": "^0.0.7",
+    "@tailwindcss/vite": "^4.0.0-beta.5",
+    "@tanstack/react-form": "^0.39.0",
     "@tanstack/react-router": "^1.58.13",
     "@tanstack/start": "^1.58.13",
+    "@tanstack/zod-form-adapter": "^0.39.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
+    "maplibre-gl": "^4.7.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-map-gl": "^7.1.7",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss": "^4.0.0-beta.5",
     "vinxi": "^0.4.3",
     "wrangler": "^3.78.10",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240925.0",
