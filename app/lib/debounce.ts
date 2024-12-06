@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
 
-export const useDebounce = <T>(
-	value: T,
-	delay?: number
-): { debouncedValue: T; isPending: boolean } => {
+export const useDebounce = <T>(value: T, delay?: number): T => {
 	const [debouncedValue, setDebouncedValue] = useState<T>(value);
-	const [isPending, setIsPending] = useState(true);
 
 	useEffect(() => {
-		setIsPending(true);
 		const timer = setTimeout(() => {
 			setDebouncedValue(value);
-			setIsPending(false);
 		}, delay || 500);
 
 		return () => {
@@ -19,5 +13,5 @@ export const useDebounce = <T>(
 		};
 	}, [value, delay]);
 
-	return { debouncedValue, isPending };
+	return debouncedValue;
 };

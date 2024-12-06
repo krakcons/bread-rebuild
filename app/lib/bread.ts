@@ -1,4 +1,6 @@
 import { ResourceAddressType, ResourceType } from "@cords/sdk";
+import { createServerFn } from "@tanstack/start";
+import meals from "../routes/data.json";
 
 type LocalizedFieldType = {
 	en: string;
@@ -169,3 +171,8 @@ export const convertDrupalToResource = (drupalData: any): ResourceType => {
 		result: null,
 	};
 };
+
+export const getMeals = createServerFn("GET", async () => {
+	const resources = meals.map((meal) => convertDrupalToResource(meal));
+	return resources;
+});

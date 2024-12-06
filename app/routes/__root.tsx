@@ -1,7 +1,7 @@
+import globalStyles from "@/index.css?url";
 import { createRootRoute, Outlet, ScrollRestoration } from "@tanstack/react-router";
 import { Body, Head, Html, Meta, Scripts } from "@tanstack/start";
 import * as React from "react";
-import globalStyles from "../index.css?url";
 
 export const Route = createRootRoute({
 	meta: () => [

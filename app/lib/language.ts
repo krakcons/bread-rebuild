@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/start";
-import { useMemo } from "react";
 import { getCookie, getEvent, getHeader, setCookie } from "vinxi/http";
 
 export const english = {
@@ -17,10 +16,7 @@ export const french: typeof english = {
 };
 
 export const getTranslations = (language: string) => {
-	const translations = useMemo(() => {
-		return language === "fr" ? french : english;
-	}, [language]);
-	return translations;
+	return language === "fr" ? french : english;
 };
 
 export const getLanguage = createServerFn("GET", () => {

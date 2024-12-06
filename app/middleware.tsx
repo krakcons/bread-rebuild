@@ -8,7 +8,11 @@ import {
 } from "vinxi/http";
 
 const languages = ["en", "fr"];
-const localizedPaths = ["/"];
+const localizedPaths = [
+	{ path: "/", exact: true },
+	{ path: "/saved", exact: true },
+	{ path: "/resource", exact: false },
+];
 
 export default defineMiddleware({
 	onRequest: async (event) => {
@@ -22,7 +26,12 @@ export default defineMiddleware({
 		const pathnameHasLanguage = languages.some(
 			(language) => pathname.startsWith(`/${language}/`) || pathname === `/${language}`
 		);
-		if (!pathnameHasLanguage && localizedPaths.includes(pathname)) {
+		if (
+			!pathnameHasLanguage &&
+			localizedPaths.some(({ path, exact }) =>
+				exact ? pathname === path : pathname.startsWith(path)
+			)
+		) {
 			const language = getCookie(event, "language");
 			if (language) {
 				const redirectUrl = `/${language}${pathname.replace(/\/$/, "")}`;
@@ -31,11 +40,7 @@ export default defineMiddleware({
 			} else {
 				const acceptLanguage = getHeader(event, "accept-language")?.split(",")[0] || "";
 				const language = acceptLanguage?.startsWith("fr") ? "fr" : "en";
-				setCookie(event, "language", language, {
-					path: "/",
-					secure: true,
-					sameSite: "lax",
-				});
+				setCookie(event, "language", language);
 				const redirectUrl = `/${language}${pathname.replace(/\/$/, "")}`;
 				console.log("Redirecting to:", redirectUrl);
 				return sendRedirect(event, redirectUrl, 302);

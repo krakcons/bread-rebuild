@@ -11,10 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as LanguageImport } from './routes/$language'
 import { Route as IndexImport } from './routes/index'
 import { Route as LanguageIndexImport } from './routes/$language/index'
+import { Route as LanguageSavedImport } from './routes/$language/saved'
+import { Route as LanguageResourceResourceIdIndexImport } from './routes/$language/resource/$resourceId/index'
 
 // Create/Update Routes
+
+const LanguageRoute = LanguageImport.update({
+  path: '/$language',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
@@ -22,9 +30,20 @@ const IndexRoute = IndexImport.update({
 } as any)
 
 const LanguageIndexRoute = LanguageIndexImport.update({
-  path: '/$language/',
-  getParentRoute: () => rootRoute,
+  path: '/',
+  getParentRoute: () => LanguageRoute,
 } as any)
+
+const LanguageSavedRoute = LanguageSavedImport.update({
+  path: '/saved',
+  getParentRoute: () => LanguageRoute,
+} as any)
+
+const LanguageResourceResourceIdIndexRoute =
+  LanguageResourceResourceIdIndexImport.update({
+    path: '/resource/$resourceId/',
+    getParentRoute: () => LanguageRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -37,51 +56,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/$language/': {
-      id: '/$language/'
+    '/$language': {
+      id: '/$language'
       path: '/$language'
       fullPath: '/$language'
-      preLoaderRoute: typeof LanguageIndexImport
+      preLoaderRoute: typeof LanguageImport
       parentRoute: typeof rootRoute
+    }
+    '/$language/saved': {
+      id: '/$language/saved'
+      path: '/saved'
+      fullPath: '/$language/saved'
+      preLoaderRoute: typeof LanguageSavedImport
+      parentRoute: typeof LanguageImport
+    }
+    '/$language/': {
+      id: '/$language/'
+      path: '/'
+      fullPath: '/$language/'
+      preLoaderRoute: typeof LanguageIndexImport
+      parentRoute: typeof LanguageImport
+    }
+    '/$language/resource/$resourceId/': {
+      id: '/$language/resource/$resourceId/'
+      path: '/resource/$resourceId'
+      fullPath: '/$language/resource/$resourceId'
+      preLoaderRoute: typeof LanguageResourceResourceIdIndexImport
+      parentRoute: typeof LanguageImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface LanguageRouteChildren {
+  LanguageSavedRoute: typeof LanguageSavedRoute
+  LanguageIndexRoute: typeof LanguageIndexRoute
+  LanguageResourceResourceIdIndexRoute: typeof LanguageResourceResourceIdIndexRoute
+}
+
+const LanguageRouteChildren: LanguageRouteChildren = {
+  LanguageSavedRoute: LanguageSavedRoute,
+  LanguageIndexRoute: LanguageIndexRoute,
+  LanguageResourceResourceIdIndexRoute: LanguageResourceResourceIdIndexRoute,
+}
+
+const LanguageRouteWithChildren = LanguageRoute._addFileChildren(
+  LanguageRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$language': typeof LanguageIndexRoute
+  '/$language': typeof LanguageRouteWithChildren
+  '/$language/saved': typeof LanguageSavedRoute
+  '/$language/': typeof LanguageIndexRoute
+  '/$language/resource/$resourceId': typeof LanguageResourceResourceIdIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$language/saved': typeof LanguageSavedRoute
   '/$language': typeof LanguageIndexRoute
+  '/$language/resource/$resourceId': typeof LanguageResourceResourceIdIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/$language': typeof LanguageRouteWithChildren
+  '/$language/saved': typeof LanguageSavedRoute
   '/$language/': typeof LanguageIndexRoute
+  '/$language/resource/$resourceId/': typeof LanguageResourceResourceIdIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$language'
+  fullPaths:
+    | '/'
+    | '/$language'
+    | '/$language/saved'
+    | '/$language/'
+    | '/$language/resource/$resourceId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$language'
-  id: '__root__' | '/' | '/$language/'
+  to:
+    | '/'
+    | '/$language/saved'
+    | '/$language'
+    | '/$language/resource/$resourceId'
+  id:
+    | '__root__'
+    | '/'
+    | '/$language'
+    | '/$language/saved'
+    | '/$language/'
+    | '/$language/resource/$resourceId/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LanguageIndexRoute: typeof LanguageIndexRoute
+  LanguageRoute: typeof LanguageRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LanguageIndexRoute: LanguageIndexRoute,
+  LanguageRoute: LanguageRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +176,31 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/$language/"
+        "/$language"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/$language": {
+      "filePath": "$language.tsx",
+      "children": [
+        "/$language/saved",
+        "/$language/",
+        "/$language/resource/$resourceId/"
+      ]
+    },
+    "/$language/saved": {
+      "filePath": "$language/saved.tsx",
+      "parent": "/$language"
+    },
     "/$language/": {
-      "filePath": "$language/index.tsx"
+      "filePath": "$language/index.tsx",
+      "parent": "/$language"
+    },
+    "/$language/resource/$resourceId/": {
+      "filePath": "$language/resource/$resourceId/index.tsx",
+      "parent": "/$language"
     }
   }
 }
