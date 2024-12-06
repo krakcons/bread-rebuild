@@ -163,7 +163,7 @@ function Home() {
 	const results = useMemo(() => {
 		return resources.filter(
 			(resource) =>
-				resource.name.en.includes(debouncedQuery) &&
+				resource.name.en.toLowerCase().includes(debouncedQuery.toLowerCase()) &&
 				(free ? resource.body.en.fees === "Free" : true)
 		);
 	}, [debouncedQuery, resources, free]);
