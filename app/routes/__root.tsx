@@ -13,11 +13,16 @@ export const Route = createRootRoute({
 			content: "width=device-width, initial-scale=1",
 		},
 		{
-			title: "Bread",
+			title: "Bread: Food Banks in Calgary",
 		},
 		{
 			name: "description",
 			content: "Bread is a directory of food resources in the greater Calgary area.",
+		},
+		{
+			name: "icon",
+			type: "image/png",
+			href: "/favicon.ico",
 		},
 	],
 	component: RootComponent,

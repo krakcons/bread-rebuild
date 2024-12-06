@@ -27,30 +27,64 @@ export const createLocalizedField = (enValue: string): LocalizedFieldType => {
 	};
 };
 
+// Helper function to parse contact info from registration notes
+// e.g. "call: 403 288 9040 e: svdp@st-peters.ca" -> { phone: "403 288 9040", email: "svdp@st-peters.ca" }
+type ContactInfo = {
+	phone?: string;
+	email?: string;
+};
+
+const parseContactInfo = (notes: string): ContactInfo => {
+	if (!notes) return {};
+	const result: ContactInfo = {};
+
+	const phoneMatch = notes.match(/call:\s*([0-9\s-]+)/);
+	if (phoneMatch) {
+		result.phone = phoneMatch[1].trim();
+	}
+
+	const emailMatch = notes.match(/e:\s*([^\s]+@[^\s]+)/);
+	if (emailMatch) {
+		result.email = emailMatch[1].trim();
+	}
+
+	return result;
+};
+
 // Convert Drupal meal/pantry to ResourceType
 export const convertDrupalToResource = (drupalData: any): ResourceType => {
 	return {
 		id: drupalData.id,
-		name: createLocalizedField(drupalData.attributes.title),
+		// trim out any text before the first colon
+		name: createLocalizedField(drupalData.attributes.title.split(":")[1] || ""),
 		description: createLocalizedField(drupalData.attributes.field_description || ""),
 		website: createLocalizedField(drupalData.attributes.field_general_web_site || ""),
-		email: createLocalizedField(drupalData.attributes.field_email_address || ""),
+		email: createLocalizedField(
+			parseContactInfo(drupalData.attributes.field_registration_notes).email || ""
+		),
 		address: convertAddress({
 			...drupalData.attributes.field_pickup_address,
 			field_geofield: drupalData.attributes.field_geofield,
 		}),
-		addresses: [], // No additional addresses in source data
-		phoneNumbers: drupalData.attributes.field_information_phone_number
+		addresses: [
+			convertAddress({
+				...drupalData.attributes.field_pickup_address,
+				field_geofield: drupalData.attributes.field_geofield,
+			}),
+		],
+		phoneNumbers: parseContactInfo(drupalData.attributes.field_registration_notes).phone
 			? [
 					{
-						phone: drupalData.attributes.field_information_phone_number,
+						phone:
+							parseContactInfo(drupalData.attributes.field_registration_notes)
+								.phone || "",
 						name: "Main",
 						type: "phone",
 					},
 				]
 			: [],
-		partner: "", // No direct partner mapping in source
-		delivery: "local", // Assuming local delivery for these services
+		partner: "bread",
+		delivery: "local",
 		body: {
 			en: {
 				fees: drupalData.attributes.field_price_description || "",
