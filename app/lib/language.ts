@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/start";
 import { useMemo } from "react";
-import { setCookie } from "vinxi/http";
+import { getCookie, getEvent, getHeader, setCookie } from "vinxi/http";
 
 export const english = {
 	search: "Search",
@@ -22,6 +22,19 @@ export const getTranslations = (language: string) => {
 	}, [language]);
 	return translations;
 };
+
+export const getLanguage = createServerFn("GET", () => {
+	const event = getEvent();
+	const language = getCookie(event, "language");
+	if (language) {
+		return language;
+	} else {
+		const acceptLanguage = getHeader(event, "accept-language")?.split(",")[0];
+		const language = acceptLanguage?.startsWith("fr") ? "fr" : "en";
+		setCookie(event, "language", language);
+		return language;
+	}
+});
 
 export const setLanguage = createServerFn("POST", (language: "en" | "fr") => {
 	setCookie("language", language);

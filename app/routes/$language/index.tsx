@@ -176,9 +176,11 @@ function Home() {
 				getLocalizedField(resource.name, language)
 					?.toLowerCase()
 					.includes(debouncedQuery.toLowerCase()) &&
-				(free ? getLocalizedField(resource.body, language)?.fees === "Free" : true)
+				(free
+					? getLocalizedField(resource.body, language)?.fees === translations.free
+					: true)
 		);
-	}, [debouncedQuery, resources, free]);
+	}, [debouncedQuery, resources, free, language]);
 
 	return (
 		<div className="p-4 max-w-screen-md mx-auto flex flex-col">

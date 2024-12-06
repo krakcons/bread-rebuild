@@ -14,7 +14,6 @@ export default defineMiddleware({
 	onRequest: async (event) => {
 		const request = getWebRequest(event);
 		const pathname = new URL(request.url).pathname;
-		console.log("pathname", pathname);
 
 		const pathnameHasLanguage = languages.some(
 			(language) => pathname.startsWith(`/${language}/`) || pathname === `/${language}`
@@ -22,7 +21,6 @@ export default defineMiddleware({
 		if (!pathnameHasLanguage && localizedPaths.includes(pathname)) {
 			const language = getCookie(event, "language");
 			if (language) {
-				console.log("language", language, pathname);
 				sendRedirect(event, `/${language}${pathname.replace(/\/$/, "")}`);
 			} else {
 				const acceptLanguage = getHeader(event, "accept-language")?.split(",")[0];
@@ -32,7 +30,6 @@ export default defineMiddleware({
 			}
 		} else if (pathnameHasLanguage) {
 			const language = pathname.split("/")[1];
-			console.log("pathnameHasLanguage", pathname, language);
 			setCookie(event, "language", language);
 		}
 
