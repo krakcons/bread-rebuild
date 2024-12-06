@@ -193,6 +193,7 @@ function Home() {
 							navigate({
 								to: Route.fullPath,
 								params: { language: language === "en" ? "fr" : "en" },
+								search: (prev) => ({ ...prev }),
 							});
 						}}
 						className="h-10 w-10 rounded-full flex items-center justify-center border border-primary bg-primary/10"
