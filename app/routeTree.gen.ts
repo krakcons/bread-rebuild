@@ -11,9 +11,15 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as IndexImport } from './routes/index'
 import { Route as LanguageIndexImport } from './routes/$language/index'
 
 // Create/Update Routes
+
+const IndexRoute = IndexImport.update({
+  path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LanguageIndexRoute = LanguageIndexImport.update({
   path: '/$language/',
@@ -24,6 +30,13 @@ const LanguageIndexRoute = LanguageIndexImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     '/$language/': {
       id: '/$language/'
       path: '/$language'
@@ -37,32 +50,37 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/$language': typeof LanguageIndexRoute
 }
 
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/$language': typeof LanguageIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/': typeof IndexRoute
   '/$language/': typeof LanguageIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/$language'
+  fullPaths: '/' | '/$language'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$language'
-  id: '__root__' | '/$language/'
+  to: '/' | '/$language'
+  id: '__root__' | '/' | '/$language/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   LanguageIndexRoute: typeof LanguageIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   LanguageIndexRoute: LanguageIndexRoute,
 }
 
@@ -78,8 +96,12 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/",
         "/$language/"
       ]
+    },
+    "/": {
+      "filePath": "index.tsx"
     },
     "/$language/": {
       "filePath": "$language/index.tsx"
