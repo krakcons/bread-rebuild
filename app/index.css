@@ -4,8 +4,8 @@
 @theme {
 	--color-primary: #d8ac69;
 	--color-secondary: #ed1c24;
-	--animate-accordian-down: accordion-down 0.2s ease-out;
-	--animate-accordian-up: accordion-up 0.2s ease-out;
+	--animate-accordion-down: accordion-down 0.2s ease-out;
+	--animate-accordion-up: accordion-up 0.2s ease-out;
 
 	@keyframes accordion-down {
 		from {
@@ -15,7 +15,6 @@
 			height: var(--radix-accordion-content-height);
 		}
 	}
-
 	@keyframes accordion-up {
 		from {
 			height: var(--radix-accordion-content-height);
@@ -23,6 +22,24 @@
 		to {
 			height: 0;
 		}
+	}
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-300, currentColor);
 	}
 }
 
