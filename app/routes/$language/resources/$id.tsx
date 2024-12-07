@@ -130,6 +130,7 @@ function ResourceDetail() {
 					{resource.phoneNumbers.length > 0 &&
 						resource.phoneNumbers.map((phone) => (
 							<Contact
+								key={phone.phone}
 								label={translations.phoneTypes[phone.type]}
 								value={resource.phoneNumbers.map((phone) => phone.phone).join(", ")}
 								icon={<PhoneCall size={20} className="text-gray-500" />}

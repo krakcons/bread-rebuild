@@ -34,10 +34,7 @@ export const ResourceActions = ({
 				onClick={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
-					saved.toggleSaved({
-						id: resource.id,
-						day: undefined,
-					});
+					saved.toggleSaved(resource.id);
 				}}
 				className="flex items-center gap-2 border border-gray-300 rounded-full px-2.5 py-1.5 hover:bg-gray-50/50 transition-colors no-print"
 			>
