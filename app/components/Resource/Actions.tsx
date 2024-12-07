@@ -15,14 +15,21 @@ import { ResourceType } from "@cords/sdk";
 import { useParams } from "@tanstack/react-router";
 import { Bookmark, CalendarDays } from "lucide-react";
 
-export const ResourceActions = ({ resource }: { resource: ResourceType }) => {
+export const ResourceActions = ({
+	resource,
+	children,
+}: {
+	resource: ResourceType;
+	children?: React.ReactNode;
+}) => {
 	const saved = useSaved();
 	const { language } = useParams({
 		from: "/$language",
 	});
 	const translations = getTranslations(language);
 	return (
-		<div className="flex items-center justify-start gap-2">
+		<div className="flex items-center justify-start gap-2 flex-wrap">
+			{children}
 			<button
 				onClick={(e) => {
 					e.preventDefault();

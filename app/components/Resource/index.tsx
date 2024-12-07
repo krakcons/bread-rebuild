@@ -25,7 +25,7 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 			{resource.phoneNumbers.map((phone) => (
 				<div key={phone.phone} className="text-gray-600 flex items-center gap-2">
 					<PhoneCall size={18} />
-					<Link href={`tel:${phone.phone}`}>{phone.phone}</Link>
+					<p>{phone.phone}</p>
 				</div>
 			))}
 			{/* Fees section */}

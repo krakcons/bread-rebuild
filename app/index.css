@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import "tailwindcss";
 
+@plugin "tailwindcss-animate";
+
 @theme {
 	--color-primary: #d8ac69;
 	--color-secondary: #ed1c24;
@@ -41,15 +43,6 @@
 	::file-selector-button {
 		border-color: var(--color-gray-300, currentColor);
 	}
-}
-
-html {
-	position: relative;
-	left: calc((100vw - 100%) / 2);
-}
-
-body {
-	font-family: "Inter", sans-serif;
 }
 
 button {

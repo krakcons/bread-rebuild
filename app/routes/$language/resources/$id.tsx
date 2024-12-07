@@ -7,7 +7,17 @@ import { STYLE } from "@/lib/map";
 import { cn } from "@/lib/utils";
 import { formatServiceAddress } from "@cords/sdk";
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { Accessibility, DollarSign, File, Mail, MapPin, PhoneCall, Utensils } from "lucide-react";
+import {
+	Accessibility,
+	Bus,
+	Car,
+	DollarSign,
+	File,
+	Mail,
+	MapPin,
+	PhoneCall,
+	Utensils,
+} from "lucide-react";
 import { Map, Marker } from "react-map-gl/maplibre";
 
 export const Route = createFileRoute("/$language/resources/$id")({
@@ -50,7 +60,7 @@ const Contact = ({
 }) => {
 	return (
 		<div className="flex items-center gap-3">
-			{icon}
+			<div className="min-w-8 flex items-center justify-center">{icon}</div>
 			<div>
 				<h3 className="font-medium mb-1">{label}</h3>
 				<p className="text-gray-600">{value}</p>
@@ -104,7 +114,7 @@ function ResourceDetail() {
 					<Contact
 						label={translations.address}
 						value={formatServiceAddress(resource.address)}
-						icon={<MapPin size={20} className="text-gray-500 mt-1" />}
+						icon={<MapPin size={20} className="text-gray-500" />}
 					/>
 
 					{/* Email */}
@@ -125,41 +135,68 @@ function ResourceDetail() {
 								icon={<PhoneCall size={20} className="text-gray-500" />}
 							/>
 						))}
+				</div>
+				<div className="flex flex-col gap-2 bg-white p-6 rounded-lg border border-gray-200">
+					<h2 className="text-xl font-bold mb-4">{translations.additionalInfo}</h2>
+					{/* Accessibility */}
+					{getLocalizedField(resource.body, language)?.accessibility && (
+						<Contact
+							label={translations.accessibility}
+							value={getLocalizedField(resource.body, language)!.accessibility}
+							icon={<Accessibility size={20} className="text-gray-500" />}
+						/>
+					)}
+
+					{/* Application Process */}
+					{getLocalizedField(resource.body, language)?.applicationProcess && (
+						<Contact
+							label={translations.applicationProcess}
+							value={getLocalizedField(resource.body, language)!.applicationProcess}
+							icon={<File size={20} className="text-gray-500" />}
+						/>
+					)}
+
+					{/* Parking */}
+					{getLocalizedField(resource.body, language)?.parkingAvailable && (
+						<Contact
+							label={translations.parking}
+							value={getLocalizedField(resource.body, language)!.parkingNotes!}
+							icon={<Car size={20} className="text-gray-500" />}
+						/>
+					)}
+
+					{/* Preparation Required */}
+					{getLocalizedField(resource.body, language)?.preparationRequired! && (
+						<Contact
+							label={translations.preparationRequired}
+							value={getLocalizedField(resource.body, language)!.preparationNotes!}
+							icon={<Utensils size={20} className="text-gray-500" />}
+						/>
+					)}
+
+					{/* Transit */}
+					{getLocalizedField(resource.body, language)?.transitStop && (
+						<Contact
+							label={translations.transit}
+							value={getLocalizedField(resource.body, language)!.transitStop!}
+							icon={<Bus size={20} className="text-gray-500" />}
+						/>
+					)}
 
 					{/* Fees */}
 					{getLocalizedField(resource.body, language)?.fees && (
 						<Contact
 							label={translations.fees}
-							value={getLocalizedField(resource.body, language)!.fees}
+							value={
+								getLocalizedField(resource.body, language)!.fees +
+								(getLocalizedField(resource.body, language)!.costNotes
+									? ". " + getLocalizedField(resource.body, language)!.costNotes
+									: "")
+							}
 							icon={<DollarSign size={20} className="text-gray-500" />}
 						/>
 					)}
 				</div>
-				{(getLocalizedField(resource.body, language)?.accessibility ||
-					getLocalizedField(resource.body, language)?.applicationProcess) && (
-					<div className="flex flex-col gap-2 bg-white p-6 rounded-lg border border-gray-200">
-						<h2 className="text-xl font-bold mb-4">{translations.additionalInfo}</h2>
-						{/* Accessibility */}
-						{getLocalizedField(resource.body, language)?.accessibility && (
-							<Contact
-								label={translations.accessibility}
-								value={getLocalizedField(resource.body, language)!.accessibility}
-								icon={<Accessibility size={20} className="text-gray-500" />}
-							/>
-						)}
-
-						{/* Application Process */}
-						{getLocalizedField(resource.body, language)?.applicationProcess && (
-							<Contact
-								label={translations.applicationProcess}
-								value={
-									getLocalizedField(resource.body, language)!.applicationProcess
-								}
-								icon={<File size={20} className="text-gray-500" />}
-							/>
-						)}
-					</div>
-				)}
 				{hours.length > 0 && (
 					<div className="flex flex-col gap-2 bg-white p-6 rounded-lg border border-gray-200">
 						<h2 className="text-xl font-bold mb-4">{translations.hours}</h2>

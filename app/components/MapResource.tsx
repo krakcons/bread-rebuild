@@ -2,10 +2,11 @@ import { getLocalizedField, getTranslations } from "@/lib/language";
 import useSaved from "@/lib/saved";
 import { formatServiceAddress, ResourceType } from "@cords/sdk";
 import { Link, useParams } from "@tanstack/react-router";
-import { Bookmark, DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
+import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useState } from "react";
 import { Marker, Popup } from "react-map-gl/maplibre";
+import { ResourceActions } from "./Resource/Actions";
 
 export const MapResource = ({ resource }: { resource: ResourceType }) => {
 	const { language } = useParams({ from: "/$language" });
@@ -38,7 +39,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 						padding: 0,
 						borderRadius: 100,
 					}}
-					maxWidth="400px"
+					maxWidth="350px"
 					className="text-base"
 				>
 					<button
@@ -78,37 +79,14 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 								{getLocalizedField(resource.body, language)?.fees}
 							</div>
 						)}
-						<div className="flex items-center gap-2 no-print">
+						<ResourceActions resource={resource}>
 							<Link
 								to={`/${language}/resources/${resource.id}`}
 								className="flex items-center gap-2 border border-gray-300 rounded-full px-2.5 py-1.5 hover:bg-gray-50/50 transition-colors"
 							>
 								{translations.viewMore}
 							</Link>
-							<button
-								onClick={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-									saved.toggleSaved({
-										id: resource.id,
-										day: undefined,
-									});
-								}}
-								className="flex items-center gap-2 border border-gray-300 rounded-full px-2.5 py-1.5 hover:bg-gray-50/50 transition-colors"
-							>
-								<Bookmark
-									size={18}
-									className={
-										saved.isSaved(resource.id)
-											? "fill-primary text-primary"
-											: "fill-none"
-									}
-								/>
-								{saved.isSaved(resource.id)
-									? translations.saved.saved
-									: translations.saved.save}
-							</button>
-						</div>
+						</ResourceActions>
 					</div>
 				</Popup>
 			)}

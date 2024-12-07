@@ -44,7 +44,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<Meta />
 			</Head>
 			<Body>
-				{children}
+				<main className="relative left-[calc((100vw-100%)/2)] font-[Inter,sans-serif]">
+					{children}
+				</main>
 				<ScrollRestoration />
 				<Scripts />
 			</Body>

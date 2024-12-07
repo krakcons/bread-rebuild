@@ -29,6 +29,17 @@ export const english = {
 	none: "None",
 	clear: "Clear",
 	unassigned: "Unassigned",
+	parking: "Parking",
+	preparationRequired: "Preparation Required",
+	transit: "Transit",
+	filters: {
+		title: "Filters",
+		free: "Free",
+		preparationRequired: "Preparation Required",
+		parkingAvailable: "Parking",
+		nearTransit: "Near Transit",
+		wheelchairAccessible: "Wheelchair Accessible",
+	},
 };
 
 export const french: typeof english = {
@@ -62,4 +73,15 @@ export const french: typeof english = {
 	none: "Aucun",
 	clear: "Effacer",
 	unassigned: "Non assigné",
+	parking: "Parking",
+	preparationRequired: "Préparation Requise",
+	transit: "Transit",
+	filters: {
+		title: "Filtres",
+		free: "Gratuit",
+		preparationRequired: "Préparation Requise",
+		parkingAvailable: "Parking",
+		nearTransit: "Proche du Transit",
+		wheelchairAccessible: "Accessible au Fauteuil Roulant",
+	},
 };

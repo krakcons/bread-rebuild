@@ -1,11 +1,22 @@
 import { MapResource } from "@/components/MapResource";
 import { Resource } from "@/components/Resource";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { getMeals } from "@/lib/bread";
 import { getLocalizedField, getTranslations } from "@/lib/language";
 import { STYLE } from "@/lib/map";
 import { cn } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
-import { DollarSign, List, MapPin, Search } from "lucide-react";
+import {
+	Accessibility,
+	Bus,
+	Car,
+	DollarSign,
+	Filter,
+	List,
+	MapPin,
+	Search,
+	Utensils,
+} from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
@@ -14,7 +25,19 @@ const SearchParamsSchema = z.object({
 	query: z.string().optional(),
 	tab: z.enum(["map", "list"]).optional(),
 	free: z.boolean().optional(),
+	preparationRequired: z.boolean().optional(),
+	parkingAvailable: z.boolean().optional(),
+	nearTransit: z.boolean().optional(),
+	wheelchairAccessible: z.boolean().optional(),
 });
+
+const filterIcons = {
+	free: <DollarSign size={18} />,
+	preparationRequired: <Utensils size={18} />,
+	parkingAvailable: <Car size={18} />,
+	nearTransit: <Bus size={18} />,
+	wheelchairAccessible: <Accessibility size={18} />,
+};
 
 export const Route = createFileRoute("/$language/")({
 	component: Home,
@@ -22,19 +45,35 @@ export const Route = createFileRoute("/$language/")({
 	beforeLoad: async ({ search }) => {
 		return search;
 	},
-	loader: async ({ params: { language }, context: { query, free } }) => {
-		const translations = getTranslations(language);
+	loader: async ({ params: { language }, context: { query, ...filters } }) => {
 		const meals = await getMeals();
-		return meals.filter((resource) =>
-			query
-				? getLocalizedField(resource.name, language)
-						?.toLowerCase()
-						.includes(query.toLowerCase())
-				: true &&
-					(free
-						? getLocalizedField(resource.body, language)?.fees === translations.free
-						: true)
-		);
+		return meals
+			.map((meal) => {
+				return {
+					...meal,
+					body: {
+						en: {
+							...meal.body?.en,
+							free: meal.body?.en?.fees === "Free",
+						},
+						fr: {
+							...meal.body?.fr,
+							free: meal.body?.fr?.fees === "Free",
+						},
+					},
+				};
+			})
+			.filter(
+				(resource) =>
+					(query
+						? getLocalizedField(resource.name, language)
+								?.toLowerCase()
+								.includes(query.toLowerCase())
+						: true) &&
+					Object.entries(filters).every(([name, value]) => {
+						return value ? getLocalizedField(resource.body, language)?.[name] : true;
+					})
+			);
 	},
 	meta: ({ params: { language } }) => {
 		const translations = getTranslations(language);
@@ -53,9 +92,25 @@ export const Route = createFileRoute("/$language/")({
 function Home() {
 	const navigate = Route.useNavigate();
 	const { language } = Route.useParams();
-	const { tab = "list", free = false, query = "" } = Route.useSearch();
+	const {
+		tab = "list",
+		query = "",
+		free = false,
+		preparationRequired = false,
+		parkingAvailable = false,
+		nearTransit = false,
+		wheelchairAccessible = false,
+	} = Route.useSearch();
 	const meals = Route.useLoaderData();
 	const translations = getTranslations(language);
+
+	const filters = {
+		free,
+		preparationRequired,
+		parkingAvailable,
+		nearTransit,
+		wheelchairAccessible,
+	};
 
 	return (
 		<div className="flex flex-col gap-3">
@@ -65,7 +120,7 @@ function Home() {
 						<input
 							type="text"
 							placeholder={translations.search}
-							className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-300 h-12 focus:outline-blue-300 focus:outline-[1px]"
+							className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-300 h-12 focus:outline-primary focus:outline-[1px]"
 							value={query}
 							onChange={(e) =>
 								navigate({
@@ -81,7 +136,7 @@ function Home() {
 						</div>
 					</div>
 				</div>
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-2 flex-wrap">
 					<button
 						onClick={() =>
 							navigate({ search: (prev) => ({ ...prev, tab: undefined }) })
@@ -105,23 +160,44 @@ function Home() {
 						{translations.map}
 					</button>
 					<div className="w-px h-6 bg-gray-300" />
-					<button
-						onClick={() =>
-							navigate({
-								search: (prev) => ({
-									...prev,
-									free: prev.free ? undefined : true,
-								}),
-							})
-						}
-						className={cn(
-							"px-4 py-2 rounded-md border border-gray-300 flex items-center gap-2",
-							free ? "bg-primary/10 border-primary" : "bg-white"
-						)}
-					>
-						<DollarSign size={18} />
-						{translations.free}
-					</button>
+					<Popover>
+						<PopoverTrigger asChild>
+							<button
+								className={cn(
+									"flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300",
+									Object.values(filters).some((filter) => filter) &&
+										"bg-primary/10 border-primary"
+								)}
+							>
+								<Filter size={18} />
+								{translations.filters.title}
+							</button>
+						</PopoverTrigger>
+						<PopoverContent className="w-80">
+							<div className="flex flex-col gap-2">
+								{Object.entries(filters).map(([name, value]) => (
+									<button
+										key={name}
+										onClick={() =>
+											navigate({
+												search: (prev) => ({
+													...prev,
+													[name]: !value || undefined,
+												}),
+											})
+										}
+										className={cn(
+											"px-4 py-2 rounded-md border border-gray-300 flex items-center gap-2 w-full",
+											value ? "bg-primary/10 border-primary" : "bg-white"
+										)}
+									>
+										{filterIcons[name]}
+										{translations.filters[name]}
+									</button>
+								))}
+							</div>
+						</PopoverContent>
+					</Popover>
 				</div>
 			</div>
 			{tab === "list" && (

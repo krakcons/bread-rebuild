@@ -1,4 +1,4 @@
-import { ResourceAddressType, ResourceType } from "@cords/sdk";
+import { ResourceAddressType, ResourceBodyType, ResourceType } from "@cords/sdk";
 import { createServerFn } from "@tanstack/start";
 import meals from "../routes/data.json";
 import { translate } from "./language";
@@ -99,8 +99,53 @@ const parseHours = (drupalData: any) => {
 	);
 };
 
+// "field_preparation_required_notes": "Bring re-usable bags (will be told how many during intake)",
+// "field_prep_required_bool": true,
+// "field_price_description": "Free",
+// "field_registration_bool": true,
+// "field_registration_notes": "Requires Intake meeting (can be done over the phone or in person)",
+// "field_requirements_other": null,
+// "field_resource_capacity": "Appointments are 30 mins long, Wednesday, Thursday and Friday bi-monthly",
+// "field_service_type": "pantry",
+// "field_transit_nearest_stop": "20, 38",
+// "field_verification_period": null,
+// "field_verified": true,
+// "field_verified_date": null,
+// "field_wheelchair_acc_bool": true,
+// "field_wheelchair_notes": "Parking ramps, access to elevator",
+// "field__near_transit_bool": true
+// "field_parking_avail_bool": true,
+// "field_parking_notes": "Parking at the front of building and roadside",
+
 // Convert Drupal meal/pantry to ResourceType
-export const convertDrupalToResource = (drupalData: any): ResourceType => {
+export const convertDrupalToResource = (
+	drupalData: any
+): ResourceType & {
+	body: {
+		en: ResourceBodyType & {
+			parkingNotes?: string;
+			parkingAvailable?: boolean;
+			preparationNotes?: string;
+			preparationRequired?: boolean;
+			registrationNotes?: string;
+			transitStop?: string;
+			costNotes?: string;
+			nearTransit?: boolean;
+			wheelchairAccessible?: boolean;
+		};
+		fr: ResourceBodyType & {
+			parkingNotes?: string;
+			parkingAvailable?: boolean;
+			preparationNotes?: string;
+			preparationRequired?: boolean;
+			registrationNotes?: string;
+			transitStop?: string;
+			costNotes?: string;
+			nearTransit?: boolean;
+			wheelchairAccessible?: boolean;
+		};
+	};
+} => {
 	const contactInfo = parseContactInfo(drupalData.attributes.field_registration_notes);
 	const hours = parseHours(drupalData);
 	return {
@@ -152,6 +197,15 @@ export const convertDrupalToResource = (drupalData: any): ResourceType => {
 					drupalData.attributes.field_registration_notes
 						? drupalData.attributes.field_registration_notes
 						: "",
+				parkingNotes: drupalData.attributes.field_parking_notes || "",
+				parkingAvailable: drupalData.attributes.field_parking_avail_bool || false,
+				preparationNotes: drupalData.attributes.field_preparation_required_notes || "",
+				preparationRequired: drupalData.attributes.field_prep_required_bool || false,
+				registrationNotes: drupalData.attributes.field_registration_notes || "",
+				transitStop: drupalData.attributes.field_transit_nearest_stop || "",
+				costNotes: drupalData.attributes.field_cost_notes || "",
+				nearTransit: drupalData.attributes.field__near_transit_bool || false,
+				wheelchairAccessible: drupalData.attributes.field_wheelchair_acc_bool || false,
 			},
 			fr: {
 				fees: translate(drupalData.attributes.field_price_description || "", "fr") || "",
@@ -173,6 +227,15 @@ export const convertDrupalToResource = (drupalData: any): ResourceType => {
 					drupalData.attributes.field_registration_notes
 						? drupalData.attributes.field_registration_notes
 						: "",
+				parkingNotes: drupalData.attributes.field_parking_notes || "",
+				parkingAvailable: drupalData.attributes.field_parking_avail_bool || false,
+				preparationNotes: drupalData.attributes.field_preparation_required_notes || "",
+				preparationRequired: drupalData.attributes.field_prep_required_bool || false,
+				registrationNotes: drupalData.attributes.field_registration_notes || "",
+				transitStop: drupalData.attributes.field_transit_nearest_stop || "",
+				costNotes: drupalData.attributes.field_cost_notes || "",
+				nearTransit: drupalData.attributes.field__near_transit_bool || false,
+				wheelchairAccessible: drupalData.attributes.field_wheelchair_acc_bool || false,
 			},
 		},
 		result: null,
