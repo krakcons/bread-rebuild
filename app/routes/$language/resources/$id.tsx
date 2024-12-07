@@ -1,4 +1,5 @@
 import { NotFound } from "@/components/NotFound";
+import { ResourceActions } from "@/components/Resource/Actions";
 import { getMeal } from "@/lib/bread";
 import { useHours } from "@/lib/hours";
 import { getLocalizedField, getTranslations, translate } from "@/lib/language";
@@ -70,12 +71,10 @@ function ResourceDetail() {
 	const todaysDayOfWeek = new Date().toLocaleDateString("en-US", { weekday: "short" });
 
 	return (
-		<div className="max-w-3xl mx-auto py-8">
+		<div className="max-w-3xl mx-auto py-8 flex flex-col gap-6">
 			{/* Header */}
-			<h1 className="text-3xl font-bold mb-6">
-				{getLocalizedField(resource.name, language)}
-			</h1>
-
+			<h1 className="text-3xl font-bold">{getLocalizedField(resource.name, language)}</h1>
+			<ResourceActions resource={resource} />
 			<div className="flex flex-col gap-3">
 				{/* Map */}
 				<div className="rounded-lg overflow-hidden border border-gray-300 h-[300px]">
