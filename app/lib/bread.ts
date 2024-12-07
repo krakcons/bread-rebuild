@@ -1,8 +1,8 @@
 import { ResourceAddressType, ResourceBodyType, ResourceType } from "@cords/sdk";
 import { createServerFn } from "@tanstack/start";
+import { z } from "zod";
 import meals from "../routes/data.json";
 import { translate } from "./language";
-
 type LocalizedFieldType = {
 	en: string;
 	fr: string;
@@ -242,12 +242,18 @@ export const convertDrupalToResource = (
 	};
 };
 
-export const getMeals = createServerFn("GET", async () => {
+export const getMeals = createServerFn({
+	method: "GET",
+}).handler(async () => {
 	const resources = meals.map((meal) => convertDrupalToResource(meal));
 	return resources;
 });
 
-export const getMeal = createServerFn("GET", async (id: string) => {
-	const resource = meals.find((meal) => meal.id === id);
-	return resource ? convertDrupalToResource(resource) : null;
-});
+export const getMeal = createServerFn({
+	method: "GET",
+})
+	.validator(z.string())
+	.handler(async ({ data: id }) => {
+		const resource = meals.find((meal) => meal.id === id);
+		return resource ? convertDrupalToResource(resource) : null;
+	});

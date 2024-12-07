@@ -1,6 +1,7 @@
 export const english = {
 	title: "Bread: Food Banks in Calgary",
-	description: "Bread is a directory of food resources in the greater Calgary area.",
+	description:
+		"Bread is a directory of food resources in the greater Calgary area.",
 	search: "Search",
 	free: "Free",
 	list: "List",
@@ -17,7 +18,7 @@ export const english = {
 	email: "Email",
 	hours: "Hours",
 	saved: {
-		title: "Saved",
+		title: "My Saved",
 		description:
 			"You can save resources here to find them later. Press the print button above to print out your saved resources.",
 		save: "Save",
@@ -40,11 +41,14 @@ export const english = {
 		nearTransit: "Near Transit",
 		wheelchairAccessible: "Wheelchair Accessible",
 	},
+	terms: "Terms of Use",
+	privacy: "Privacy Policy",
 };
 
 export const french: typeof english = {
 	title: "Bread: Banques alimentaires à Calgary",
-	description: "Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
+	description:
+		"Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
 	search: "Rechercher",
 	free: "Gratuit",
 	list: "Liste",
@@ -69,7 +73,7 @@ export const french: typeof english = {
 	},
 	print: "Imprimer",
 	viewMore: "Voir plus",
-	day: "Jour de la semaine",
+	day: "Par jour",
 	none: "Aucun",
 	clear: "Effacer",
 	unassigned: "Non assigné",
@@ -84,4 +88,6 @@ export const french: typeof english = {
 		nearTransit: "Proche du Transit",
 		wheelchairAccessible: "Accessible au Fauteuil Roulant",
 	},
+	terms: "Conditions d'utilisation",
+	privacy: "Politique de confidentialité",
 };

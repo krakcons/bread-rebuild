@@ -1,4 +1,3 @@
-import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "@tanstack/start/config";
 import { App } from "vinxi";
 import viteTsConfigPaths from "vite-tsconfig-paths";
@@ -19,8 +18,7 @@ const tanstackApp = defineConfig({
 		},
 	},
 	vite: {
-		plugins: () => [
-			tailwindcss(),
+		plugins: [
 			viteTsConfigPaths({
 				projects: ["./tsconfig.json"],
 			}),

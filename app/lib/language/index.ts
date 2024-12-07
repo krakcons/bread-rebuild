@@ -1,12 +1,15 @@
 import { createServerFn } from "@tanstack/start";
 import { getCookie, getEvent, getHeader, setCookie } from "vinxi/http";
+import { z } from "zod";
 import { english, french } from "./messages";
 
 export const getTranslations = (language: string) => {
 	return language === "fr" ? french : english;
 };
 
-export const getLanguage = createServerFn("GET", () => {
+export const getLanguage = createServerFn({
+	method: "GET",
+}).handler(() => {
 	const event = getEvent();
 	const language = getCookie(event, "language");
 	if (language) {
@@ -19,9 +22,13 @@ export const getLanguage = createServerFn("GET", () => {
 	}
 });
 
-export const setLanguage = createServerFn("POST", (language: "en" | "fr") => {
-	setCookie("language", language);
-});
+export const setLanguage = createServerFn({
+	method: "POST",
+})
+	.validator(z.enum(["en", "fr"]).optional().default("en"))
+	.handler(({ data: language }) => {
+		setCookie("language", language);
+	});
 
 export type LocalizationObject<T> = {
 	en?: T | null;

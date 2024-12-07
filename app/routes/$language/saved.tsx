@@ -28,17 +28,19 @@ const SearchParamsSchema = z.object({
 export const Route = createFileRoute("/$language/saved")({
 	component: SavedPage,
 	validateSearch: SearchParamsSchema,
-	meta: ({ params: { language } }) => {
+	head: ({ params: { language } }) => {
 		const translations = getTranslations(language);
-		return [
-			{
-				title: translations.saved.title,
-			},
-			{
-				name: "description",
-				content: translations.saved.description,
-			},
-		];
+		return {
+			meta: [
+				{
+					title: translations.saved.title,
+				},
+				{
+					name: "description",
+					content: translations.saved.description,
+				},
+			],
+		};
 	},
 	loader: async () => await getMeals(),
 });
@@ -62,35 +64,51 @@ function SavedPage() {
 
 	return (
 		<div className="flex flex-col gap-4">
-			<div className="flex items-center justify-between gap-4 no-print">
+			<div className="no-print flex items-center justify-between gap-4">
 				<div className="flex flex-col gap-2">
-					<h1 className="text-3xl font-semibold">{translations.saved.title}</h1>
-					<p className="text-gray-500">{translations.saved.description}</p>
+					<h1 className="text-3xl font-semibold">
+						{translations.saved.title}
+					</h1>
+					<p className="text-gray-500">
+						{translations.saved.description}
+					</p>
 				</div>
 			</div>
 
 			<div className="flex items-center gap-2">
 				<button
-					onClick={() => navigate({ search: (prev) => ({ ...prev, tab: undefined }) })}
+					onClick={() =>
+						navigate({
+							search: (prev) => ({ ...prev, tab: undefined }),
+						})
+					}
 					className={cn(
-						"px-4 py-2 rounded-md border border-gray-300 flex items-center gap-2",
-						tab === "list" ? "bg-primary/10 border-primary" : "bg-white"
+						"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
+						tab === "list"
+							? "border-primary bg-primary-background"
+							: "bg-white transition-colors hover:bg-gray-50/50",
 					)}
 				>
 					<List size={18} />
 					{translations.list}
 				</button>
 				<button
-					onClick={() => navigate({ search: (prev) => ({ ...prev, tab: "map" }) })}
+					onClick={() =>
+						navigate({
+							search: (prev) => ({ ...prev, tab: "map" }),
+						})
+					}
 					className={cn(
-						"px-4 py-2 rounded-md border border-gray-300 flex items-center gap-2",
-						tab === "map" ? "bg-primary/10 border-primary" : "bg-white"
+						"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
+						tab === "map"
+							? "border-primary bg-primary-background"
+							: "bg-white transition-colors hover:bg-gray-50/50",
 					)}
 				>
 					<MapPin size={18} />
 					{translations.map}
 				</button>
-				<div className="w-px h-6 bg-gray-300" />
+				<div className="h-6 w-px bg-gray-300" />
 				<button
 					onClick={() =>
 						navigate({
@@ -101,8 +119,10 @@ function SavedPage() {
 						})
 					}
 					className={cn(
-						"px-4 py-2 rounded-md border border-gray-300 flex items-center gap-2",
-						day ? "bg-primary/10 border-primary" : "bg-white"
+						"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
+						day
+							? "border-primary bg-primary-background"
+							: "bg-white transition-colors hover:bg-gray-50/50",
 					)}
 				>
 					<CalendarDays size={18} />
@@ -113,7 +133,10 @@ function SavedPage() {
 			{tab === "list" && (
 				<>
 					{day ? (
-						<Accordion type="multiple" defaultValue={[...days, "unassigned"]}>
+						<Accordion
+							type="multiple"
+							defaultValue={[...days, "unassigned"]}
+						>
 							{Object.entries(
 								results.reduce(
 									(acc, resource) => {
@@ -124,26 +147,34 @@ function SavedPage() {
 										acc[key].push(resource);
 										return acc;
 									},
-									{} as Record<string, ResourceType[]>
-								)
+									{} as Record<string, ResourceType[]>,
+								),
 							)
 								.sort(([dayA], [dayB]) => {
 									// Put unassigned at the bottom
 									if (dayA === "unassigned") return 1;
 									if (dayB === "unassigned") return -1;
 									// Sort by weekday order
-									return days.indexOf(dayA) - days.indexOf(dayB);
+									return (
+										days.indexOf(dayA) - days.indexOf(dayB)
+									);
 								})
 								.map(([day, resources]) => (
 									<AccordionItem key={day} value={day}>
 										<AccordionTrigger className="text-xl font-semibold">
 											{day === "unassigned"
 												? translations.unassigned
-												: translate(day, language as "fr" | "en")}
+												: translate(
+														day,
+														language as "fr" | "en",
+													)}
 										</AccordionTrigger>
-										<AccordionContent>
+										<AccordionContent className="flex flex-col gap-3">
 											{resources.map((resource) => (
-												<Resource key={resource.id} resource={resource} />
+												<Resource
+													key={resource.id}
+													resource={resource}
+												/>
 											))}
 										</AccordionContent>
 									</AccordionItem>
@@ -152,7 +183,10 @@ function SavedPage() {
 					) : (
 						<div className="flex flex-col gap-4">
 							{results.map((resource) => (
-								<Resource key={resource.id} resource={resource} />
+								<Resource
+									key={resource.id}
+									resource={resource}
+								/>
 							))}
 						</div>
 					)}
@@ -160,7 +194,7 @@ function SavedPage() {
 			)}
 
 			{tab === "map" && (
-				<div className="rounded-lg overflow-hidden border border-gray-300 flex-1">
+				<div className="flex-1 overflow-hidden rounded-lg border border-gray-300">
 					<Map
 						initialViewState={{
 							longitude: -114.0719,
@@ -171,7 +205,10 @@ function SavedPage() {
 						mapStyle={STYLE}
 					>
 						{results.map((resource) => (
-							<MapResource key={resource.id} resource={resource} />
+							<MapResource
+								key={resource.id}
+								resource={resource}
+							/>
 						))}
 					</Map>
 				</div>

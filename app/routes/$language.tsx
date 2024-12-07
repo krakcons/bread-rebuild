@@ -1,11 +1,19 @@
+import { NotFound } from "@/components/NotFound";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/Popover";
 import { getTranslations, setLanguage } from "@/lib/language";
+import { cn } from "@/lib/utils";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { Printer } from "lucide-react";
+import { Bookmark, Menu, Printer } from "lucide-react";
 
 export const Route = createFileRoute("/$language")({
 	component: LayoutComponent,
+	notFoundComponent: NotFound,
 	beforeLoad: ({ params }) => {
-		setLanguage(params.language as "en" | "fr");
+		setLanguage({ data: params.language });
 	},
 });
 
@@ -15,23 +23,36 @@ function LayoutComponent() {
 	const translations = getTranslations(language);
 	return (
 		<div>
-			<div className="flex justify-center items-center border-b border-gray-300">
-				<header className="max-w-screen-md w-full flex items-center gap-4 justify-between py-3 px-4">
-					<Link to="/$language" params={{ language }} className="flex items-center gap-2">
-						<img src="/logo.png" alt="Bread Logo" className="w-12" />
-						<p className="text-primary font-semibold hidden tracking-widest sm:block sm:text-xl">
+			<div className="flex items-center justify-center border-b border-gray-300">
+				<header className="flex w-full max-w-screen-md items-center justify-between gap-4 px-4 py-3">
+					<Link
+						to="/$language"
+						params={{ language }}
+						className="flex items-center gap-2"
+					>
+						<img
+							src="/logo.png"
+							alt="Bread Logo"
+							className="w-12"
+						/>
+						<p className="hidden font-semibold tracking-widest text-primary sm:block sm:text-xl">
 							BREAD
 						</p>
 					</Link>
-					<div className="flex items-center gap-2 no-print">
-						<Link to="/$language/saved" params={{ language }} className="pr-2">
+					<div className="no-print flex items-center gap-2">
+						<Link
+							to="/$language/saved"
+							params={{ language }}
+							className="flex items-center gap-2 rounded-full border border-gray-300 px-2.5 py-1.5 transition-colors hover:bg-gray-50/50"
+						>
+							<Bookmark size={18} />
 							{translations.saved.title}
 						</Link>
 						<button
 							onClick={() => {
 								window.print();
 							}}
-							className="flex items-center gap-2 border border-gray-300 rounded-full px-2.5 py-1.5 hover:bg-gray-50/50 transition-colors"
+							className="hidden items-center gap-2 rounded-full border border-gray-300 px-2.5 py-1.5 transition-colors hover:bg-gray-50/50 sm:flex"
 						>
 							<Printer size={18} />
 							{translations.print}
@@ -40,18 +61,57 @@ function LayoutComponent() {
 							onClick={() => {
 								navigate({
 									replace: true,
-									params: { language: language === "en" ? "fr" : "en" },
+									params: {
+										language:
+											language === "en" ? "fr" : "en",
+									},
 									search: (prev) => ({ ...prev }),
 								});
 							}}
-							className="h-10 w-10 rounded-full flex items-center justify-center border border-gray-300 hover:bg-gray-50/50 transition-colors"
+							className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 transition-colors hover:bg-gray-50/50"
 						>
 							{language === "en" ? "FR" : "EN"}
 						</button>
+						<Popover>
+							<PopoverTrigger className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 transition-colors hover:bg-gray-50/50">
+								<Menu size={18} />
+							</PopoverTrigger>
+							<PopoverContent
+								align="end"
+								className={cn(
+									"flex flex-col gap-2",
+									language === "fr" ? "w-64" : "w-48",
+								)}
+							>
+								<button
+									onClick={() => {
+										window.print();
+									}}
+									className="flex items-center justify-center gap-2 rounded-full border border-gray-300 px-2.5 py-1.5 transition-colors hover:bg-gray-50/50 sm:hidden"
+								>
+									<Printer size={18} />
+									{translations.print}
+								</button>
+								<Link
+									to="/$language/terms"
+									params={{ language }}
+									className="text-center"
+								>
+									{translations.terms}
+								</Link>
+								<Link
+									to="/$language/privacy-policy"
+									params={{ language }}
+									className="text-center"
+								>
+									{translations.privacy}
+								</Link>
+							</PopoverContent>
+						</Popover>
 					</div>
 				</header>
 			</div>
-			<div className="p-4 max-w-screen-md mx-auto">
+			<div className="mx-auto max-w-screen-md p-4">
 				<Outlet />
 			</div>
 		</div>
