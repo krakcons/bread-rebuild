@@ -1,19 +1,33 @@
 import { MapResource } from "@/components/MapResource";
 import { Resource } from "@/components/Resource";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/Accordian";
 import { getMeals } from "@/lib/bread";
-import { getTranslations } from "@/lib/language";
+import { days } from "@/lib/hours";
+import { getTranslations, translate } from "@/lib/language";
 import { STYLE } from "@/lib/map";
 import useSaved from "@/lib/saved";
 import { cn } from "@/lib/utils";
-import { createFileRoute } from "@tanstack/react-router";
-import { List, MapPin } from "lucide-react";
+import { ResourceType } from "@cords/sdk";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { CalendarDays, List, MapPin } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useMemo } from "react";
 import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
+const SearchParamsSchema = z.object({
+	tab: z.enum(["map", "list"]).optional(),
+	day: z.boolean().optional(),
+});
+
 export const Route = createFileRoute("/$language/saved")({
 	component: SavedPage,
+	validateSearch: SearchParamsSchema,
 	meta: ({ params: { language } }) => {
 		const translations = getTranslations(language);
 		return [
@@ -27,20 +41,21 @@ export const Route = createFileRoute("/$language/saved")({
 		];
 	},
 	loader: async () => await getMeals(),
-	validateSearch: z.object({
-		tab: z.enum(["map", "list"]).optional(),
-	}),
 });
 
 function SavedPage() {
 	const { language } = Route.useParams();
 	const saved = useSaved();
 	const meals = Route.useLoaderData();
-	const navigate = Route.useNavigate();
-	const { tab = "list" } = Route.useSearch();
+	const navigate = useNavigate({
+		from: Route.fullPath,
+	});
+	const { tab = "list", day = false } = Route.useSearch();
 
 	const results = useMemo(() => {
-		return saved.savedIds.map((id) => meals.find((meal) => meal.id === id));
+		return saved.saved
+			.map(({ id, day }) => meals.find((meal) => meal.id === id))
+			.filter(Boolean) as ResourceType[];
 	}, [saved]);
 
 	const translations = getTranslations(language);
@@ -75,14 +90,73 @@ function SavedPage() {
 					<MapPin size={18} />
 					{translations.map}
 				</button>
+				<div className="w-px h-6 bg-gray-300" />
+				<button
+					onClick={() =>
+						navigate({
+							search: (prev) => ({
+								...prev,
+								day: prev.day ? undefined : true,
+							}),
+						})
+					}
+					className={cn(
+						"px-4 py-2 rounded-md border border-gray-300 flex items-center gap-2",
+						day ? "bg-primary/10 border-primary" : "bg-white"
+					)}
+				>
+					<CalendarDays size={18} />
+					{translations.day}
+				</button>
 			</div>
 
 			{tab === "list" && (
-				<div className="flex flex-col gap-4">
-					{results.map((resource) => (
-						<Resource key={resource.id} resource={resource} />
-					))}
-				</div>
+				<>
+					{day ? (
+						<Accordion type="multiple" defaultValue={[...days, "unassigned"]}>
+							{Object.entries(
+								results.reduce(
+									(acc, resource) => {
+										const day = saved.getDay(resource.id);
+										// Group items without a day under "unassigned"
+										const key = day || "unassigned";
+										if (!acc[key]) acc[key] = [];
+										acc[key].push(resource);
+										return acc;
+									},
+									{} as Record<string, ResourceType[]>
+								)
+							)
+								.sort(([dayA], [dayB]) => {
+									// Put unassigned at the bottom
+									if (dayA === "unassigned") return 1;
+									if (dayB === "unassigned") return -1;
+									// Sort by weekday order
+									return days.indexOf(dayA) - days.indexOf(dayB);
+								})
+								.map(([day, resources]) => (
+									<AccordionItem key={day} value={day}>
+										<AccordionTrigger className="text-xl font-semibold">
+											{day === "unassigned"
+												? translations.unassigned
+												: translate(day, language as "fr" | "en")}
+										</AccordionTrigger>
+										<AccordionContent>
+											{resources.map((resource) => (
+												<Resource key={resource.id} resource={resource} />
+											))}
+										</AccordionContent>
+									</AccordionItem>
+								))}
+						</Accordion>
+					) : (
+						<div className="flex flex-col gap-4">
+							{results.map((resource) => (
+								<Resource key={resource.id} resource={resource} />
+							))}
+						</div>
+					)}
+				</>
 			)}
 
 			{tab === "map" && (

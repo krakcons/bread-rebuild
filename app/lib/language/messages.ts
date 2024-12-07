@@ -25,6 +25,10 @@ export const english = {
 	},
 	print: "Print",
 	viewMore: "View More",
+	day: "Day of week",
+	none: "None",
+	clear: "Clear",
+	unassigned: "Unassigned",
 };
 
 export const french: typeof english = {
@@ -54,4 +58,8 @@ export const french: typeof english = {
 	},
 	print: "Imprimer",
 	viewMore: "Voir plus",
+	day: "Jour de la semaine",
+	none: "Aucun",
+	clear: "Effacer",
+	unassigned: "Non assigné",
 };

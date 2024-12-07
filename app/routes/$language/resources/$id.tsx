@@ -14,7 +14,7 @@ export const Route = createFileRoute("/$language/resources/$id")({
 	notFoundComponent: NotFound,
 	loader: async ({ params: { id } }) => {
 		const resource = await getMeal(id);
-		if (!resource) notFound();
+		if (!resource) throw notFound();
 		return resource;
 	},
 	meta: ({ loaderData, params: { language } }) => {
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/$language/resources/$id")({
 				.slice(0, 155);
 		return [
 			{
-				title: getLocalizedField(loaderData.name, language),
+				title: getLocalizedField(loaderData.name, language) || "",
 			},
 			{
 				name: "description",
@@ -81,16 +81,16 @@ function ResourceDetail() {
 				<div className="rounded-lg overflow-hidden border border-gray-300 h-[300px]">
 					<Map
 						initialViewState={{
-							longitude: resource.address.lng,
-							latitude: resource.address.lat,
+							longitude: resource.address.lng!,
+							latitude: resource.address.lat!,
 							zoom: 14,
 						}}
 						style={{ width: "100%", height: "100%" }}
 						mapStyle={STYLE} // Use the same STYLE object from your index page
 					>
 						<Marker
-							latitude={resource.address.lat}
-							longitude={resource.address.lng}
+							latitude={resource.address.lat!}
+							longitude={resource.address.lng!}
 							anchor="bottom"
 						>
 							<div className="bg-white rounded-full p-2 shadow-sm">
@@ -112,7 +112,7 @@ function ResourceDetail() {
 					{getLocalizedField(resource.email, language) && (
 						<Contact
 							label={translations.email}
-							value={getLocalizedField(resource.email, language)}
+							value={getLocalizedField(resource.email, language)!}
 							icon={<Mail size={20} className="text-gray-500" />}
 						/>
 					)}
@@ -131,7 +131,7 @@ function ResourceDetail() {
 					{getLocalizedField(resource.body, language)?.fees && (
 						<Contact
 							label={translations.fees}
-							value={getLocalizedField(resource.body, language)?.fees}
+							value={getLocalizedField(resource.body, language)!.fees}
 							icon={<DollarSign size={20} className="text-gray-500" />}
 						/>
 					)}
@@ -144,7 +144,7 @@ function ResourceDetail() {
 						{getLocalizedField(resource.body, language)?.accessibility && (
 							<Contact
 								label={translations.accessibility}
-								value={getLocalizedField(resource.body, language)?.accessibility}
+								value={getLocalizedField(resource.body, language)!.accessibility}
 								icon={<Accessibility size={20} className="text-gray-500" />}
 							/>
 						)}
@@ -154,7 +154,7 @@ function ResourceDetail() {
 							<Contact
 								label={translations.applicationProcess}
 								value={
-									getLocalizedField(resource.body, language)?.applicationProcess
+									getLocalizedField(resource.body, language)!.applicationProcess
 								}
 								icon={<File size={20} className="text-gray-500" />}
 							/>

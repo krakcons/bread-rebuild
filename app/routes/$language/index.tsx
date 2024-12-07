@@ -10,7 +10,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
-const SearchSchema = z.object({
+const SearchParamsSchema = z.object({
 	query: z.string().optional(),
 	tab: z.enum(["map", "list"]).optional(),
 	free: z.boolean().optional(),
@@ -18,7 +18,7 @@ const SearchSchema = z.object({
 
 export const Route = createFileRoute("/$language/")({
 	component: Home,
-	validateSearch: SearchSchema,
+	validateSearch: SearchParamsSchema,
 	beforeLoad: async ({ search }) => {
 		return search;
 	},

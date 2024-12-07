@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 // import { useTranslation } from "react-i18next";
 
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+export const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-const frenchDays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+export const frenchDays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
 export type DaySchedule = {
 	day: string;

@@ -16,8 +16,8 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 	return (
 		<>
 			<Marker
-				latitude={resource.address.lat}
-				longitude={resource.address.lng}
+				latitude={resource.address.lat!}
+				longitude={resource.address.lng!}
 				anchor="bottom"
 				onClick={() => setPopupOpen(true)}
 			>
@@ -27,8 +27,8 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 			</Marker>
 			{popupOpen && (
 				<Popup
-					latitude={resource.address.lat}
-					longitude={resource.address.lng}
+					latitude={resource.address.lat!}
+					longitude={resource.address.lng!}
 					onClose={() => setPopupOpen(!popupOpen)}
 					anchor="bottom"
 					offset={36}
@@ -89,25 +89,22 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 								onClick={(e) => {
 									e.preventDefault();
 									e.stopPropagation();
-									if (saved.savedIds.includes(resource.id)) {
-										saved.setSavedIds(
-											saved.savedIds.filter((id) => id !== resource.id)
-										);
-									} else {
-										saved.setSavedIds([...saved.savedIds, resource.id]);
-									}
+									saved.toggleSaved({
+										id: resource.id,
+										day: undefined,
+									});
 								}}
 								className="flex items-center gap-2 border border-gray-300 rounded-full px-2.5 py-1.5 hover:bg-gray-50/50 transition-colors"
 							>
 								<Bookmark
 									size={18}
 									className={
-										saved.savedIds.includes(resource.id)
+										saved.isSaved(resource.id)
 											? "fill-primary text-primary"
 											: "fill-none"
 									}
 								/>
-								{saved.savedIds.includes(resource.id)
+								{saved.isSaved(resource.id)
 									? translations.saved.saved
 									: translations.saved.save}
 							</button>
