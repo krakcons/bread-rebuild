@@ -65,7 +65,7 @@ export const french: typeof english = {
 	email: "Courriel",
 	hours: "Horaires",
 	saved: {
-		title: "Sauvegardé",
+		title: "Ma Sauvegardé",
 		description:
 			"Vous pouvez enregistrer des ressources ici pour les retrouver plus tard. Pressez le bouton d'impression ci-dessus pour imprimer vos ressources enregistrées.",
 		save: "Sauvegarder",
