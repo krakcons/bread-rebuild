@@ -1,10 +1,6 @@
 import { MapResource } from "@/components/MapResource";
 import { Resource } from "@/components/Resource";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/Popover";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/Dialog";
 import { dietaryOptions as breadDietaryOptions, getMeals } from "@/lib/bread";
 import { getLocalizedField, getTranslations } from "@/lib/language";
 import { STYLE } from "@/lib/map";
@@ -193,8 +189,8 @@ function Home() {
 						<p className="hidden sm:block">{translations.map}</p>
 					</button>
 					<div className="h-6 w-px bg-gray-300" />
-					<Popover>
-						<PopoverTrigger asChild>
+					<Dialog>
+						<DialogTrigger asChild>
 							<button
 								className={cn(
 									"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
@@ -210,9 +206,12 @@ function Home() {
 									{translations.filters.title}
 								</p>
 							</button>
-						</PopoverTrigger>
-						<PopoverContent className="w-80">
+						</DialogTrigger>
+						<DialogContent className="max-h-screen overflow-y-auto sm:max-w-lg">
 							<div className="flex flex-col gap-2">
+								<h2 className="text-lg font-medium">
+									{translations.filters.title}
+								</h2>
 								{Object.entries(filters).map(
 									([name, value]) => (
 										<button
@@ -238,7 +237,9 @@ function Home() {
 										</button>
 									),
 								)}
-								<div className="h-px bg-gray-300" />
+								<h2 className="mt-4 text-lg font-medium">
+									{translations.dietaryOptions}
+								</h2>
 								<div className="flex flex-wrap gap-2">
 									{breadDietaryOptions.map((option) => (
 										<button
@@ -282,8 +283,8 @@ function Home() {
 									))}
 								</div>
 							</div>
-						</PopoverContent>
-					</Popover>
+						</DialogContent>
+					</Dialog>
 				</div>
 			</div>
 			{tab === "list" && (
