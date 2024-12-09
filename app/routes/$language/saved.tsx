@@ -14,7 +14,7 @@ import useSaved from "@/lib/saved";
 import { cn } from "@/lib/utils";
 import { ResourceType } from "@cords/sdk";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { CalendarDays, List, MapPin } from "lucide-react";
+import { CalendarDays, List, MapIcon } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo } from "react";
 import { Map } from "react-map-gl/maplibre";
@@ -54,7 +54,7 @@ function SavedPage() {
 	const navigate = useNavigate({
 		from: Route.fullPath,
 	});
-	const { tab = "list", day = false } = Route.useSearch();
+	const { tab = "list", day = true } = Route.useSearch();
 
 	const results = useMemo(() => {
 		return saved
@@ -96,7 +96,7 @@ function SavedPage() {
 					)}
 				>
 					<List size={18} />
-					{translations.list}
+					<p className="hidden sm:block">{translations.list}</p>
 				</button>
 				<button
 					onClick={() =>
@@ -111,8 +111,8 @@ function SavedPage() {
 							: "bg-white transition-colors hover:bg-gray-50/50",
 					)}
 				>
-					<MapPin size={18} />
-					{translations.map}
+					<MapIcon size={18} />
+					<p className="hidden sm:block">{translations.map}</p>
 				</button>
 				<div className="h-6 w-px bg-gray-300" />
 				<button
@@ -120,7 +120,7 @@ function SavedPage() {
 						navigate({
 							search: (prev) => ({
 								...prev,
-								day: prev.day ? undefined : true,
+								day: prev.day === undefined ? false : undefined,
 							}),
 						})
 					}
@@ -132,7 +132,7 @@ function SavedPage() {
 					)}
 				>
 					<CalendarDays size={18} />
-					{translations.day}
+					<p className="hidden sm:block">{translations.day}</p>
 				</button>
 			</div>
 

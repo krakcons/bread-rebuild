@@ -17,7 +17,7 @@ import {
 	DollarSign,
 	Filter,
 	List,
-	MapPin,
+	MapIcon,
 	Search,
 	Utensils,
 } from "lucide-react";
@@ -166,7 +166,7 @@ function Home() {
 						)}
 					>
 						<List size={18} />
-						{translations.list}
+						<p className="hidden sm:block">{translations.list}</p>
 					</button>
 					<button
 						onClick={() =>
@@ -181,8 +181,8 @@ function Home() {
 								: "bg-white transition-colors hover:bg-gray-50/50",
 						)}
 					>
-						<MapPin size={18} />
-						{translations.map}
+						<MapIcon size={18} />
+						<p className="hidden sm:block">{translations.map}</p>
 					</button>
 					<div className="h-6 w-px bg-gray-300" />
 					<Popover>
@@ -198,7 +198,9 @@ function Home() {
 								)}
 							>
 								<Filter size={18} />
-								{translations.filters.title}
+								<p className="hidden sm:block">
+									{translations.filters.title}
+								</p>
 							</button>
 						</PopoverTrigger>
 						<PopoverContent className="w-80">
