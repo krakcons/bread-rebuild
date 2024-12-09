@@ -75,7 +75,7 @@ function SavedPage() {
 				</div>
 			</div>
 
-			<div className="flex items-center gap-2">
+			<div className="no-print flex items-center gap-2">
 				<button
 					onClick={() =>
 						navigate({

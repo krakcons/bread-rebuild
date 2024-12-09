@@ -29,8 +29,12 @@ button {
 }
 
 @media print {
+	.print {
+		display: block !important;
+	}
+
 	.no-print {
-		display: none;
+		display: none !important;
 	}
 
 	body {

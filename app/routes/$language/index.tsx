@@ -126,7 +126,7 @@ function Home() {
 
 	return (
 		<div className="flex flex-col gap-3">
-			<div className="flex flex-col gap-3">
+			<div className="no-print flex flex-col gap-3">
 				<div className="flex-1">
 					<div className="relative">
 						<input
