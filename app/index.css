@@ -20,6 +20,10 @@
 	}
 }
 
+html {
+	scrollbar-gutter: stable;
+}
+
 button {
 	@apply cursor-pointer;
 }
@@ -27,5 +31,11 @@ button {
 @media print {
 	.no-print {
 		display: none;
+	}
+
+	body {
+		width: 100%;
+		margin: 0;
+		padding: 0;
 	}
 }

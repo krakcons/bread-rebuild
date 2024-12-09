@@ -65,11 +65,11 @@ export const french: typeof english = {
 	email: "Courriel",
 	hours: "Horaires",
 	saved: {
-		title: "Enregistrés",
+		title: "Sauvegardé",
 		description:
 			"Vous pouvez enregistrer des ressources ici pour les retrouver plus tard. Pressez le bouton d'impression ci-dessus pour imprimer vos ressources enregistrées.",
-		save: "Enregistrer",
-		saved: "Enregistré",
+		save: "Sauvegarder",
+		saved: "Sauvegardé",
 	},
 	print: "Imprimer",
 	viewMore: "Voir plus",

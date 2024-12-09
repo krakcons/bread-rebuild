@@ -1,5 +1,9 @@
 import globalStyles from "@/index.css?url";
-import { createRootRoute, Outlet, ScrollRestoration } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	Outlet,
+	ScrollRestoration,
+} from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
 import * as React from "react";
 
@@ -18,7 +22,8 @@ export const Route = createRootRoute({
 			},
 			{
 				name: "description",
-				content: "Bread is a directory of food resources in the greater Calgary area.",
+				content:
+					"Bread is a directory of food resources in the greater Calgary area.",
 			},
 			{
 				name: "icon",
@@ -46,9 +51,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<Meta />
 			</head>
 			<body>
-				<main className="relative left-[calc((100vw-100%)/2)] font-[Inter,sans-serif]">
-					{children}
-				</main>
+				<main className="font-[Inter,sans-serif]">{children}</main>
 				<ScrollRestoration />
 				<Scripts />
 			</body>

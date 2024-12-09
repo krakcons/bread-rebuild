@@ -22,7 +22,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 				anchor="bottom"
 				onClick={() => setPopupOpen(true)}
 			>
-				<div className="bg-white rounded-full p-2 shadow-sm">
+				<div className="rounded-full bg-white p-2 shadow-sm">
 					<Utensils size={18} />
 				</div>
 			</Marker>
@@ -43,12 +43,12 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 					className="text-base"
 				>
 					<button
-						className="absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer focus:outline-none"
+						className="absolute right-2 top-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-gray-100 focus:outline-none"
 						onClick={() => setPopupOpen(false)}
 					>
 						<X size={18} />
 					</button>
-					<div className="flex flex-col gap-2 mt-4">
+					<div className="mt-4 flex flex-col gap-2">
 						<Link
 							to={`/${language}/resources/${resource.id}`}
 							className="text-lg font-semibold hover:underline"
@@ -57,7 +57,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 						</Link>
 						{/* Address section */}
 						{resource.address && (
-							<div className="text-gray-600 flex items-center gap-2">
+							<div className="flex items-center gap-2 text-gray-600">
 								<MapPin size={20} />
 								{formatServiceAddress(resource.address)}
 							</div>
@@ -66,23 +66,26 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 						{resource.phoneNumbers.map((phone) => (
 							<div
 								key={phone.phone}
-								className="text-gray-600 flex items-center gap-2"
+								className="flex items-center gap-2 text-gray-600"
 							>
 								<PhoneCall size={18} />
-								<Link href={`tel:${phone.phone}`}>{phone.phone}</Link>
+								<p>{phone.phone}</p>
 							</div>
 						))}
 						{/* Fees section */}
 						{getLocalizedField(resource.body, language)?.fees && (
-							<div className="mb-2 text-gray-600 flex items-center gap-2">
+							<div className="mb-2 flex items-center gap-2 text-gray-600">
 								<DollarSign size={20} />
-								{getLocalizedField(resource.body, language)?.fees}
+								{
+									getLocalizedField(resource.body, language)
+										?.fees
+								}
 							</div>
 						)}
 						<ResourceActions resource={resource}>
 							<Link
 								to={`/${language}/resources/${resource.id}`}
-								className="flex items-center gap-2 border border-gray-300 rounded-full px-2.5 py-1.5 hover:bg-gray-50/50 transition-colors"
+								className="flex items-center gap-2 rounded-full border border-gray-300 px-2.5 py-1.5 transition-colors hover:bg-gray-50/50"
 							>
 								{translations.viewMore}
 							</Link>
