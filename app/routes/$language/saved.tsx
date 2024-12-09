@@ -16,7 +16,7 @@ import { ResourceType } from "@cords/sdk";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CalendarDays, List, MapPin } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
@@ -47,7 +47,9 @@ export const Route = createFileRoute("/$language/saved")({
 
 function SavedPage() {
 	const { language } = Route.useParams();
-	const saved = useSaved();
+	const saved = useSaved((s) => s.saved);
+	const getDay = useSaved((s) => s.getDay);
+	const resetSeen = useSaved((s) => s.resetSeen);
 	const meals = Route.useLoaderData();
 	const navigate = useNavigate({
 		from: Route.fullPath,
@@ -55,10 +57,14 @@ function SavedPage() {
 	const { tab = "list", day = false } = Route.useSearch();
 
 	const results = useMemo(() => {
-		return saved.saved
+		return saved
 			.map(({ id, day }) => meals.find((meal) => meal.id === id))
 			.filter(Boolean) as ResourceType[];
 	}, [saved]);
+
+	useEffect(() => {
+		resetSeen();
+	}, [resetSeen]);
 
 	const translations = getTranslations(language);
 
@@ -140,7 +146,7 @@ function SavedPage() {
 							{Object.entries(
 								results.reduce(
 									(acc, resource) => {
-										const day = saved.getDay(resource.id);
+										const day = getDay(resource.id);
 										// Group items without a day under "unassigned"
 										const key = day || "unassigned";
 										if (!acc[key]) acc[key] = [];
