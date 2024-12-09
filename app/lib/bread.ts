@@ -1,7 +1,12 @@
-import { ResourceAddressType, ResourceBodyType, ResourceType } from "@cords/sdk";
+import {
+	ResourceAddressType,
+	ResourceBodyType,
+	ResourceType,
+} from "@cords/sdk";
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
-import meals from "../routes/data.json";
+import dietary from "../data/dietary.json";
+import meals from "../data/meals.json";
 import { translate } from "./language";
 type LocalizedFieldType = {
 	en: string;
@@ -119,7 +124,7 @@ const parseHours = (drupalData: any) => {
 
 // Convert Drupal meal/pantry to ResourceType
 export const convertDrupalToResource = (
-	drupalData: any
+	drupalData: any,
 ): ResourceType & {
 	body: {
 		en: ResourceBodyType & {
@@ -132,6 +137,7 @@ export const convertDrupalToResource = (
 			costNotes?: string;
 			nearTransit?: boolean;
 			wheelchairAccessible?: boolean;
+			dietaryOptions?: string[];
 		};
 		fr: ResourceBodyType & {
 			parkingNotes?: string;
@@ -143,17 +149,34 @@ export const convertDrupalToResource = (
 			costNotes?: string;
 			nearTransit?: boolean;
 			wheelchairAccessible?: boolean;
+			dietaryOptions?: string[];
 		};
 	};
 } => {
-	const contactInfo = parseContactInfo(drupalData.attributes.field_registration_notes);
+	const contactInfo = parseContactInfo(
+		drupalData.attributes.field_registration_notes,
+	);
 	const hours = parseHours(drupalData);
+	const dietaryOptions = dietary
+		.filter((dietary) =>
+			drupalData.relationships.field_dietary.data.some(
+				({ id }) => dietary.id === id,
+			),
+		)
+		.map((dietary) => dietary.attributes.name);
+
 	return {
 		id: drupalData.id,
 		// trim out any text before the first colon
-		name: createLocalizedField(drupalData.attributes.title.split(":")[1] || ""),
-		description: createLocalizedField(drupalData.attributes.field_description || ""),
-		website: createLocalizedField(drupalData.attributes.field_general_web_site || ""),
+		name: createLocalizedField(
+			drupalData.attributes.title.split(":")[1] || "",
+		),
+		description: createLocalizedField(
+			drupalData.attributes.field_description || "",
+		),
+		website: createLocalizedField(
+			drupalData.attributes.field_general_web_site || "",
+		),
 		email: createLocalizedField(contactInfo.email || ""),
 		address: convertAddress({
 			...drupalData.attributes.field_pickup_address,
@@ -189,7 +212,8 @@ export const convertDrupalToResource = (
 				languages: "",
 				eligibility: "",
 				recordOwner: "",
-				accessibility: drupalData.attributes.field_wheelchair_notes || "",
+				accessibility:
+					drupalData.attributes.field_wheelchair_notes || "",
 				documentsRequired: "",
 				applicationProcess:
 					!contactInfo.email &&
@@ -198,17 +222,30 @@ export const convertDrupalToResource = (
 						? drupalData.attributes.field_registration_notes
 						: "",
 				parkingNotes: drupalData.attributes.field_parking_notes || "",
-				parkingAvailable: drupalData.attributes.field_parking_avail_bool || false,
-				preparationNotes: drupalData.attributes.field_preparation_required_notes || "",
-				preparationRequired: drupalData.attributes.field_prep_required_bool || false,
-				registrationNotes: drupalData.attributes.field_registration_notes || "",
-				transitStop: drupalData.attributes.field_transit_nearest_stop || "",
+				parkingAvailable:
+					drupalData.attributes.field_parking_avail_bool || false,
+				preparationNotes:
+					drupalData.attributes.field_preparation_required_notes ||
+					"",
+				preparationRequired:
+					drupalData.attributes.field_prep_required_bool || false,
+				registrationNotes:
+					drupalData.attributes.field_registration_notes || "",
+				transitStop:
+					drupalData.attributes.field_transit_nearest_stop || "",
 				costNotes: drupalData.attributes.field_cost_notes || "",
-				nearTransit: drupalData.attributes.field__near_transit_bool || false,
-				wheelchairAccessible: drupalData.attributes.field_wheelchair_acc_bool || false,
+				nearTransit:
+					drupalData.attributes.field__near_transit_bool || false,
+				wheelchairAccessible:
+					drupalData.attributes.field_wheelchair_acc_bool || false,
+				dietaryOptions,
 			},
 			fr: {
-				fees: translate(drupalData.attributes.field_price_description || "", "fr") || "",
+				fees:
+					translate(
+						drupalData.attributes.field_price_description || "",
+						"fr",
+					) || "",
 				hours,
 				topics: "",
 				twitter: null,
@@ -219,7 +256,8 @@ export const convertDrupalToResource = (
 				languages: "",
 				eligibility: "",
 				recordOwner: "",
-				accessibility: drupalData.attributes.field_wheelchair_notes || "",
+				accessibility:
+					drupalData.attributes.field_wheelchair_notes || "",
 				documentsRequired: "",
 				applicationProcess:
 					!contactInfo.email &&
@@ -228,19 +266,41 @@ export const convertDrupalToResource = (
 						? drupalData.attributes.field_registration_notes
 						: "",
 				parkingNotes: drupalData.attributes.field_parking_notes || "",
-				parkingAvailable: drupalData.attributes.field_parking_avail_bool || false,
-				preparationNotes: drupalData.attributes.field_preparation_required_notes || "",
-				preparationRequired: drupalData.attributes.field_prep_required_bool || false,
-				registrationNotes: drupalData.attributes.field_registration_notes || "",
-				transitStop: drupalData.attributes.field_transit_nearest_stop || "",
+				parkingAvailable:
+					drupalData.attributes.field_parking_avail_bool || false,
+				preparationNotes:
+					drupalData.attributes.field_preparation_required_notes ||
+					"",
+				preparationRequired:
+					drupalData.attributes.field_prep_required_bool || false,
+				registrationNotes:
+					drupalData.attributes.field_registration_notes || "",
+				transitStop:
+					drupalData.attributes.field_transit_nearest_stop || "",
 				costNotes: drupalData.attributes.field_cost_notes || "",
-				nearTransit: drupalData.attributes.field__near_transit_bool || false,
-				wheelchairAccessible: drupalData.attributes.field_wheelchair_acc_bool || false,
+				nearTransit:
+					drupalData.attributes.field__near_transit_bool || false,
+				wheelchairAccessible:
+					drupalData.attributes.field_wheelchair_acc_bool || false,
+				dietaryOptions: dietaryOptions.map((option) =>
+					translate(option, "fr"),
+				),
 			},
 		},
 		result: null,
 	};
 };
+
+export const dietaryOptions = [
+	["Vegetarian", "Vegetarien"],
+	["Halal", "Halal"],
+	["Celiac", "Céliaque"],
+	["Renal Disease", "Maladie Rénale"],
+	["Baby", "Bébé"],
+	["Kosher", "Kosher"],
+	["Gluten Free", "Sans Gluten"],
+	["Pet Food", "Alimentation pour animaux"],
+];
 
 export const getMeals = createServerFn({
 	method: "GET",

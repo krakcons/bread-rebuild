@@ -5,7 +5,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/Popover";
-import { getMeals } from "@/lib/bread";
+import { dietaryOptions as breadDietaryOptions, getMeals } from "@/lib/bread";
 import { getLocalizedField, getTranslations } from "@/lib/language";
 import { STYLE } from "@/lib/map";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,7 @@ import {
 	MapIcon,
 	Search,
 	Utensils,
+	UtensilsCrossed,
 } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Map } from "react-map-gl/maplibre";
@@ -33,14 +34,16 @@ const SearchParamsSchema = z.object({
 	parkingAvailable: z.boolean().optional(),
 	nearTransit: z.boolean().optional(),
 	wheelchairAccessible: z.boolean().optional(),
+	dietaryOptions: z.string().array().optional(),
 });
 
 const filterIcons = {
 	free: <DollarSign size={18} />,
-	preparationRequired: <Utensils size={18} />,
+	preparationRequired: <UtensilsCrossed size={18} />,
 	parkingAvailable: <Car size={18} />,
 	nearTransit: <Bus size={18} />,
 	wheelchairAccessible: <Accessibility size={18} />,
+	dietaryOptions: <Utensils size={18} />,
 };
 
 export const Route = createFileRoute("/$language/")({
@@ -51,7 +54,7 @@ export const Route = createFileRoute("/$language/")({
 	},
 	loader: async ({
 		params: { language },
-		context: { query, tab, ...filters },
+		context: { query, tab, dietaryOptions = [], ...filters },
 	}) => {
 		const meals = await getMeals();
 		return meals
@@ -82,7 +85,11 @@ export const Route = createFileRoute("/$language/")({
 						return value
 							? getLocalizedField(resource.body, language)?.[name]
 							: true;
-					}),
+					}) &&
+					(dietaryOptions?.length === 0 ||
+						resource.body?.en?.dietaryOptions?.filter((option) => {
+							return dietaryOptions!.includes(option);
+						})?.length === dietaryOptions?.length),
 			);
 	},
 	head: ({ params: { language } }) => {
@@ -112,11 +119,12 @@ function Home() {
 		parkingAvailable = false,
 		nearTransit = false,
 		wheelchairAccessible = false,
+		dietaryOptions = [],
 	} = Route.useSearch();
 	const meals = Route.useLoaderData();
 	const translations = getTranslations(language);
 
-	const filters = {
+	const filters: Record<string, boolean> = {
 		free,
 		preparationRequired,
 		parkingAvailable,
@@ -192,7 +200,7 @@ function Home() {
 									"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
 									Object.values(filters).some(
 										(filter) => filter,
-									)
+									) || dietaryOptions.length > 0
 										? "border-primary bg-primary-background"
 										: "transition-colors hover:bg-gray-50/50",
 								)}
@@ -230,6 +238,49 @@ function Home() {
 										</button>
 									),
 								)}
+								<div className="h-px bg-gray-300" />
+								<div className="flex flex-wrap gap-2">
+									{breadDietaryOptions.map((option) => (
+										<button
+											key={
+												option[
+													language === "en" ? 0 : 1
+												]
+											}
+											onClick={() =>
+												navigate({
+													search: (prev) => ({
+														...prev,
+														dietaryOptions:
+															dietaryOptions.includes(
+																option[0],
+															)
+																? dietaryOptions.filter(
+																		(o) =>
+																			o !==
+																			option[0],
+																	)
+																: [
+																		...dietaryOptions,
+																		option[0],
+																	],
+													}),
+												})
+											}
+											className={cn(
+												"flex flex-grow items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
+												dietaryOptions.includes(
+													option[0],
+												)
+													? "border-primary bg-primary-background"
+													: "bg-white transition-colors hover:bg-gray-50/50",
+											)}
+										>
+											<Utensils size={18} />
+											{option[language === "en" ? 0 : 1]}
+										</button>
+									))}
+								</div>
 							</div>
 						</PopoverContent>
 					</Popover>

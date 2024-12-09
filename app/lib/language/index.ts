@@ -15,7 +15,9 @@ export const getLanguage = createServerFn({
 	if (language) {
 		return language;
 	} else {
-		const acceptLanguage = getHeader(event, "accept-language")?.split(",")[0];
+		const acceptLanguage = getHeader(event, "accept-language")?.split(
+			",",
+		)[0];
 		const language = acceptLanguage?.startsWith("fr") ? "fr" : "en";
 		setCookie(event, "language", language);
 		return language;
@@ -37,7 +39,7 @@ export type LocalizationObject<T> = {
 
 export const getLocalizedField = <T>(
 	obj: LocalizationObject<T>,
-	locale: string
+	locale: string,
 ): T | undefined | null => {
 	if (locale === "fr" && obj["fr"] !== "") return obj[locale];
 	else return obj["en"];
@@ -52,6 +54,14 @@ const commonTranslations = new Map<string, string>([
 	["Fri", "Ven"],
 	["Sat", "Sam"],
 	["Sun", "Dim"],
+	["Vegetarian", "Végétarien"],
+	["Halal", "Halal"],
+	["Celiac", "Céliaque"],
+	["Renal Disease", "Maladie Rénale"],
+	["Baby", "Bébé"],
+	["Kosher", "Kosher"],
+	["Gluten Free", "Sans Gluten"],
+	["Pet Food", "Alimentation pour animaux"],
 ]);
 
 export const translate = (enValue: string, language: "en" | "fr") => {

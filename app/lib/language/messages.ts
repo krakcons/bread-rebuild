@@ -43,6 +43,7 @@ export const english = {
 	},
 	terms: "Terms of Use",
 	privacy: "Privacy Policy",
+	dietaryOptions: "Dietary Options",
 };
 
 export const french: typeof english = {
@@ -90,4 +91,5 @@ export const french: typeof english = {
 	},
 	terms: "Conditions d'utilisation",
 	privacy: "Politique de confidentialité",
+	dietaryOptions: "Options Diététiques",
 };
