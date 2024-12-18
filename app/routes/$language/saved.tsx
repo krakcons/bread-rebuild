@@ -1,4 +1,3 @@
-import { Map } from "@/components/Map";
 import { Resource } from "@/components/Resource";
 import { MapResource } from "@/components/Resource/Map";
 import {
@@ -15,8 +14,10 @@ import useSaved from "@/lib/saved";
 import { cn } from "@/lib/utils";
 import { ResourceType } from "@cords/sdk";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { clientOnly } from "@tanstack/start";
 import { CalendarDays, List, MapIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
+import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
 const SearchParamsSchema = z.object({
@@ -43,6 +44,8 @@ export const Route = createFileRoute("/$language/saved")({
 	},
 	loader: async () => await getMeals(),
 });
+
+const map = clientOnly(() => <></>);
 
 function SavedPage() {
 	const { language } = Route.useParams();

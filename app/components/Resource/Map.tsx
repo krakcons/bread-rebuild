@@ -1,10 +1,10 @@
-import { Marker, Popup } from "@/components/Map";
 import { getLocalizedField, getTranslations } from "@/lib/language";
 import useSaved from "@/lib/saved";
 import { formatServiceAddress, ResourceType } from "@cords/sdk";
 import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
 import { useState } from "react";
+import { Marker, Popup } from "react-map-gl/maplibre";
 import { ResourceActions } from "./Actions";
 
 export const MapResource = ({ resource }: { resource: ResourceType }) => {
