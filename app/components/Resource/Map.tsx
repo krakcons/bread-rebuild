@@ -6,7 +6,7 @@ import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useState } from "react";
 import { Marker, Popup } from "react-map-gl/maplibre";
-import { ResourceActions } from "./Resource/Actions";
+import { ResourceActions } from "./Actions";
 
 export const MapResource = ({ resource }: { resource: ResourceType }) => {
 	const { language } = useParams({ from: "/$language" });

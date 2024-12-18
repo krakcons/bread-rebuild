@@ -38,7 +38,7 @@ function LayoutComponent() {
 							alt="Bread Logo"
 							className="w-12"
 						/>
-						<p className="print hidden font-semibold tracking-widest text-primary sm:block sm:text-xl">
+						<p className="print font-semibold tracking-widest text-primary sm:text-xl">
 							BREAD
 						</p>
 					</Link>

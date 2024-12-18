@@ -1,5 +1,5 @@
-import { MapResource } from "@/components/MapResource";
 import { Resource } from "@/components/Resource";
+import { MapResource } from "@/components/Resource/Map";
 import {
 	Accordion,
 	AccordionContent,

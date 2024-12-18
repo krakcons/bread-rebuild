@@ -1,5 +1,5 @@
-import { MapResource } from "@/components/MapResource";
 import { Resource } from "@/components/Resource";
+import { MapResource } from "@/components/Resource/Map";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/Dialog";
 import { dietaryOptions as breadDietaryOptions, getMeals } from "@/lib/bread";
 import { getLocalizedField, getTranslations } from "@/lib/language";

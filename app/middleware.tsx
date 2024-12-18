@@ -24,12 +24,14 @@ export default defineMiddleware({
 		console.log("Accept-Language:", getHeader(event, "accept-language"));
 
 		const pathnameHasLanguage = languages.some(
-			(language) => pathname.startsWith(`/${language}/`) || pathname === `/${language}`
+			(language) =>
+				pathname.startsWith(`/${language}/`) ||
+				pathname === `/${language}`,
 		);
 		if (
 			!pathnameHasLanguage &&
 			localizedPaths.some(({ path, exact }) =>
-				exact ? pathname === path : pathname.startsWith(path)
+				exact ? pathname === path : pathname.startsWith(path),
 			)
 		) {
 			const language = getCookie(event, "language");
@@ -38,7 +40,8 @@ export default defineMiddleware({
 				console.log("Redirecting to:", redirectUrl);
 				return sendRedirect(event, redirectUrl, 302);
 			} else {
-				const acceptLanguage = getHeader(event, "accept-language")?.split(",")[0] || "";
+				const acceptLanguage =
+					getHeader(event, "accept-language")?.split(",")[0] || "";
 				const language = acceptLanguage?.startsWith("fr") ? "fr" : "en";
 				setCookie(event, "language", language);
 				const redirectUrl = `/${language}${pathname.replace(/\/$/, "")}`;
@@ -48,12 +51,6 @@ export default defineMiddleware({
 		} else if (pathnameHasLanguage) {
 			const language = pathname.split("/")[1];
 			setCookie(event, "language", language);
-		}
-
-		if (import.meta.env.DEV) {
-			const { getPlatformProxy } = await import("wrangler");
-			const proxy = await getPlatformProxy<Env>();
-			event.context.cloudflare = proxy;
 		}
 	},
 });
