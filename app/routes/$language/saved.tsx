@@ -1,3 +1,4 @@
+import { Map } from "@/components/Map";
 import { Resource } from "@/components/Resource";
 import { MapResource } from "@/components/Resource/Map";
 import {
@@ -15,9 +16,7 @@ import { cn } from "@/lib/utils";
 import { ResourceType } from "@cords/sdk";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CalendarDays, List, MapIcon } from "lucide-react";
-import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo } from "react";
-import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
 const SearchParamsSchema = z.object({

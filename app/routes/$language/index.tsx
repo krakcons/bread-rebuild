@@ -18,9 +18,14 @@ import {
 	Utensils,
 	UtensilsCrossed,
 } from "lucide-react";
-import "maplibre-gl/dist/maplibre-gl.css";
-import { Map } from "react-map-gl/maplibre";
+import { lazy } from "react";
 import { z } from "zod";
+
+const Map = lazy(() =>
+	import("react-map-gl/maplibre").then((mod) => ({
+		default: mod.Map,
+	})),
+);
 
 const SearchParamsSchema = z.object({
 	query: z.string().optional(),

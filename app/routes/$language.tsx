@@ -14,7 +14,7 @@ export const Route = createFileRoute("/$language")({
 	component: LayoutComponent,
 	notFoundComponent: NotFound,
 	beforeLoad: ({ params }) => {
-		setLanguage({ data: params.language });
+		setLanguage({ data: params.language as "en" | "fr" });
 	},
 });
 

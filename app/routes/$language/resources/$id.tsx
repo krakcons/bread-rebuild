@@ -1,3 +1,4 @@
+import { Map, Marker } from "@/components/Map";
 import { NotFound } from "@/components/NotFound";
 import { ResourceActions } from "@/components/Resource/Actions";
 import { getMeal } from "@/lib/bread";
@@ -19,7 +20,6 @@ import {
 	Utensils,
 	UtensilsCrossed,
 } from "lucide-react";
-import { Map, Marker } from "react-map-gl/maplibre";
 
 export const Route = createFileRoute("/$language/resources/$id")({
 	component: ResourceDetail,

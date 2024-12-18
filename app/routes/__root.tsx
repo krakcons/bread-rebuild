@@ -31,7 +31,13 @@ export const Route = createRootRoute({
 				href: "/favicon.ico",
 			},
 		],
-		links: [{ rel: "stylesheet", href: globalStyles }],
+		links: [
+			{ rel: "stylesheet", href: globalStyles },
+			{
+				rel: "stylesheet",
+				href: "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css",
+			},
+		],
 	}),
 	component: RootComponent,
 });
