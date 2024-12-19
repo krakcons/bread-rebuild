@@ -47,14 +47,17 @@ function LayoutComponent() {
 						<Link
 							to="/$language/saved"
 							params={{ language }}
-							className={cn(buttonVariants(), "rounded-full")}
+							className={cn(
+								buttonVariants(),
+								"relative rounded-full",
+							)}
 						>
 							<Bookmark size={20} />
 							<p className="hidden sm:block">
 								{translations.saved.title}
 							</p>
 							{saved.saved.filter((s) => !s.seen).length > 0 && (
-								<span className="absolute left-5 top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-secondary text-xs text-white">
+								<span className="absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-secondary text-xs text-white">
 									{saved.saved.filter((s) => !s.seen).length}
 								</span>
 							)}

@@ -22,6 +22,7 @@ export default $config({
 
 		new sst.aws.TanstackStart("Bread", {
 			link: [rds],
+			domain: "bread.nuonn.com",
 			vpc,
 		});
 
