@@ -10,13 +10,26 @@ export default $config({
 					region: "ca-central-1",
 					profile:
 						input.stage === "production"
-							? "billyhawkes-production"
-							: "billyhawkes-dev",
+							? "bread-production"
+							: "bread-dev",
 				},
 			},
 		};
 	},
 	async run() {
-		new sst.aws.TanstackStart("Bread");
+		const vpc = new sst.aws.Vpc("bread-vpc", { bastion: true, nat: "ec2" });
+		const rds = new sst.aws.Postgres("bread-db", { vpc, proxy: true });
+
+		new sst.aws.TanstackStart("Bread", {
+			link: [rds],
+			vpc,
+		});
+
+		new sst.x.DevCommand("Studio", {
+			link: [rds],
+			dev: {
+				command: "npx drizzle-kit studio",
+			},
+		});
 	},
 });

@@ -10,5 +10,17 @@ declare module "sst" {
       "type": "sst.aws.TanstackStart"
       "url": string
     }
+    "bread-db": {
+      "database": string
+      "host": string
+      "password": string
+      "port": number
+      "type": "sst.aws.Postgres"
+      "username": string
+    }
+    "bread-vpc": {
+      "bastion": string
+      "type": "sst.aws.Vpc"
+    }
   }
 }
