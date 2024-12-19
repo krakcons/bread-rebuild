@@ -44,6 +44,30 @@ export const english = {
 	terms: "Terms of Use",
 	privacy: "Privacy Policy",
 	dietaryOptions: "Dietary Options",
+	admin: {
+		title: "Admin",
+		auth: {
+			form: {
+				email: "Email",
+				password: "Password",
+			},
+			signup: {
+				title: "Sign Up",
+				form: {
+					email: "Email",
+					password: "Password",
+					passwordConfirmation: "Password Confirmation",
+					passwordStrength: {
+						0: "Weak",
+						1: "Weak",
+						2: "Medium",
+						3: "Strong",
+						4: "Strong",
+					},
+				},
+			},
+		},
+	},
 };
 
 export const french: typeof english = {
@@ -92,4 +116,28 @@ export const french: typeof english = {
 	terms: "Conditions d'utilisation",
 	privacy: "Politique de confidentialité",
 	dietaryOptions: "Options Diététiques",
+	admin: {
+		title: "Admin",
+		auth: {
+			form: {
+				email: "Courriel",
+				password: "Mot de passe",
+			},
+			signup: {
+				title: "S'enregistrer",
+				form: {
+					email: "Courriel",
+					password: "Mot de passe",
+					passwordConfirmation: "Confirmation du mot de passe",
+					passwordStrength: {
+						0: "Faible",
+						1: "Faible",
+						2: "Moyen",
+						3: "Fort",
+						4: "Fort",
+					},
+				},
+			},
+		},
+	},
 };

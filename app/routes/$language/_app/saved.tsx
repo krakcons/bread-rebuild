@@ -5,13 +5,13 @@ import {
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
-} from "@/components/ui/Accordian";
+} from "@/components/ui/Accordion";
+import { Button } from "@/components/ui/Button";
 import { getMeals } from "@/lib/bread";
 import { days } from "@/lib/hours";
 import { getTranslations, translate } from "@/lib/language";
 import { STYLE } from "@/lib/map";
 import useSaved from "@/lib/saved";
-import { cn } from "@/lib/utils";
 import { ResourceType } from "@cords/sdk";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { clientOnly } from "@tanstack/start";
@@ -25,7 +25,7 @@ const SearchParamsSchema = z.object({
 	day: z.boolean().optional(),
 });
 
-export const Route = createFileRoute("/$language/saved")({
+export const Route = createFileRoute("/$language/_app/saved")({
 	component: SavedPage,
 	validateSearch: SearchParamsSchema,
 	head: ({ params: { language } }) => {
@@ -84,40 +84,32 @@ function SavedPage() {
 			</div>
 
 			<div className="no-print flex items-center gap-2">
-				<button
+				<Button
 					onClick={() =>
 						navigate({
 							search: (prev) => ({ ...prev, tab: undefined }),
 						})
 					}
-					className={cn(
-						"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
-						tab === "list"
-							? "border-primary bg-primary-background"
-							: "bg-white transition-colors hover:bg-gray-50/50",
-					)}
+					active={tab === "list"}
+					size="lg"
 				>
 					<List size={18} />
 					<p className="hidden sm:block">{translations.list}</p>
-				</button>
-				<button
+				</Button>
+				<Button
 					onClick={() =>
 						navigate({
 							search: (prev) => ({ ...prev, tab: "map" }),
 						})
 					}
-					className={cn(
-						"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
-						tab === "map"
-							? "border-primary bg-primary-background"
-							: "bg-white transition-colors hover:bg-gray-50/50",
-					)}
+					active={tab === "map"}
+					size="lg"
 				>
 					<MapIcon size={18} />
 					<p className="hidden sm:block">{translations.map}</p>
-				</button>
+				</Button>
 				<div className="h-6 w-px bg-gray-300" />
-				<button
+				<Button
 					onClick={() =>
 						navigate({
 							search: (prev) => ({
@@ -126,16 +118,12 @@ function SavedPage() {
 							}),
 						})
 					}
-					className={cn(
-						"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
-						day
-							? "border-primary bg-primary-background"
-							: "bg-white transition-colors hover:bg-gray-50/50",
-					)}
+					active={day}
+					size="lg"
 				>
 					<CalendarDays size={18} />
 					<p className="hidden sm:block">{translations.day}</p>
-				</button>
+				</Button>
 			</div>
 
 			{tab === "list" && (
@@ -202,7 +190,7 @@ function SavedPage() {
 			)}
 
 			{tab === "map" && (
-				<div className="flex-1 overflow-hidden rounded-lg border border-gray-300">
+				<div className="flex-1 overflow-hidden rounded-lg border">
 					<Map
 						initialViewState={{
 							longitude: -114.0719,

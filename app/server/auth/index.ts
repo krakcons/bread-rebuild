@@ -4,8 +4,8 @@ import {
 	encodeHexLowerCase,
 } from "@oslojs/encoding";
 import { eq } from "drizzle-orm";
-import { db } from "./db";
-import { sessions, users, type Session, type User } from "./db/schema";
+import { db } from "../db";
+import { sessions, users, type Session, type User } from "../db/schema";
 
 export function generateSessionToken(): string {
 	const bytes = new Uint8Array(20);
