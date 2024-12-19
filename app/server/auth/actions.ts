@@ -17,19 +17,8 @@ export const login = createServerFn()
 		});
 	});
 
-export const SignupSchema = z
-	.object({
-		email: z.string().email(),
-		password: z.string().min(8).max(64),
-		passwordConfirmation: z.string().min(8).max(64),
-	})
-	.refine((data) => data.password === data.passwordConfirmation, {
-		message: "Passwords do not match",
-		path: ["passwordConfirmation"],
-	});
-
 export const signup = createServerFn()
-	.validator(SignupSchema)
+	.validator(LoginSchema)
 	.handler(async ({ data }) => {
 		const user = await db.query.users.findFirst({
 			where: eq(users.email, data.email),

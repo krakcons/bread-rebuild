@@ -19,6 +19,7 @@ import { Route as LanguageAdminIndexImport } from './routes/$language/admin/inde
 import { Route as LanguageAppIndexImport } from './routes/$language/_app/index'
 import { Route as LanguageAdminSignupImport } from './routes/$language/admin/signup'
 import { Route as LanguageAdminLoginImport } from './routes/$language/admin/login'
+import { Route as LanguageAdminForgotPasswordImport } from './routes/$language/admin/forgot-password'
 import { Route as LanguageAppTermsImport } from './routes/$language/_app/terms'
 import { Route as LanguageAppSavedImport } from './routes/$language/_app/saved'
 import { Route as LanguageAppPrivacyPolicyImport } from './routes/$language/_app/privacy-policy'
@@ -70,6 +71,13 @@ const LanguageAdminLoginRoute = LanguageAdminLoginImport.update({
   path: '/admin/login',
   getParentRoute: () => LanguageRoute,
 } as any)
+
+const LanguageAdminForgotPasswordRoute =
+  LanguageAdminForgotPasswordImport.update({
+    id: '/admin/forgot-password',
+    path: '/admin/forgot-password',
+    getParentRoute: () => LanguageRoute,
+  } as any)
 
 const LanguageAppTermsRoute = LanguageAppTermsImport.update({
   id: '/terms',
@@ -141,6 +149,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LanguageAppTermsImport
       parentRoute: typeof LanguageAppImport
     }
+    '/$language/admin/forgot-password': {
+      id: '/$language/admin/forgot-password'
+      path: '/admin/forgot-password'
+      fullPath: '/$language/admin/forgot-password'
+      preLoaderRoute: typeof LanguageAdminForgotPasswordImport
+      parentRoute: typeof LanguageImport
+    }
     '/$language/admin/login': {
       id: '/$language/admin/login'
       path: '/admin/login'
@@ -203,6 +218,7 @@ const LanguageAppRouteWithChildren = LanguageAppRoute._addFileChildren(
 
 interface LanguageRouteChildren {
   LanguageAppRoute: typeof LanguageAppRouteWithChildren
+  LanguageAdminForgotPasswordRoute: typeof LanguageAdminForgotPasswordRoute
   LanguageAdminLoginRoute: typeof LanguageAdminLoginRoute
   LanguageAdminSignupRoute: typeof LanguageAdminSignupRoute
   LanguageAdminIndexRoute: typeof LanguageAdminIndexRoute
@@ -210,6 +226,7 @@ interface LanguageRouteChildren {
 
 const LanguageRouteChildren: LanguageRouteChildren = {
   LanguageAppRoute: LanguageAppRouteWithChildren,
+  LanguageAdminForgotPasswordRoute: LanguageAdminForgotPasswordRoute,
   LanguageAdminLoginRoute: LanguageAdminLoginRoute,
   LanguageAdminSignupRoute: LanguageAdminSignupRoute,
   LanguageAdminIndexRoute: LanguageAdminIndexRoute,
@@ -225,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/$language/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
   '/$language/saved': typeof LanguageAppSavedRoute
   '/$language/terms': typeof LanguageAppTermsRoute
+  '/$language/admin/forgot-password': typeof LanguageAdminForgotPasswordRoute
   '/$language/admin/login': typeof LanguageAdminLoginRoute
   '/$language/admin/signup': typeof LanguageAdminSignupRoute
   '/$language/': typeof LanguageAppIndexRoute
@@ -238,6 +256,7 @@ export interface FileRoutesByTo {
   '/$language/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
   '/$language/saved': typeof LanguageAppSavedRoute
   '/$language/terms': typeof LanguageAppTermsRoute
+  '/$language/admin/forgot-password': typeof LanguageAdminForgotPasswordRoute
   '/$language/admin/login': typeof LanguageAdminLoginRoute
   '/$language/admin/signup': typeof LanguageAdminSignupRoute
   '/$language/admin': typeof LanguageAdminIndexRoute
@@ -252,6 +271,7 @@ export interface FileRoutesById {
   '/$language/_app/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
   '/$language/_app/saved': typeof LanguageAppSavedRoute
   '/$language/_app/terms': typeof LanguageAppTermsRoute
+  '/$language/admin/forgot-password': typeof LanguageAdminForgotPasswordRoute
   '/$language/admin/login': typeof LanguageAdminLoginRoute
   '/$language/admin/signup': typeof LanguageAdminSignupRoute
   '/$language/_app/': typeof LanguageAppIndexRoute
@@ -267,6 +287,7 @@ export interface FileRouteTypes {
     | '/$language/privacy-policy'
     | '/$language/saved'
     | '/$language/terms'
+    | '/$language/admin/forgot-password'
     | '/$language/admin/login'
     | '/$language/admin/signup'
     | '/$language/'
@@ -279,6 +300,7 @@ export interface FileRouteTypes {
     | '/$language/privacy-policy'
     | '/$language/saved'
     | '/$language/terms'
+    | '/$language/admin/forgot-password'
     | '/$language/admin/login'
     | '/$language/admin/signup'
     | '/$language/admin'
@@ -291,6 +313,7 @@ export interface FileRouteTypes {
     | '/$language/_app/privacy-policy'
     | '/$language/_app/saved'
     | '/$language/_app/terms'
+    | '/$language/admin/forgot-password'
     | '/$language/admin/login'
     | '/$language/admin/signup'
     | '/$language/_app/'
@@ -330,6 +353,7 @@ export const routeTree = rootRoute
       "filePath": "$language",
       "children": [
         "/$language/_app",
+        "/$language/admin/forgot-password",
         "/$language/admin/login",
         "/$language/admin/signup",
         "/$language/admin/"
@@ -357,6 +381,10 @@ export const routeTree = rootRoute
     "/$language/_app/terms": {
       "filePath": "$language/_app/terms.tsx",
       "parent": "/$language/_app"
+    },
+    "/$language/admin/forgot-password": {
+      "filePath": "$language/admin/forgot-password.tsx",
+      "parent": "/$language"
     },
     "/$language/admin/login": {
       "filePath": "$language/admin/login.tsx",
