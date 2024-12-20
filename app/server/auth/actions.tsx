@@ -1,7 +1,7 @@
-import { hash, verify } from "@node-rs/argon2";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { and, eq } from "drizzle-orm";
+import { argon2id, argon2Verify } from "hash-wasm";
 import { getCookie } from "vinxi/http";
 import { z } from "zod";
 import {
@@ -32,7 +32,10 @@ export const login = createServerFn({ method: "POST" })
 			where: eq(users.email, data.email),
 		});
 		if (!user) return { error: "Invalid email or password" };
-		const passwordVerified = await verify(user.passwordHash, data.password);
+		const passwordVerified = await argon2Verify({
+			hash: user.passwordHash,
+			password: data.password,
+		});
 		if (!passwordVerified) return { error: "Invalid email or password" };
 
 		const sessionToken = generateSessionToken();
@@ -74,12 +77,16 @@ export const signup = createServerFn({ method: "POST" })
 		if (existingUserWithEmail) return { error: "Email already in use" };
 
 		// Hash password/ create user
-		const passwordHash = await hash(data.password, {
-			memoryCost: 19456,
-			timeCost: 2,
-			outputLen: 32,
+		const passwordHash = await argon2id({
+			password: data.password,
+			salt: crypto.getRandomValues(new Uint8Array(16)),
 			parallelism: 1,
+			iterations: 2,
+			memorySize: 19456,
+			hashLength: 32,
+			outputType: "encoded",
 		});
+
 		const [user] = await db
 			.insert(users)
 			.values({
