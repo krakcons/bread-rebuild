@@ -68,7 +68,7 @@ const Contact = ({
 				{icon}
 			</div>
 			<div>
-				<h3 className="mb-1 font-medium">{label}</h3>
+				<p className="mb-1 font-medium">{label}</p>
 				<p className="text-gray-600">{value}</p>
 			</div>
 		</div>
@@ -287,7 +287,7 @@ function ResourceDetail() {
 										"flex w-64 items-center justify-between gap-3"
 									}
 								>
-									<h3
+									<p
 										className={cn(
 											"font-medium",
 											hour.day === todaysDayOfWeek &&
@@ -298,7 +298,7 @@ function ResourceDetail() {
 											hour.day,
 											language as "en" | "fr",
 										)}
-									</h3>
+									</p>
 									<p
 										className={cn(
 											"text-gray-600",
