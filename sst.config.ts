@@ -22,10 +22,10 @@ export default $config({
 				? "bread.nuonn.com"
 				: `bread-dev.nuonn.com`;
 
-		const vpc = new sst.aws.Vpc("bread-vpc", { bastion: true, nat: "ec2" });
-		const rds = new sst.aws.Postgres("bread-db", { vpc, proxy: true });
+		const vpc = new sst.aws.Vpc("BreadVPC", { bastion: true, nat: "ec2" });
+		const rds = new sst.aws.Postgres("BreadDB", { vpc, proxy: true });
 
-		const email = new sst.aws.Email("bread-email", {
+		const email = new sst.aws.Email("BreadEmail", {
 			sender: domain,
 		});
 

@@ -10,7 +10,7 @@ declare module "sst" {
       "type": "sst.aws.TanstackStart"
       "url": string
     }
-    "bread-db": {
+    "BreadDB": {
       "database": string
       "host": string
       "password": string
@@ -18,12 +18,12 @@ declare module "sst" {
       "type": "sst.aws.Postgres"
       "username": string
     }
-    "bread-email": {
+    "BreadEmail": {
       "configSet": string
       "sender": string
       "type": "sst.aws.Email"
     }
-    "bread-vpc": {
+    "BreadVPC": {
       "bastion": string
       "type": "sst.aws.Vpc"
     }
