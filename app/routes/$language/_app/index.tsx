@@ -1,10 +1,10 @@
-import { MapResource } from "@/components/MapResource";
 import { Resource } from "@/components/Resource";
+import { MapResource } from "@/components/Resource/Map";
+import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/Dialog";
 import { dietaryOptions as breadDietaryOptions, getMeals } from "@/lib/bread";
 import { getLocalizedField, getTranslations } from "@/lib/language";
 import { STYLE } from "@/lib/map";
-import { cn } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	Accessibility,
@@ -18,7 +18,6 @@ import {
 	Utensils,
 	UtensilsCrossed,
 } from "lucide-react";
-import "maplibre-gl/dist/maplibre-gl.css";
 import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
@@ -42,7 +41,7 @@ const filterIcons = {
 	dietaryOptions: <Utensils size={18} />,
 };
 
-export const Route = createFileRoute("/$language/")({
+export const Route = createFileRoute("/$language/_app/")({
 	component: Home,
 	validateSearch: SearchParamsSchema,
 	beforeLoad: async ({ search }) => {
@@ -136,7 +135,7 @@ function Home() {
 						<input
 							type="text"
 							placeholder={translations.search}
-							className="h-12 w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 transition-colors focus:border-primary focus:outline-none"
+							className="h-12 w-full rounded-md border py-2 pl-10 pr-4 transition-colors focus:border-primary focus:outline-none"
 							value={query}
 							onChange={(e) =>
 								navigate({
@@ -156,56 +155,46 @@ function Home() {
 					</div>
 				</div>
 				<div className="flex flex-wrap items-center gap-2">
-					<button
+					<Button
 						onClick={() =>
 							navigate({
 								search: (prev) => ({ ...prev, tab: undefined }),
 							})
 						}
-						className={cn(
-							"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
-							tab === "list"
-								? "border-primary bg-primary-background"
-								: "bg-white transition-colors hover:bg-gray-50/50",
-						)}
+						size="lg"
+						active={tab === "list"}
 					>
 						<List size={18} />
 						<p className="hidden sm:block">{translations.list}</p>
-					</button>
-					<button
+					</Button>
+					<Button
 						onClick={() =>
 							navigate({
 								search: (prev) => ({ ...prev, tab: "map" }),
 							})
 						}
-						className={cn(
-							"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
-							tab === "map"
-								? "border-primary bg-primary-background"
-								: "bg-white transition-colors hover:bg-gray-50/50",
-						)}
+						size="lg"
+						active={tab === "map"}
 					>
 						<MapIcon size={18} />
 						<p className="hidden sm:block">{translations.map}</p>
-					</button>
+					</Button>
 					<div className="h-6 w-px bg-gray-300" />
 					<Dialog>
 						<DialogTrigger asChild>
-							<button
-								className={cn(
-									"flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
+							<Button
+								size="lg"
+								active={
 									Object.values(filters).some(
 										(filter) => filter,
 									) || dietaryOptions.length > 0
-										? "border-primary bg-primary-background"
-										: "transition-colors hover:bg-gray-50/50",
-								)}
+								}
 							>
 								<Filter size={18} />
 								<p className="hidden sm:block">
 									{translations.filters.title}
 								</p>
-							</button>
+							</Button>
 						</DialogTrigger>
 						<DialogContent className="max-h-screen overflow-y-auto sm:max-w-lg">
 							<div className="flex flex-col gap-2">
@@ -214,7 +203,7 @@ function Home() {
 								</h2>
 								{Object.entries(filters).map(
 									([name, value]) => (
-										<button
+										<Button
 											key={name}
 											onClick={() =>
 												navigate({
@@ -225,16 +214,12 @@ function Home() {
 													}),
 												})
 											}
-											className={cn(
-												"flex w-full items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
-												value
-													? "border-primary bg-primary-background"
-													: "bg-white transition-colors hover:bg-gray-50/50",
-											)}
+											active={value}
+											className="justify-start"
 										>
 											{filterIcons[name]}
 											{translations.filters[name]}
-										</button>
+										</Button>
 									),
 								)}
 								<h2 className="mt-4 text-lg font-medium">
@@ -242,7 +227,7 @@ function Home() {
 								</h2>
 								<div className="flex flex-wrap gap-2">
 									{breadDietaryOptions.map((option) => (
-										<button
+										<Button
 											key={
 												option[
 													language === "en" ? 0 : 1
@@ -268,18 +253,14 @@ function Home() {
 													}),
 												})
 											}
-											className={cn(
-												"flex flex-grow items-center gap-2 rounded-md border border-gray-300 px-4 py-2",
-												dietaryOptions.includes(
-													option[0],
-												)
-													? "border-primary bg-primary-background"
-													: "bg-white transition-colors hover:bg-gray-50/50",
+											active={dietaryOptions.includes(
+												option[0],
 											)}
+											className="flex-grow justify-start"
 										>
 											<Utensils size={18} />
 											{option[language === "en" ? 0 : 1]}
-										</button>
+										</Button>
 									))}
 								</div>
 							</div>
@@ -297,7 +278,7 @@ function Home() {
 				</>
 			)}
 			{tab === "map" && (
-				<div className="flex-1 overflow-hidden rounded-lg border border-gray-300">
+				<div className="flex-1 overflow-hidden rounded-lg border">
 					<Map
 						initialViewState={{
 							longitude: -114.0719,

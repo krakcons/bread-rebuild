@@ -4,18 +4,7 @@ import viteTsConfigPaths from "vite-tsconfig-paths";
 
 const tanstackApp = defineConfig({
 	server: {
-		preset: "cloudflare-pages",
-		output: {
-			dir: "{{ rootDir }}/dist",
-			publicDir: "{{ output.dir }}/public",
-			serverDir: "{{ output.dir }}/worker",
-		},
-		rollupConfig: {
-			external: ["node:async_hooks"],
-		},
-		hooks: {
-			compiled() {},
-		},
+		preset: "aws-lambda",
 	},
 	vite: {
 		plugins: [

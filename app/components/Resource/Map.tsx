@@ -3,10 +3,10 @@ import useSaved from "@/lib/saved";
 import { formatServiceAddress, ResourceType } from "@cords/sdk";
 import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
-import "maplibre-gl/dist/maplibre-gl.css";
 import { useState } from "react";
 import { Marker, Popup } from "react-map-gl/maplibre";
-import { ResourceActions } from "./Resource/Actions";
+import { Button, buttonVariants } from "../ui/Button";
+import { ResourceActions } from "./Actions";
 
 export const MapResource = ({ resource }: { resource: ResourceType }) => {
 	const { language } = useParams({ from: "/$language" });
@@ -40,14 +40,15 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 						borderRadius: 100,
 					}}
 					maxWidth="350px"
-					className="text-base"
+					className="text-base font-normal"
 				>
-					<button
-						className="absolute right-2 top-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-gray-100 focus:outline-none"
+					<Button
+						className="absolute right-1.5 top-1.5 h-6 w-6 rounded-full"
 						onClick={() => setPopupOpen(false)}
+						size="icon"
 					>
 						<X size={18} />
-					</button>
+					</Button>
 					<div className="mt-4 flex flex-col gap-2">
 						<Link
 							to={`/${language}/resources/${resource.id}`}
@@ -57,7 +58,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 						</Link>
 						{/* Address section */}
 						{resource.address && (
-							<div className="flex items-center gap-2 text-gray-600">
+							<div className="flex items-center gap-2 text-muted-foreground">
 								<MapPin size={20} />
 								{formatServiceAddress(resource.address)}
 							</div>
@@ -66,7 +67,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 						{resource.phoneNumbers.map((phone) => (
 							<div
 								key={phone.phone}
-								className="flex items-center gap-2 text-gray-600"
+								className="flex items-center gap-2 text-muted-foreground"
 							>
 								<PhoneCall size={18} />
 								<p>{phone.phone}</p>
@@ -74,7 +75,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 						))}
 						{/* Fees section */}
 						{getLocalizedField(resource.body, language)?.fees && (
-							<div className="mb-2 flex items-center gap-2 text-gray-600">
+							<div className="mb-2 flex items-center gap-2 text-muted-foreground">
 								<DollarSign size={20} />
 								{
 									getLocalizedField(resource.body, language)
@@ -85,7 +86,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 						<ResourceActions resource={resource}>
 							<Link
 								to={`/${language}/resources/${resource.id}`}
-								className="flex items-center gap-2 rounded-full border border-gray-300 px-2.5 py-1.5 transition-colors hover:bg-gray-50/50"
+								className={buttonVariants()}
 							>
 								{translations.viewMore}
 							</Link>

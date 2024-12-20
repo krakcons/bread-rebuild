@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { ResourceType } from "@cords/sdk";
 import { useParams } from "@tanstack/react-router";
 import { Bookmark, CalendarDays } from "lucide-react";
+import { Button } from "../ui/Button";
 
 export const ResourceActions = ({
 	resource,
@@ -36,11 +37,11 @@ export const ResourceActions = ({
 			}}
 		>
 			{children}
-			<button
+			<Button
 				onClick={() => {
 					saved.toggleSaved(resource.id);
 				}}
-				className="no-print flex h-9 items-center gap-2 rounded-full border border-gray-300 px-2.5 transition-colors hover:bg-gray-50/50"
+				className="no-print"
 			>
 				<Bookmark
 					size={18}
@@ -53,7 +54,7 @@ export const ResourceActions = ({
 				{saved.isSaved(resource.id)
 					? translations.saved.saved
 					: translations.saved.save}
-			</button>
+			</Button>
 			{saved.isSaved(resource.id) && (
 				<Select
 					value={saved.getDay(resource.id) ?? undefined}

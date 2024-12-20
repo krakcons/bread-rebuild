@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { Map, Marker } from "react-map-gl/maplibre";
 
-export const Route = createFileRoute("/$language/resources/$id")({
+export const Route = createFileRoute("/$language/_app/resources/$id")({
 	component: ResourceDetail,
 	notFoundComponent: NotFound,
 	loader: async ({ params: { id } }) => {
@@ -99,7 +99,7 @@ function ResourceDetail() {
 			<ResourceActions resource={resource} />
 			<div className="flex flex-col gap-3">
 				{/* Map */}
-				<div className="overflow-hidden rounded-lg border border-gray-300">
+				<div className="overflow-hidden rounded-lg border">
 					<Map
 						initialViewState={{
 							longitude: resource.address.lng!,
@@ -120,7 +120,7 @@ function ResourceDetail() {
 						</Marker>
 					</Map>
 				</div>
-				<div className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4">
+				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 					<h2 className="mb-4 text-xl font-bold">
 						{translations.contact}
 					</h2>
@@ -158,7 +158,7 @@ function ResourceDetail() {
 							/>
 						))}
 				</div>
-				<div className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4">
+				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 					<h2 className="mb-4 text-xl font-bold">
 						{translations.additionalInfo}
 					</h2>{" "}
@@ -274,7 +274,7 @@ function ResourceDetail() {
 					)}
 				</div>
 				{hours.length > 0 && (
-					<div className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4">
+					<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 						<h2 className="mb-4 text-xl font-bold">
 							{translations.hours}
 						</h2>

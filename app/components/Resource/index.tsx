@@ -11,14 +11,14 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 	return (
 		<Link
 			to={`/${language}/resources/${resource.id}`}
-			className="flex flex-col items-start gap-2 rounded-lg border border-gray-300 p-4 shadow-sm transition-shadow hover:shadow-md"
+			className="flex flex-col items-start gap-2 rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
 		>
 			<p className="text-xl font-semibold">
 				{getLocalizedField(resource.name, language)}
 			</p>
 			{/* Address section */}
 			{resource.address && (
-				<div className="flex items-center gap-2 text-gray-600">
+				<div className="text-muted-foreground flex items-center gap-2">
 					<MapPin size={20} />
 					{formatServiceAddress(resource.address)}
 				</div>
@@ -27,7 +27,7 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 			{resource.phoneNumbers.map((phone) => (
 				<div
 					key={phone.phone}
-					className="flex items-center gap-2 text-gray-600"
+					className="text-muted-foreground flex items-center gap-2"
 				>
 					<PhoneCall size={18} />
 					<p>{phone.phone}</p>
@@ -35,7 +35,7 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 			))}
 			{/* Fees section */}
 			{getLocalizedField(resource.body, language)?.fees && (
-				<div className="mb-2 flex items-center gap-2 text-gray-600">
+				<div className="text-muted-foreground mb-2 flex items-center gap-2">
 					<DollarSign size={20} />
 					{getLocalizedField(resource.body, language)?.fees}
 				</div>

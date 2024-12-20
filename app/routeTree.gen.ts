@@ -8,16 +8,29 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LanguageImport } from './routes/$language'
 import { Route as IndexImport } from './routes/index'
-import { Route as LanguageIndexImport } from './routes/$language/index'
-import { Route as LanguageTermsImport } from './routes/$language/terms'
-import { Route as LanguageSavedImport } from './routes/$language/saved'
-import { Route as LanguagePrivacyPolicyImport } from './routes/$language/privacy-policy'
-import { Route as LanguageResourcesIdImport } from './routes/$language/resources/$id'
+import { Route as LanguageAppImport } from './routes/$language/_app'
+import { Route as LanguageAppIndexImport } from './routes/$language/_app/index'
+import { Route as LanguageAdminVerifyEmailImport } from './routes/$language/admin/verify-email'
+import { Route as LanguageAdminSignupImport } from './routes/$language/admin/signup'
+import { Route as LanguageAdminLoginImport } from './routes/$language/admin/login'
+import { Route as LanguageAdminForgotPasswordImport } from './routes/$language/admin/forgot-password'
+import { Route as LanguageAdminAdminImport } from './routes/$language/admin/_admin'
+import { Route as LanguageAppTermsImport } from './routes/$language/_app/terms'
+import { Route as LanguageAppSavedImport } from './routes/$language/_app/saved'
+import { Route as LanguageAppPrivacyPolicyImport } from './routes/$language/_app/privacy-policy'
+import { Route as LanguageAdminAdminIndexImport } from './routes/$language/admin/_admin/index'
+import { Route as LanguageAppResourcesIdImport } from './routes/$language/_app/resources/$id'
+
+// Create Virtual Routes
+
+const LanguageImport = createFileRoute('/$language')()
+const LanguageAdminImport = createFileRoute('/$language/admin')()
 
 // Create/Update Routes
 
@@ -33,34 +46,81 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LanguageIndexRoute = LanguageIndexImport.update({
+const LanguageAdminRoute = LanguageAdminImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => LanguageRoute,
+} as any)
+
+const LanguageAppRoute = LanguageAppImport.update({
+  id: '/_app',
+  getParentRoute: () => LanguageRoute,
+} as any)
+
+const LanguageAppIndexRoute = LanguageAppIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LanguageRoute,
+  getParentRoute: () => LanguageAppRoute,
 } as any)
 
-const LanguageTermsRoute = LanguageTermsImport.update({
+const LanguageAdminVerifyEmailRoute = LanguageAdminVerifyEmailImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => LanguageAdminRoute,
+} as any)
+
+const LanguageAdminSignupRoute = LanguageAdminSignupImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => LanguageAdminRoute,
+} as any)
+
+const LanguageAdminLoginRoute = LanguageAdminLoginImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => LanguageAdminRoute,
+} as any)
+
+const LanguageAdminForgotPasswordRoute =
+  LanguageAdminForgotPasswordImport.update({
+    id: '/forgot-password',
+    path: '/forgot-password',
+    getParentRoute: () => LanguageAdminRoute,
+  } as any)
+
+const LanguageAdminAdminRoute = LanguageAdminAdminImport.update({
+  id: '/_admin',
+  getParentRoute: () => LanguageAdminRoute,
+} as any)
+
+const LanguageAppTermsRoute = LanguageAppTermsImport.update({
   id: '/terms',
   path: '/terms',
-  getParentRoute: () => LanguageRoute,
+  getParentRoute: () => LanguageAppRoute,
 } as any)
 
-const LanguageSavedRoute = LanguageSavedImport.update({
+const LanguageAppSavedRoute = LanguageAppSavedImport.update({
   id: '/saved',
   path: '/saved',
-  getParentRoute: () => LanguageRoute,
+  getParentRoute: () => LanguageAppRoute,
 } as any)
 
-const LanguagePrivacyPolicyRoute = LanguagePrivacyPolicyImport.update({
+const LanguageAppPrivacyPolicyRoute = LanguageAppPrivacyPolicyImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
-  getParentRoute: () => LanguageRoute,
+  getParentRoute: () => LanguageAppRoute,
 } as any)
 
-const LanguageResourcesIdRoute = LanguageResourcesIdImport.update({
+const LanguageAdminAdminIndexRoute = LanguageAdminAdminIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LanguageAdminAdminRoute,
+} as any)
+
+const LanguageAppResourcesIdRoute = LanguageAppResourcesIdImport.update({
   id: '/resources/$id',
   path: '/resources/$id',
-  getParentRoute: () => LanguageRoute,
+  getParentRoute: () => LanguageAppRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -81,60 +141,161 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LanguageImport
       parentRoute: typeof rootRoute
     }
-    '/$language/privacy-policy': {
-      id: '/$language/privacy-policy'
+    '/$language/_app': {
+      id: '/$language/_app'
+      path: '/$language'
+      fullPath: '/$language'
+      preLoaderRoute: typeof LanguageAppImport
+      parentRoute: typeof LanguageRoute
+    }
+    '/$language/_app/privacy-policy': {
+      id: '/$language/_app/privacy-policy'
       path: '/privacy-policy'
       fullPath: '/$language/privacy-policy'
-      preLoaderRoute: typeof LanguagePrivacyPolicyImport
-      parentRoute: typeof LanguageImport
+      preLoaderRoute: typeof LanguageAppPrivacyPolicyImport
+      parentRoute: typeof LanguageAppImport
     }
-    '/$language/saved': {
-      id: '/$language/saved'
+    '/$language/_app/saved': {
+      id: '/$language/_app/saved'
       path: '/saved'
       fullPath: '/$language/saved'
-      preLoaderRoute: typeof LanguageSavedImport
-      parentRoute: typeof LanguageImport
+      preLoaderRoute: typeof LanguageAppSavedImport
+      parentRoute: typeof LanguageAppImport
     }
-    '/$language/terms': {
-      id: '/$language/terms'
+    '/$language/_app/terms': {
+      id: '/$language/_app/terms'
       path: '/terms'
       fullPath: '/$language/terms'
-      preLoaderRoute: typeof LanguageTermsImport
+      preLoaderRoute: typeof LanguageAppTermsImport
+      parentRoute: typeof LanguageAppImport
+    }
+    '/$language/admin': {
+      id: '/$language/admin'
+      path: '/admin'
+      fullPath: '/$language/admin'
+      preLoaderRoute: typeof LanguageAdminImport
       parentRoute: typeof LanguageImport
     }
-    '/$language/': {
-      id: '/$language/'
+    '/$language/admin/_admin': {
+      id: '/$language/admin/_admin'
+      path: '/admin'
+      fullPath: '/$language/admin'
+      preLoaderRoute: typeof LanguageAdminAdminImport
+      parentRoute: typeof LanguageAdminRoute
+    }
+    '/$language/admin/forgot-password': {
+      id: '/$language/admin/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/$language/admin/forgot-password'
+      preLoaderRoute: typeof LanguageAdminForgotPasswordImport
+      parentRoute: typeof LanguageAdminImport
+    }
+    '/$language/admin/login': {
+      id: '/$language/admin/login'
+      path: '/login'
+      fullPath: '/$language/admin/login'
+      preLoaderRoute: typeof LanguageAdminLoginImport
+      parentRoute: typeof LanguageAdminImport
+    }
+    '/$language/admin/signup': {
+      id: '/$language/admin/signup'
+      path: '/signup'
+      fullPath: '/$language/admin/signup'
+      preLoaderRoute: typeof LanguageAdminSignupImport
+      parentRoute: typeof LanguageAdminImport
+    }
+    '/$language/admin/verify-email': {
+      id: '/$language/admin/verify-email'
+      path: '/verify-email'
+      fullPath: '/$language/admin/verify-email'
+      preLoaderRoute: typeof LanguageAdminVerifyEmailImport
+      parentRoute: typeof LanguageAdminImport
+    }
+    '/$language/_app/': {
+      id: '/$language/_app/'
       path: '/'
       fullPath: '/$language/'
-      preLoaderRoute: typeof LanguageIndexImport
-      parentRoute: typeof LanguageImport
+      preLoaderRoute: typeof LanguageAppIndexImport
+      parentRoute: typeof LanguageAppImport
     }
-    '/$language/resources/$id': {
-      id: '/$language/resources/$id'
+    '/$language/_app/resources/$id': {
+      id: '/$language/_app/resources/$id'
       path: '/resources/$id'
       fullPath: '/$language/resources/$id'
-      preLoaderRoute: typeof LanguageResourcesIdImport
-      parentRoute: typeof LanguageImport
+      preLoaderRoute: typeof LanguageAppResourcesIdImport
+      parentRoute: typeof LanguageAppImport
+    }
+    '/$language/admin/_admin/': {
+      id: '/$language/admin/_admin/'
+      path: '/'
+      fullPath: '/$language/admin/'
+      preLoaderRoute: typeof LanguageAdminAdminIndexImport
+      parentRoute: typeof LanguageAdminAdminImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface LanguageAppRouteChildren {
+  LanguageAppPrivacyPolicyRoute: typeof LanguageAppPrivacyPolicyRoute
+  LanguageAppSavedRoute: typeof LanguageAppSavedRoute
+  LanguageAppTermsRoute: typeof LanguageAppTermsRoute
+  LanguageAppIndexRoute: typeof LanguageAppIndexRoute
+  LanguageAppResourcesIdRoute: typeof LanguageAppResourcesIdRoute
+}
+
+const LanguageAppRouteChildren: LanguageAppRouteChildren = {
+  LanguageAppPrivacyPolicyRoute: LanguageAppPrivacyPolicyRoute,
+  LanguageAppSavedRoute: LanguageAppSavedRoute,
+  LanguageAppTermsRoute: LanguageAppTermsRoute,
+  LanguageAppIndexRoute: LanguageAppIndexRoute,
+  LanguageAppResourcesIdRoute: LanguageAppResourcesIdRoute,
+}
+
+const LanguageAppRouteWithChildren = LanguageAppRoute._addFileChildren(
+  LanguageAppRouteChildren,
+)
+
+interface LanguageAdminAdminRouteChildren {
+  LanguageAdminAdminIndexRoute: typeof LanguageAdminAdminIndexRoute
+}
+
+const LanguageAdminAdminRouteChildren: LanguageAdminAdminRouteChildren = {
+  LanguageAdminAdminIndexRoute: LanguageAdminAdminIndexRoute,
+}
+
+const LanguageAdminAdminRouteWithChildren =
+  LanguageAdminAdminRoute._addFileChildren(LanguageAdminAdminRouteChildren)
+
+interface LanguageAdminRouteChildren {
+  LanguageAdminAdminRoute: typeof LanguageAdminAdminRouteWithChildren
+  LanguageAdminForgotPasswordRoute: typeof LanguageAdminForgotPasswordRoute
+  LanguageAdminLoginRoute: typeof LanguageAdminLoginRoute
+  LanguageAdminSignupRoute: typeof LanguageAdminSignupRoute
+  LanguageAdminVerifyEmailRoute: typeof LanguageAdminVerifyEmailRoute
+}
+
+const LanguageAdminRouteChildren: LanguageAdminRouteChildren = {
+  LanguageAdminAdminRoute: LanguageAdminAdminRouteWithChildren,
+  LanguageAdminForgotPasswordRoute: LanguageAdminForgotPasswordRoute,
+  LanguageAdminLoginRoute: LanguageAdminLoginRoute,
+  LanguageAdminSignupRoute: LanguageAdminSignupRoute,
+  LanguageAdminVerifyEmailRoute: LanguageAdminVerifyEmailRoute,
+}
+
+const LanguageAdminRouteWithChildren = LanguageAdminRoute._addFileChildren(
+  LanguageAdminRouteChildren,
+)
+
 interface LanguageRouteChildren {
-  LanguagePrivacyPolicyRoute: typeof LanguagePrivacyPolicyRoute
-  LanguageSavedRoute: typeof LanguageSavedRoute
-  LanguageTermsRoute: typeof LanguageTermsRoute
-  LanguageIndexRoute: typeof LanguageIndexRoute
-  LanguageResourcesIdRoute: typeof LanguageResourcesIdRoute
+  LanguageAppRoute: typeof LanguageAppRouteWithChildren
+  LanguageAdminRoute: typeof LanguageAdminRouteWithChildren
 }
 
 const LanguageRouteChildren: LanguageRouteChildren = {
-  LanguagePrivacyPolicyRoute: LanguagePrivacyPolicyRoute,
-  LanguageSavedRoute: LanguageSavedRoute,
-  LanguageTermsRoute: LanguageTermsRoute,
-  LanguageIndexRoute: LanguageIndexRoute,
-  LanguageResourcesIdRoute: LanguageResourcesIdRoute,
+  LanguageAppRoute: LanguageAppRouteWithChildren,
+  LanguageAdminRoute: LanguageAdminRouteWithChildren,
 }
 
 const LanguageRouteWithChildren = LanguageRoute._addFileChildren(
@@ -143,32 +304,51 @@ const LanguageRouteWithChildren = LanguageRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$language': typeof LanguageRouteWithChildren
-  '/$language/privacy-policy': typeof LanguagePrivacyPolicyRoute
-  '/$language/saved': typeof LanguageSavedRoute
-  '/$language/terms': typeof LanguageTermsRoute
-  '/$language/': typeof LanguageIndexRoute
-  '/$language/resources/$id': typeof LanguageResourcesIdRoute
+  '/$language': typeof LanguageAppRouteWithChildren
+  '/$language/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
+  '/$language/saved': typeof LanguageAppSavedRoute
+  '/$language/terms': typeof LanguageAppTermsRoute
+  '/$language/admin': typeof LanguageAdminAdminRouteWithChildren
+  '/$language/admin/forgot-password': typeof LanguageAdminForgotPasswordRoute
+  '/$language/admin/login': typeof LanguageAdminLoginRoute
+  '/$language/admin/signup': typeof LanguageAdminSignupRoute
+  '/$language/admin/verify-email': typeof LanguageAdminVerifyEmailRoute
+  '/$language/': typeof LanguageAppIndexRoute
+  '/$language/resources/$id': typeof LanguageAppResourcesIdRoute
+  '/$language/admin/': typeof LanguageAdminAdminIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$language/privacy-policy': typeof LanguagePrivacyPolicyRoute
-  '/$language/saved': typeof LanguageSavedRoute
-  '/$language/terms': typeof LanguageTermsRoute
-  '/$language': typeof LanguageIndexRoute
-  '/$language/resources/$id': typeof LanguageResourcesIdRoute
+  '/$language': typeof LanguageAppIndexRoute
+  '/$language/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
+  '/$language/saved': typeof LanguageAppSavedRoute
+  '/$language/terms': typeof LanguageAppTermsRoute
+  '/$language/admin': typeof LanguageAdminAdminIndexRoute
+  '/$language/admin/forgot-password': typeof LanguageAdminForgotPasswordRoute
+  '/$language/admin/login': typeof LanguageAdminLoginRoute
+  '/$language/admin/signup': typeof LanguageAdminSignupRoute
+  '/$language/admin/verify-email': typeof LanguageAdminVerifyEmailRoute
+  '/$language/resources/$id': typeof LanguageAppResourcesIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/$language': typeof LanguageRouteWithChildren
-  '/$language/privacy-policy': typeof LanguagePrivacyPolicyRoute
-  '/$language/saved': typeof LanguageSavedRoute
-  '/$language/terms': typeof LanguageTermsRoute
-  '/$language/': typeof LanguageIndexRoute
-  '/$language/resources/$id': typeof LanguageResourcesIdRoute
+  '/$language/_app': typeof LanguageAppRouteWithChildren
+  '/$language/_app/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
+  '/$language/_app/saved': typeof LanguageAppSavedRoute
+  '/$language/_app/terms': typeof LanguageAppTermsRoute
+  '/$language/admin': typeof LanguageAdminRouteWithChildren
+  '/$language/admin/_admin': typeof LanguageAdminAdminRouteWithChildren
+  '/$language/admin/forgot-password': typeof LanguageAdminForgotPasswordRoute
+  '/$language/admin/login': typeof LanguageAdminLoginRoute
+  '/$language/admin/signup': typeof LanguageAdminSignupRoute
+  '/$language/admin/verify-email': typeof LanguageAdminVerifyEmailRoute
+  '/$language/_app/': typeof LanguageAppIndexRoute
+  '/$language/_app/resources/$id': typeof LanguageAppResourcesIdRoute
+  '/$language/admin/_admin/': typeof LanguageAdminAdminIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -179,25 +359,44 @@ export interface FileRouteTypes {
     | '/$language/privacy-policy'
     | '/$language/saved'
     | '/$language/terms'
+    | '/$language/admin'
+    | '/$language/admin/forgot-password'
+    | '/$language/admin/login'
+    | '/$language/admin/signup'
+    | '/$language/admin/verify-email'
     | '/$language/'
     | '/$language/resources/$id'
+    | '/$language/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$language'
     | '/$language/privacy-policy'
     | '/$language/saved'
     | '/$language/terms'
-    | '/$language'
+    | '/$language/admin'
+    | '/$language/admin/forgot-password'
+    | '/$language/admin/login'
+    | '/$language/admin/signup'
+    | '/$language/admin/verify-email'
     | '/$language/resources/$id'
   id:
     | '__root__'
     | '/'
     | '/$language'
-    | '/$language/privacy-policy'
-    | '/$language/saved'
-    | '/$language/terms'
-    | '/$language/'
-    | '/$language/resources/$id'
+    | '/$language/_app'
+    | '/$language/_app/privacy-policy'
+    | '/$language/_app/saved'
+    | '/$language/_app/terms'
+    | '/$language/admin'
+    | '/$language/admin/_admin'
+    | '/$language/admin/forgot-password'
+    | '/$language/admin/login'
+    | '/$language/admin/signup'
+    | '/$language/admin/verify-email'
+    | '/$language/_app/'
+    | '/$language/_app/resources/$id'
+    | '/$language/admin/_admin/'
   fileRoutesById: FileRoutesById
 }
 
@@ -229,34 +428,80 @@ export const routeTree = rootRoute
       "filePath": "index.tsx"
     },
     "/$language": {
-      "filePath": "$language.tsx",
+      "filePath": "$language",
       "children": [
-        "/$language/privacy-policy",
-        "/$language/saved",
-        "/$language/terms",
-        "/$language/",
-        "/$language/resources/$id"
+        "/$language/_app",
+        "/$language/admin"
       ]
     },
-    "/$language/privacy-policy": {
-      "filePath": "$language/privacy-policy.tsx",
-      "parent": "/$language"
+    "/$language/_app": {
+      "filePath": "$language/_app.tsx",
+      "parent": "/$language",
+      "children": [
+        "/$language/_app/privacy-policy",
+        "/$language/_app/saved",
+        "/$language/_app/terms",
+        "/$language/_app/",
+        "/$language/_app/resources/$id"
+      ]
     },
-    "/$language/saved": {
-      "filePath": "$language/saved.tsx",
-      "parent": "/$language"
+    "/$language/_app/privacy-policy": {
+      "filePath": "$language/_app/privacy-policy.tsx",
+      "parent": "/$language/_app"
     },
-    "/$language/terms": {
-      "filePath": "$language/terms.tsx",
-      "parent": "/$language"
+    "/$language/_app/saved": {
+      "filePath": "$language/_app/saved.tsx",
+      "parent": "/$language/_app"
     },
-    "/$language/": {
-      "filePath": "$language/index.tsx",
-      "parent": "/$language"
+    "/$language/_app/terms": {
+      "filePath": "$language/_app/terms.tsx",
+      "parent": "/$language/_app"
     },
-    "/$language/resources/$id": {
-      "filePath": "$language/resources/$id.tsx",
-      "parent": "/$language"
+    "/$language/admin": {
+      "filePath": "$language/admin",
+      "parent": "/$language",
+      "children": [
+        "/$language/admin/_admin",
+        "/$language/admin/forgot-password",
+        "/$language/admin/login",
+        "/$language/admin/signup",
+        "/$language/admin/verify-email"
+      ]
+    },
+    "/$language/admin/_admin": {
+      "filePath": "$language/admin/_admin.tsx",
+      "parent": "/$language/admin",
+      "children": [
+        "/$language/admin/_admin/"
+      ]
+    },
+    "/$language/admin/forgot-password": {
+      "filePath": "$language/admin/forgot-password.tsx",
+      "parent": "/$language/admin"
+    },
+    "/$language/admin/login": {
+      "filePath": "$language/admin/login.tsx",
+      "parent": "/$language/admin"
+    },
+    "/$language/admin/signup": {
+      "filePath": "$language/admin/signup.tsx",
+      "parent": "/$language/admin"
+    },
+    "/$language/admin/verify-email": {
+      "filePath": "$language/admin/verify-email.tsx",
+      "parent": "/$language/admin"
+    },
+    "/$language/_app/": {
+      "filePath": "$language/_app/index.tsx",
+      "parent": "/$language/_app"
+    },
+    "/$language/_app/resources/$id": {
+      "filePath": "$language/_app/resources/$id.tsx",
+      "parent": "/$language/_app"
+    },
+    "/$language/admin/_admin/": {
+      "filePath": "$language/admin/_admin/index.tsx",
+      "parent": "/$language/admin/_admin"
     }
   }
 }

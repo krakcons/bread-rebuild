@@ -1,4 +1,5 @@
 import { NotFound } from "@/components/NotFound";
+import { Button, buttonVariants } from "@/components/ui/Button";
 import {
 	Popover,
 	PopoverContent,
@@ -10,11 +11,11 @@ import { cn } from "@/lib/utils";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { Bookmark, Menu, Printer } from "lucide-react";
 
-export const Route = createFileRoute("/$language")({
+export const Route = createFileRoute("/$language/_app")({
 	component: LayoutComponent,
 	notFoundComponent: NotFound,
 	beforeLoad: ({ params }) => {
-		setLanguage({ data: params.language });
+		setLanguage({ data: params.language as "en" | "fr" });
 	},
 });
 
@@ -26,7 +27,7 @@ function LayoutComponent() {
 
 	return (
 		<div>
-			<div className="flex items-center justify-center border-b border-gray-300">
+			<div className="flex items-center justify-center border-b">
 				<header className="flex w-full max-w-screen-md items-center justify-between gap-4 px-4 py-3">
 					<Link
 						to="/$language"
@@ -38,7 +39,7 @@ function LayoutComponent() {
 							alt="Bread Logo"
 							className="w-12"
 						/>
-						<p className="print hidden font-semibold tracking-widest text-primary sm:block sm:text-xl">
+						<p className="print font-semibold tracking-widest text-primary sm:text-xl">
 							BREAD
 						</p>
 					</Link>
@@ -46,30 +47,33 @@ function LayoutComponent() {
 						<Link
 							to="/$language/saved"
 							params={{ language }}
-							className="relative flex h-10 w-10 items-center justify-center gap-2 rounded-full border border-gray-300 p-0 transition-colors hover:bg-gray-50/50 sm:w-auto sm:px-2.5"
+							className={cn(
+								buttonVariants(),
+								"relative rounded-full",
+							)}
 						>
 							<Bookmark size={20} />
 							<p className="hidden sm:block">
 								{translations.saved.title}
 							</p>
 							{saved.saved.filter((s) => !s.seen).length > 0 && (
-								<span className="absolute left-5 top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-secondary text-xs text-white">
+								<span className="absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-secondary text-xs text-white">
 									{saved.saved.filter((s) => !s.seen).length}
 								</span>
 							)}
 						</Link>
-						<button
+						<Button
 							onClick={() => {
 								window.print();
 							}}
-							className="flex h-10 w-10 items-center justify-center gap-2 rounded-full border border-gray-300 p-0 transition-colors hover:bg-gray-50/50 sm:w-auto sm:px-2.5"
+							className="rounded-full"
 						>
 							<Printer size={20} />
 							<p className="hidden sm:block">
 								{translations.print}
 							</p>
-						</button>
-						<button
+						</Button>
+						<Button
 							onClick={() => {
 								navigate({
 									replace: true,
@@ -80,12 +84,20 @@ function LayoutComponent() {
 									search: (prev) => ({ ...prev }),
 								});
 							}}
-							className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 transition-colors hover:bg-gray-50/50"
+							size="icon"
+							className="rounded-full"
 						>
 							{language === "en" ? "FR" : "EN"}
-						</button>
+						</Button>
 						<Popover>
-							<PopoverTrigger className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 transition-colors hover:bg-gray-50/50">
+							<PopoverTrigger
+								className={cn(
+									buttonVariants({
+										size: "icon",
+									}),
+									"rounded-full",
+								)}
+							>
 								<Menu size={18} />
 							</PopoverTrigger>
 							<PopoverContent
@@ -108,6 +120,13 @@ function LayoutComponent() {
 									className="text-center"
 								>
 									{translations.privacy}
+								</Link>
+								<Link
+									to="/$language/admin"
+									params={{ language }}
+									className="text-center"
+								>
+									{translations.admin.title}
 								</Link>
 							</PopoverContent>
 						</Popover>

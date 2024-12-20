@@ -1,13 +1,14 @@
 import globalStyles from "@/index.css?url";
+import { SessionValidationResult } from "@/server/auth";
 import {
-	createRootRoute,
+	createRootRouteWithContext,
 	Outlet,
 	ScrollRestoration,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
 import * as React from "react";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<SessionValidationResult>()({
 	head: () => ({
 		meta: [
 			{
@@ -31,7 +32,13 @@ export const Route = createRootRoute({
 				href: "/favicon.ico",
 			},
 		],
-		links: [{ rel: "stylesheet", href: globalStyles }],
+		links: [
+			{ rel: "stylesheet", href: globalStyles },
+			{
+				rel: "stylesheet",
+				href: "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css",
+			},
+		],
 	}),
 	component: RootComponent,
 });
