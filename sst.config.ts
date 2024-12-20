@@ -17,19 +17,31 @@ export default $config({
 		};
 	},
 	async run() {
+		const domain =
+			$app.stage === "production"
+				? "bread.nuonn.com"
+				: `bread-dev.nuonn.com`;
+
 		const vpc = new sst.aws.Vpc("bread-vpc", { bastion: true, nat: "ec2" });
 		const rds = new sst.aws.Postgres("bread-db", { vpc, proxy: true });
 
+		const email = new sst.aws.Email("bread-email", {
+			sender: domain,
+		});
+
 		new sst.aws.TanstackStart("Bread", {
-			link: [rds],
-			domain: "bread.nuonn.com",
+			link: [rds, email],
+			domain,
 			vpc,
+			environment: {
+				STAGE: $app.stage === "production" ? "production" : "dev",
+			},
 		});
 
 		new sst.x.DevCommand("Studio", {
 			link: [rds],
 			dev: {
-				command: "npx drizzle-kit studio",
+				command: "drizzle-kit studio",
 			},
 		});
 	},

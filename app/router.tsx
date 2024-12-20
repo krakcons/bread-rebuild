@@ -7,6 +7,10 @@ export function createRouter() {
 		routeTree,
 		defaultPreload: "intent",
 		defaultPreloadDelay: 100,
+		context: {
+			session: null,
+			user: null,
+		},
 	});
 
 	return router;

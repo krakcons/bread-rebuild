@@ -1,9 +1,9 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import pg from "pg";
 import { Resource } from "sst";
 import * as schema from "./schema";
 
-const pool = new Pool({
+const pool = new pg.Pool({
 	host: Resource["bread-db"].host,
 	port: Resource["bread-db"].port,
 	user: Resource["bread-db"].username,

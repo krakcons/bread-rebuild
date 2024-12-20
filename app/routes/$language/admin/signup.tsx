@@ -1,18 +1,36 @@
 import { Button, buttonVariants } from "@/components/ui/Button";
-import { FieldError } from "@/components/ui/FieldError";
+import { Error, FieldError } from "@/components/ui/Error";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { getTranslations } from "@/lib/language";
 import { cn } from "@/lib/utils";
-import { LoginSchema } from "@/server/auth/actions";
-import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { z } from "zod";
+import { signup, SignupSchema } from "@/server/auth/actions";
+import { useForm, useStore } from "@tanstack/react-form";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/start";
+import { ArrowLeft, Loader2 } from "lucide-react";
+
 export const Route = createFileRoute("/$language/admin/signup")({
 	component: RouteComponent,
+	beforeLoad: async ({ context, params }) => {
+		if (context.user !== null) {
+			if (context.user.emailVerified !== null) {
+				throw redirect({
+					to: "/$language/admin",
+					params,
+				});
+			} else {
+				throw redirect({
+					to: "/$language/admin/verify-email",
+					params,
+				});
+			}
+		}
+	},
 });
 
 function RouteComponent() {
+	const signupMutation = useServerFn(signup);
 	const { language } = Route.useParams();
 	const t = getTranslations(language);
 	const form = useForm({
@@ -21,27 +39,50 @@ function RouteComponent() {
 			password: "",
 			passwordConfirmation: "",
 		},
-		onSubmit: async ({ value: data }) => {
-			// await signup({ data });
-			console.log(data);
-		},
 		validators: {
-			onSubmit: LoginSchema.extend({
-				passwordConfirmation: z.string().min(8).max(64),
-			}).refine((data) => data.password === data.passwordConfirmation, {
-				message: "Passwords do not match",
-				path: ["passwordConfirmation"],
-			}),
+			onSubmit: SignupSchema,
+		},
+		onSubmit: async ({ value: data, formApi }) => {
+			try {
+				const result = await signupMutation({ data });
+				if (result.error) {
+					formApi.setErrorMap({
+						onServer: result.error,
+					});
+				}
+			} catch (error) {
+				formApi.setErrorMap({
+					onServer: "Something went wrong",
+				});
+			}
 		},
 	});
 
+	const serverError = useStore(
+		form.store,
+		(formState) => formState.errorMap.onServer,
+	);
+
 	return (
 		<div className="mx-auto flex h-screen w-screen max-w-[400px] flex-col justify-center gap-4 p-4">
+			<Link
+				to="/$language"
+				params={{ language }}
+				className={buttonVariants({
+					variant: "link",
+					class: "self-start",
+					size: "auto",
+				})}
+			>
+				<ArrowLeft size={20} />
+				{t.common.back}
+			</Link>
 			<h1>{t.admin.auth.signup.title}</h1>
 			<p className="text-sm text-muted-foreground">
 				{t.admin.auth.signup.switch.preface}
 				<Link
-					href="/$language/admin/login"
+					to="/$language/admin/login"
+					params={{ language }}
 					className={cn(
 						buttonVariants({
 							variant: "link",
@@ -60,6 +101,7 @@ function RouteComponent() {
 				}}
 			>
 				<div className="flex flex-col gap-4">
+					{serverError && <Error text={serverError as string} />}
 					<form.Field
 						name="email"
 						children={(field) => (
@@ -115,9 +157,20 @@ function RouteComponent() {
 							</Label>
 						)}
 					/>
-					<div className="flex items-start justify-between gap-2">
-						<Button type="submit">{t.form.submit}</Button>
-					</div>
+					<form.Subscribe
+						selector={(formState) => [formState.isSubmitting]}
+					>
+						{([isSubmitting]) => (
+							<div className="flex items-start justify-between gap-2">
+								<Button type="submit" disabled={isSubmitting}>
+									{isSubmitting && (
+										<Loader2 className="animate-spin" />
+									)}
+									{t.common.submit}
+								</Button>
+							</div>
+						)}
+					</form.Subscribe>
 				</div>
 			</form>
 		</div>

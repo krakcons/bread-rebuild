@@ -18,6 +18,11 @@ declare module "sst" {
       "type": "sst.aws.Postgres"
       "username": string
     }
+    "bread-email": {
+      "configSet": string
+      "sender": string
+      "type": "sst.aws.Email"
+    }
     "bread-vpc": {
       "bastion": string
       "type": "sst.aws.Vpc"

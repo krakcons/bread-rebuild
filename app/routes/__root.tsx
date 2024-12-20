@@ -1,13 +1,14 @@
 import globalStyles from "@/index.css?url";
+import { SessionValidationResult } from "@/server/auth";
 import {
-	createRootRoute,
+	createRootRouteWithContext,
 	Outlet,
 	ScrollRestoration,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
 import * as React from "react";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<SessionValidationResult>()({
 	head: () => ({
 		meta: [
 			{

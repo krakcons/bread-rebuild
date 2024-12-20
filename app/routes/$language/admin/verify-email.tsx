@@ -1,49 +1,44 @@
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { Error, FieldError } from "@/components/ui/Error";
-import { Input } from "@/components/ui/Input";
+import {
+	InputOTP,
+	InputOTPGroup,
+	InputOTPSlot,
+} from "@/components/ui/InputOTP";
 import { Label } from "@/components/ui/Label";
 import { getTranslations } from "@/lib/language";
-import { cn } from "@/lib/utils";
-import { login, LoginSchema } from "@/server/auth/actions";
+import {
+	resendEmailVerification,
+	verifyEmail,
+	VerifyEmailSchema,
+} from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/$language/admin/login")({
+export const Route = createFileRoute("/$language/admin/verify-email")({
 	component: RouteComponent,
-	beforeLoad: async ({ context, params }) => {
-		if (context.user !== null) {
-			if (context.user.emailVerified !== null) {
-				throw redirect({
-					to: "/$language/admin",
-					params,
-				});
-			} else {
-				throw redirect({
-					to: "/$language/admin/verify-email",
-					params,
-				});
-			}
-		}
-	},
 });
 
 function RouteComponent() {
-	const loginMutation = useServerFn(login);
+	const verifyEmailMutation = useServerFn(verifyEmail);
+	const resendEmailVerificationMutation = useServerFn(
+		resendEmailVerification,
+	);
 	const { language } = Route.useParams();
 	const t = getTranslations(language);
 	const form = useForm({
 		defaultValues: {
-			email: "",
-			password: "",
+			code: "",
 		},
 		validators: {
-			onSubmit: LoginSchema,
+			onSubmit: VerifyEmailSchema,
 		},
 		onSubmit: async ({ value: data, formApi }) => {
 			try {
-				const result = await loginMutation({ data });
+				const result = await verifyEmailMutation({ data });
 				if (result.error) {
 					formApi.setErrorMap({
 						onServer: result.error,
@@ -65,7 +60,7 @@ function RouteComponent() {
 	return (
 		<div className="mx-auto flex h-screen w-screen max-w-[400px] flex-col justify-center gap-4 p-4">
 			<Link
-				to="/$language"
+				to="/$language/admin/login"
 				params={{ language }}
 				className={buttonVariants({
 					variant: "link",
@@ -76,22 +71,21 @@ function RouteComponent() {
 				<ArrowLeft size={20} />
 				{t.common.back}
 			</Link>
-			<h1>{t.admin.auth.login.title}</h1>
-			<p className="text-sm text-muted-foreground">
-				{t.admin.auth.login.switch.preface}
-				<Link
-					to="/$language/admin/signup"
-					params={{ language }}
-					className={cn(
-						buttonVariants({
-							variant: "link",
-						}),
-						"px-2",
-					)}
+			<h1>{t.admin.auth.verifyEmail.title}</h1>
+			<div className="flex items-start justify-start gap-1">
+				<p className="text-sm text-muted-foreground">
+					{t.admin.auth.verifyEmail.resend.preface}
+				</p>
+				<Button
+					variant="link"
+					size="auto"
+					onClick={() => {
+						resendEmailVerificationMutation();
+					}}
 				>
-					{t.admin.auth.login.switch.link}
-				</Link>
-			</p>
+					{t.admin.auth.verifyEmail.resend.link}
+				</Button>
+			</div>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -102,37 +96,32 @@ function RouteComponent() {
 				<div className="flex flex-col gap-4">
 					{serverError && <Error text={serverError as string} />}
 					<form.Field
-						name="email"
+						name="code"
 						children={(field) => (
 							<Label>
-								{t.admin.auth.form.email}
-								<Input
+								{t.admin.auth.verifyEmail.form.code}
+								<InputOTP
+									maxLength={6}
+									pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
 									name={field.name}
 									value={field.state.value}
 									onBlur={field.handleBlur}
-									onChange={(e) =>
-										field.handleChange(e.target.value)
+									onChange={(value) =>
+										field.handleChange(value)
 									}
-								/>
-								<FieldError state={field.state} />
-							</Label>
-						)}
-					/>
-					<form.Field
-						name="password"
-						children={(field) => (
-							<Label>
-								{t.admin.auth.signup.form.password}
-								<Input
-									name={field.name}
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(e) =>
-										field.handleChange(e.target.value)
-									}
-									type="password"
-									autoComplete="new-password"
-								/>
+								>
+									<InputOTPGroup>
+										<InputOTPSlot index={0} />
+										<InputOTPSlot index={1} />
+										<InputOTPSlot index={2} />
+										<InputOTPSlot index={3} />
+										<InputOTPSlot index={4} />
+										<InputOTPSlot index={5} />
+									</InputOTPGroup>
+								</InputOTP>
+								<p className="text-sm text-muted-foreground">
+									{t.admin.auth.verifyEmail.description}
+								</p>
 								<FieldError state={field.state} />
 							</Label>
 						)}
@@ -148,18 +137,6 @@ function RouteComponent() {
 									)}
 									{t.common.submit}
 								</Button>
-								<Link
-									to="/$language/admin/forgot-password"
-									params={{ language }}
-									className={cn(
-										buttonVariants({
-											variant: "link",
-											size: "auto",
-										}),
-									)}
-								>
-									{t.admin.auth.login.forgotPassword}
-								</Link>
 							</div>
 						)}
 					</form.Subscribe>

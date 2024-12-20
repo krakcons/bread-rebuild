@@ -1,3 +1,4 @@
+import { generateRandomString, type RandomReader } from "@oslojs/crypto/random";
 import { sha256 } from "@oslojs/crypto/sha2";
 import {
 	encodeBase32LowerCaseNoPadding,
@@ -6,6 +7,12 @@ import {
 import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { sessions, users, type Session, type User } from "../db/schema";
+
+const random: RandomReader = {
+	read(bytes) {
+		crypto.getRandomValues(bytes);
+	},
+};
 
 export function generateSessionToken(): string {
 	const bytes = new Uint8Array(20);
@@ -16,7 +23,7 @@ export function generateSessionToken(): string {
 
 export async function createSession(
 	token: string,
-	userId: number,
+	userId: string,
 ): Promise<Session> {
 	const sessionId = encodeHexLowerCase(
 		sha256(new TextEncoder().encode(token)),
@@ -58,7 +65,8 @@ export async function validateSessionToken(
 			})
 			.where(eq(sessions.id, session.id));
 	}
-	return { session, user };
+	const { passwordHash, ...safeUser } = user;
+	return { session, user: safeUser };
 }
 
 export async function invalidateSession(sessionId: string): Promise<void> {
@@ -66,5 +74,14 @@ export async function invalidateSession(sessionId: string): Promise<void> {
 }
 
 export type SessionValidationResult =
-	| { session: Session; user: User }
+	| { session: Session; user: Omit<User, "passwordHash"> }
 	| { session: null; user: null };
+
+export function generateId(length: number, alphabet?: string): string {
+	return generateRandomString(
+		random,
+		alphabet ??
+			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+		length,
+	);
+}

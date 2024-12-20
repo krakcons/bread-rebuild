@@ -2,6 +2,10 @@ export const english = {
 	title: "Bread: Food Banks in Calgary",
 	description:
 		"Bread is a directory of food resources in the greater Calgary area.",
+	common: {
+		back: "Back",
+		submit: "Submit",
+	},
 	search: "Search",
 	free: "Free",
 	list: "List",
@@ -44,9 +48,6 @@ export const english = {
 	terms: "Terms of Use",
 	privacy: "Privacy Policy",
 	dietaryOptions: "Dietary Options",
-	form: {
-		submit: "Submit",
-	},
 	admin: {
 		title: "Admin",
 		auth: {
@@ -61,6 +62,17 @@ export const english = {
 				},
 				title: "Login",
 				forgotPassword: "Forgot password?",
+			},
+			verifyEmail: {
+				title: "Verify Email",
+				description: "Please enter the code sent to your email.",
+				form: {
+					code: "Code",
+				},
+				resend: {
+					preface: "Need another code?",
+					link: "Resend Code",
+				},
 			},
 			signup: {
 				title: "Sign Up",
@@ -79,6 +91,9 @@ export const english = {
 						3: "Strong",
 						4: "Strong",
 					},
+					errors: {
+						email: "Email already in use",
+					},
 				},
 			},
 		},
@@ -89,6 +104,10 @@ export const french: typeof english = {
 	title: "Bread: Banques alimentaires à Calgary",
 	description:
 		"Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
+	common: {
+		back: "Retour",
+		submit: "Soumettre",
+	},
 	search: "Rechercher",
 	free: "Gratuit",
 	list: "Liste",
@@ -131,9 +150,6 @@ export const french: typeof english = {
 	terms: "Conditions d'utilisation",
 	privacy: "Politique de confidentialité",
 	dietaryOptions: "Options Diététiques",
-	form: {
-		submit: "Soumettre",
-	},
 	admin: {
 		title: "Admin",
 		auth: {
@@ -148,6 +164,17 @@ export const french: typeof english = {
 				},
 				title: "Connexion",
 				forgotPassword: "Mot de passe oublié?",
+			},
+			verifyEmail: {
+				title: "Vérifier votre email",
+				description: "Veuillez entrer le code envoyé à votre email.",
+				form: {
+					code: "Code",
+				},
+				resend: {
+					preface: "Besoin d'un autre code?",
+					link: "Renvoyer le code",
+				},
 			},
 			signup: {
 				title: "S'enregistrer",
@@ -165,6 +192,9 @@ export const french: typeof english = {
 						2: "Moyen",
 						3: "Fort",
 						4: "Fort",
+					},
+					errors: {
+						email: "Courriel déjà utilisé",
 					},
 				},
 			},

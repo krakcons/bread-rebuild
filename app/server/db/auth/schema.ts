@@ -1,8 +1,8 @@
 import { InferSelectModel } from "drizzle-orm";
-import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
-	id: serial("id").primaryKey(),
+	id: text("id").primaryKey(),
 	email: text("email").notNull().unique(),
 	passwordHash: text("password_hash").notNull(),
 	emailVerified: timestamp("email_verified", {
@@ -25,7 +25,7 @@ export const users = pgTable("users", {
 
 export const sessions = pgTable("sessions", {
 	id: text("id").primaryKey(),
-	userId: integer("user_id")
+	userId: text("user_id")
 		.notNull()
 		.references(() => users.id),
 	expiresAt: timestamp("expires_at", {
@@ -37,7 +37,7 @@ export const sessions = pgTable("sessions", {
 // For sending email verification codes
 export const emailVerifications = pgTable("email_verifications", {
 	id: text("id").primaryKey(),
-	userId: integer("user_id")
+	userId: text("user_id")
 		.notNull()
 		.references(() => users.id),
 	code: text("code").notNull(),
