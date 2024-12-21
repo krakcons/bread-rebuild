@@ -10,10 +10,8 @@
 		"dev": "vinxi dev",
 		"start": "vinxi start",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"db": "sst shell drizzle-kit",
-		"sso": "aws sso login --sso-session=krak",
-		"sst": "sst",
-		"sst-deploy": "sst deploy --stage production"
+		"db": "sst shell drizzle-kit --target=Studio",
+		"sso": "aws sso login --sso-session=krak"
 	},
 	"keywords": [],
 	"author": "",

@@ -3,12 +3,21 @@ import pg from "pg";
 import { Resource } from "sst";
 import * as schema from "./schema";
 
-const pool = new pg.Pool({
-	host: Resource.BreadDB.host,
-	port: Resource.BreadDB.port,
-	user: Resource.BreadDB.username,
-	password: Resource.BreadDB.password,
-	database: Resource.BreadDB.database,
-});
+if (!process.env.TENANT_STAGE_NAME) {
+	throw new Error("TENANT_STAGE_NAME is not set");
+}
+
+export const config = {
+	host: Resource.RDS.host,
+	port: Resource.RDS.port,
+	user: Resource.RDS.username,
+	password: Resource.RDS.password,
+	database: process.env.TENANT_STAGE_NAME,
+	ssl: {
+		rejectUnauthorized: false,
+	},
+} satisfies pg.PoolConfig;
+
+const pool = new pg.Pool(config);
 
 export const db = drizzle(pool, { schema });

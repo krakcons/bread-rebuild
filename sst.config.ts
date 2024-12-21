@@ -1,48 +1,70 @@
 /// <reference path="./.sst/platform/config.d.ts" />
+const tenant = "bread";
+const profile = "krak";
+const stageMap = new Map<string, { name: string; domain: string }>([
+	["prod", { name: `${tenant}-prod`, domain: `${tenant}.nuonn.com` }],
+	["dev", { name: `${tenant}-dev`, domain: `${tenant}-dev.nuonn.com` }],
+]);
+
 export default $config({
 	app(input) {
 		return {
-			name: "bread",
-			removal: input?.stage === "production" ? "retain" : "remove",
+			name: tenant,
+			removal: input?.stage === "prod" ? "retain" : "remove",
 			home: "aws",
 			providers: {
 				aws: {
+					// Region for all resources (restrict to Canada)
 					region: "ca-central-1",
-					profile:
-						input.stage === "production"
-							? "bread-production"
-							: "bread-dev",
+					// Under main account
+					profile,
 				},
 			},
 		};
 	},
 	async run() {
-		const domain =
-			$app.stage === "production"
-				? "bread.nuonn.com"
-				: `bread-dev.nuonn.com`;
+		let stage = stageMap.get($app.stage);
+		// Personal stage
+		if (!stage) {
+			stage = {
+				name: `${tenant}-${$app.stage}`,
+				domain: `${tenant}-${$app.stage}.nuonn.com`,
+			};
+		}
+		const { name, domain } = stage;
 
-		const vpc = new sst.aws.Vpc("BreadVPC", { bastion: true, nat: "ec2" });
-		const rds = new sst.aws.Postgres("BreadDB", { vpc, proxy: true });
-
-		const email = new sst.aws.Email("BreadEmail", {
-			sender: domain,
+		// Multi-tenant resources
+		const vpc = sst.aws.Vpc.get("Vpc", "vpc-08c28b23ee20f3975");
+		const rds = sst.aws.Postgres.get("RDS", {
+			id: "krak-prod-rdsinstance",
 		});
 
-		new sst.aws.TanstackStart("Bread", {
+		const environment = {
+			TENANT_STAGE_NAME: name,
+		};
+
+		// Per-tenant resources
+		const email = new sst.aws.Email("Email", {
+			sender: domain,
+		});
+		new sst.aws.TanstackStart("Web", {
 			link: [rds, email],
 			domain,
 			vpc,
-			environment: {
-				STAGE: $app.stage === "production" ? "production" : "dev",
-			},
+			environment,
 		});
 
+		// Dev commands
 		new sst.x.DevCommand("Studio", {
 			link: [rds],
 			dev: {
 				command: "drizzle-kit studio",
 			},
+			environment,
 		});
+
+		return {
+			// database: $interpolate`postgres://${rds.username}:${rds.password}@${rds.host}:${rds.port}/${rds.database}`,
+		};
 	},
 });

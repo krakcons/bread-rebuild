@@ -6,11 +6,12 @@ import "sst"
 export {}
 declare module "sst" {
   export interface Resource {
-    "Bread": {
-      "type": "sst.aws.TanstackStart"
-      "url": string
+    "Email": {
+      "configSet": string
+      "sender": string
+      "type": "sst.aws.Email"
     }
-    "BreadDB": {
+    "RDS": {
       "database": string
       "host": string
       "password": string
@@ -18,14 +19,13 @@ declare module "sst" {
       "type": "sst.aws.Postgres"
       "username": string
     }
-    "BreadEmail": {
-      "configSet": string
-      "sender": string
-      "type": "sst.aws.Email"
-    }
-    "BreadVPC": {
+    "Vpc": {
       "bastion": string
       "type": "sst.aws.Vpc"
+    }
+    "Web": {
+      "type": "sst.aws.TanstackStart"
+      "url": string
     }
   }
 }
