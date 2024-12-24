@@ -12,12 +12,9 @@ export async function sendEmail(
 	subject: string,
 	content: ReactElement,
 ): Promise<void> {
-	console.log("Sending email to", to);
-	console.log("Subject", subject);
 	const html = await render(content);
-	console.log("Content", html);
 	const command = new SendEmailCommand({
-		FromEmailAddress: `noreply@${Resource["bread-email"].sender}`,
+		FromEmailAddress: `noreply@${Resource.Email.sender}`,
 		Destination: {
 			ToAddresses: to,
 		},

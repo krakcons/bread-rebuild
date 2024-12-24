@@ -1,4 +1,4 @@
-import { InferSelectModel } from "drizzle-orm";
+import { InferSelectModel, relations } from "drizzle-orm";
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -22,6 +22,10 @@ export const users = pgTable("users", {
 		.defaultNow()
 		.notNull(),
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+	emailVerifications: many(emailVerifications),
+}));
 
 export const sessions = pgTable("sessions", {
 	id: text("id").primaryKey(),
@@ -48,6 +52,39 @@ export const emailVerifications = pgTable("email_verifications", {
 		.$default(() => new Date(Date.now() + 1000 * 60 * 15))
 		.notNull(),
 });
+
+export const emailVerificationsRelations = relations(
+	emailVerifications,
+	({ one }) => ({
+		user: one(users, {
+			fields: [emailVerifications.userId],
+			references: [users.id],
+		}),
+	}),
+);
+
+export const passwordResets = pgTable("password_resets", {
+	id: text("id").primaryKey(),
+	userId: text("user_id")
+		.notNull()
+		.references(() => users.id),
+	code: text("code").notNull(),
+	expiresAt: timestamp("expires_at", {
+		withTimezone: true,
+		mode: "date",
+	}).notNull(),
+	emailVerified: timestamp("email_verified", {
+		withTimezone: true,
+		mode: "date",
+	}),
+});
+
+export const passwordResetsRelations = relations(passwordResets, ({ one }) => ({
+	user: one(users, {
+		fields: [passwordResets.userId],
+		references: [users.id],
+	}),
+}));
 
 export type User = InferSelectModel<typeof users>;
 export type Session = InferSelectModel<typeof sessions>;

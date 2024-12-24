@@ -3,7 +3,8 @@ export const english = {
 	description:
 		"Bread is a directory of food resources in the greater Calgary area.",
 	common: {
-		back: "Back",
+		back: "Back to",
+		bread: "Bread",
 		submit: "Submit",
 	},
 	search: "Search",
@@ -65,6 +66,12 @@ export const english = {
 				title: "Login",
 				forgotPassword: "Forgot password?",
 			},
+			resetPassword: {
+				title: "Reset Password",
+				emailDescription:
+					"Please enter your email to reset your password.",
+				passwordDescription: "Please enter your new password.",
+			},
 			verifyEmail: {
 				title: "Verify Email",
 				description: "Please enter the code sent to your email.",
@@ -85,12 +92,13 @@ export const english = {
 				form: {
 					email: "Email",
 					password: "Password",
-					passwordConfirmation: "Password Confirmation",
+					passwordConfirmation: "Confirm Password",
 					passwordStrength: {
-						0: "Weak",
-						1: "Weak",
-						2: "Medium",
-						3: "Strong",
+						title: "Password Strength",
+						0: "Very Weak",
+						1: "Very Weak",
+						2: "Weak",
+						3: "Good",
 						4: "Strong",
 					},
 					errors: {
@@ -107,7 +115,8 @@ export const french: typeof english = {
 	description:
 		"Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
 	common: {
-		back: "Retour",
+		back: "Retour à",
+		bread: "Bread",
 		submit: "Soumettre",
 	},
 	search: "Rechercher",
@@ -169,6 +178,13 @@ export const french: typeof english = {
 				title: "Connexion",
 				forgotPassword: "Mot de passe oublié?",
 			},
+			resetPassword: {
+				title: "Réinitialiser le mot de passe",
+				emailDescription:
+					"Veuillez entrer votre email pour réinitialiser votre mot de passe.",
+				passwordDescription:
+					"Veuillez entrer votre nouveau mot de passe.",
+			},
 			verifyEmail: {
 				title: "Vérifier votre email",
 				description: "Veuillez entrer le code envoyé à votre email.",
@@ -189,13 +205,14 @@ export const french: typeof english = {
 				form: {
 					email: "Courriel",
 					password: "Mot de passe",
-					passwordConfirmation: "Confirmation du mot de passe",
+					passwordConfirmation: "Confirmer le mot de passe",
 					passwordStrength: {
-						0: "Faible",
-						1: "Faible",
-						2: "Moyen",
-						3: "Fort",
-						4: "Fort",
+						title: "Force du mot de passe",
+						0: "Très Faible",
+						1: "Très Faible",
+						2: "Faible",
+						3: "Bon",
+						4: "Très Fort",
 					},
 					errors: {
 						email: "Courriel déjà utilisé",

@@ -23,6 +23,9 @@ export const Route = createFileRoute("/$language/admin/login")({
 				throw redirect({
 					to: "/$language/admin/verify-email",
 					params,
+					search: {
+						type: "email_verification",
+					},
 				});
 			}
 		}
@@ -74,7 +77,7 @@ function RouteComponent() {
 				})}
 			>
 				<ArrowLeft size={20} />
-				{t.common.back}
+				{t.common.back} {t.common.bread}
 			</Link>
 			<h1>{t.admin.auth.login.title}</h1>
 			<p className="text-sm text-muted-foreground">
@@ -149,7 +152,7 @@ function RouteComponent() {
 									{t.common.submit}
 								</Button>
 								<Link
-									to="/$language/admin/forgot-password"
+									to="/$language/admin/reset-password"
 									params={{ language }}
 									className={cn(
 										buttonVariants({

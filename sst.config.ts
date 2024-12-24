@@ -68,7 +68,7 @@ export default $config({
 		});
 
 		return {
-			// database: $interpolate`postgres://${rds.username}:${rds.password}@${rds.host}:${rds.port}/${rds.database}`,
+			database: $interpolate`postgres://${rds.username}:${rds.password}@${rds.host}:${rds.port}/${rds.database}`,
 		};
 	},
 });
