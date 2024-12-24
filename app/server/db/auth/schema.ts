@@ -4,7 +4,7 @@ import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 export const users = pgTable("users", {
 	id: text("id").primaryKey(),
 	email: text("email").notNull().unique(),
-	passwordHash: text("password_hash").notNull(),
+	passwordHash: text("password_hash"),
 	emailVerified: timestamp("email_verified", {
 		withTimezone: true,
 		mode: "date",
@@ -31,7 +31,9 @@ export const sessions = pgTable("sessions", {
 	id: text("id").primaryKey(),
 	userId: text("user_id")
 		.notNull()
-		.references(() => users.id),
+		.references(() => users.id, {
+			onDelete: "cascade",
+		}),
 	expiresAt: timestamp("expires_at", {
 		withTimezone: true,
 		mode: "date",
@@ -43,7 +45,9 @@ export const emailVerifications = pgTable("email_verifications", {
 	id: text("id").primaryKey(),
 	userId: text("user_id")
 		.notNull()
-		.references(() => users.id),
+		.references(() => users.id, {
+			onDelete: "cascade",
+		}),
 	code: text("code").notNull(),
 	expiresAt: timestamp("expires_at", {
 		withTimezone: true,
@@ -67,12 +71,16 @@ export const passwordResets = pgTable("password_resets", {
 	id: text("id").primaryKey(),
 	userId: text("user_id")
 		.notNull()
-		.references(() => users.id),
+		.references(() => users.id, {
+			onDelete: "cascade",
+		}),
 	code: text("code").notNull(),
 	expiresAt: timestamp("expires_at", {
 		withTimezone: true,
 		mode: "date",
-	}).notNull(),
+	})
+		.$default(() => new Date(Date.now() + 1000 * 60 * 60 * 24))
+		.notNull(),
 	emailVerified: timestamp("email_verified", {
 		withTimezone: true,
 		mode: "date",

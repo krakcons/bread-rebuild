@@ -15,10 +15,11 @@ import {
 	verifyPasswordResetEmail,
 } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 
 export const Route = createFileRoute("/$language/admin/verify-email")({
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/$language/admin/verify-email")({
 });
 
 function RouteComponent() {
+	const router = useRouter();
 	const { type = "email_verification" } = Route.useSearch();
 	const verifyEmailMutation = useServerFn(verifyEmail);
 	const verifyPasswordResetEmailMutation = useServerFn(
@@ -40,6 +42,7 @@ function RouteComponent() {
 	const resendPasswordResetVerificationMutation = useServerFn(
 		resendPasswordResetVerification,
 	);
+	const [resendCodeSent, setResendCodeSent] = useState(false);
 	const { language } = Route.useParams();
 	const t = getTranslations(language);
 	const form = useForm({
@@ -75,27 +78,30 @@ function RouteComponent() {
 		(formState) => formState.errorMap.onServer,
 	);
 
+	useEffect(() => {
+		if (resendCodeSent) {
+			setTimeout(() => {
+				setResendCodeSent(false);
+			}, 1000);
+		}
+	}, [resendCodeSent]);
+
 	return (
 		<div className="mx-auto flex h-screen w-screen max-w-[400px] flex-col justify-center gap-4 p-4">
+			<Button
+				variant="link"
+				size="auto"
+				className="self-start"
+				onClick={() => router.history.back()}
+			>
+				<ArrowLeft size={16} />
+				{t.common.back}
+			</Button>
 			<h1>{t.admin.auth.verifyEmail.title}</h1>
-			<div className="flex items-start justify-start gap-1">
-				<p className="text-sm text-muted-foreground">
-					{t.admin.auth.verifyEmail.resend.preface}
-				</p>
-				<Button
-					variant="link"
-					size="auto"
-					onClick={() => {
-						if (type === "email_verification") {
-							resendEmailVerificationMutation();
-						} else if (type === "password_reset") {
-							resendPasswordResetVerificationMutation();
-						}
-					}}
-				>
-					{t.admin.auth.verifyEmail.resend.link}
-				</Button>
-			</div>
+			<p className="text-sm text-muted-foreground">
+				{t.admin.auth.verifyEmail.description[type]}
+			</p>
+
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -129,9 +135,6 @@ function RouteComponent() {
 										<InputOTPSlot index={5} />
 									</InputOTPGroup>
 								</InputOTP>
-								<p className="text-sm text-muted-foreground">
-									{t.admin.auth.verifyEmail.description}
-								</p>
 								<FieldError state={field.state} />
 							</Label>
 						)}
@@ -152,6 +155,30 @@ function RouteComponent() {
 					</form.Subscribe>
 				</div>
 			</form>
+			<div className="flex items-start justify-start gap-1">
+				<p className="text-sm text-muted-foreground">
+					{t.admin.auth.verifyEmail.resend.preface}
+				</p>
+				<Button
+					disabled={resendCodeSent}
+					variant="link"
+					size="auto"
+					onClick={() => {
+						if (type === "email_verification") {
+							resendEmailVerificationMutation();
+						} else if (type === "password_reset") {
+							resendPasswordResetVerificationMutation();
+						}
+						setResendCodeSent(true);
+					}}
+					className={"gap-1"}
+				>
+					{resendCodeSent && (
+						<Loader2 size={16} className="animate-spin" />
+					)}
+					{t.admin.auth.verifyEmail.resend.link}
+				</Button>
+			</div>
 		</div>
 	);
 }

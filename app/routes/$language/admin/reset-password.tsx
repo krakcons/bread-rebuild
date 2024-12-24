@@ -71,7 +71,7 @@ const EmailForm = () => {
 				})}
 			>
 				<ArrowLeft size={20} />
-				{t.common.back} {t.admin.auth.login.title}
+				{t.common.back} {t.common.to} {t.admin.auth.login.title}
 			</Link>
 			<h1>{t.admin.auth.resetPassword.title}</h1>
 			<p className="text-sm text-muted-foreground">

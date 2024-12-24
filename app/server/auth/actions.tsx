@@ -1,7 +1,7 @@
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
-import { and, eq } from "drizzle-orm";
-import { argon2id, argon2Verify } from "hash-wasm";
+import { and, eq, isNull } from "drizzle-orm";
+import { argon2Verify } from "hash-wasm";
 import { getCookie } from "vinxi/http";
 import { z } from "zod";
 import {
@@ -17,6 +17,7 @@ import {
 	deleteSessionTokenCookie,
 	setSessionTokenCookie,
 } from "./helpers/cookies";
+import { hashPassword } from "./helpers/password";
 import {
 	createAndSendEmailVerification,
 	createAndSendPasswordReset,
@@ -35,6 +36,8 @@ export const login = createServerFn({ method: "POST" })
 			where: eq(users.email, data.email),
 		});
 		if (!user) return { error: "Invalid email or password" };
+		if (!user.passwordHash)
+			return { error: "User does not have a password.  " };
 		const passwordVerified = await argon2Verify({
 			hash: user.passwordHash,
 			password: data.password,
@@ -79,36 +82,25 @@ export const signup = createServerFn({ method: "POST" })
 		});
 		if (existingUserWithEmail) return { error: "Email already in use" };
 
-		// Hash password/ create user
-		const passwordHash = await argon2id({
-			password: data.password,
-			salt: crypto.getRandomValues(new Uint8Array(16)),
-			parallelism: 1,
-			iterations: 2,
-			memorySize: 19456,
-			hashLength: 32,
-			outputType: "encoded",
-		});
-
 		const [user] = await db
 			.insert(users)
 			.values({
 				id: generateId(16),
 				email: data.email,
-				passwordHash,
+				passwordHash: await hashPassword(data.password),
 			})
 			.returning();
+
 		await createAndSendEmailVerification(user.id, data.email);
+
 		// Create session
 		const sessionToken = generateSessionToken();
 		const session = await createSession(sessionToken, user.id);
 		setSessionTokenCookie(sessionToken, session.expiresAt);
+
 		throw redirect({
 			to: "/$language/admin/verify-email",
 			params: { language: context.language },
-			search: {
-				type: "password_reset",
-			},
 		});
 	});
 
@@ -188,9 +180,49 @@ export const resendEmailVerification = createServerFn({ method: "POST" })
 
 // Reset password
 
+const validatePasswordResetSession = async () => {
+	const resetPasswordCookie = getCookie("password_reset");
+	if (!resetPasswordCookie)
+		return { error: "Invalid code. Please try again." };
+
+	const passwordReset = await db.query.passwordResets.findFirst({
+		where: eq(passwordResets.id, resetPasswordCookie),
+		with: {
+			user: true,
+		},
+	});
+	if (!passwordReset) return { error: "Invalid code. Please try again." };
+
+	if (passwordReset.expiresAt < new Date())
+		return {
+			error: "The password reset code was expired. Please request a new password reset.",
+		};
+
+	return passwordReset;
+};
+
 export const ResetPasswordEmailSchema = z.object({
 	email: z.string().email(),
 });
+
+export const resetPasswordFromEmail = createServerFn({ method: "POST" })
+	.middleware([languageMiddleware])
+	.validator(ResetPasswordEmailSchema)
+	.handler(async ({ data, context }): Promise<{ error?: string }> => {
+		const user = await db.query.users.findFirst({
+			where: eq(users.email, data.email),
+		});
+		if (user) {
+			await createAndSendPasswordReset(user.id, user.email);
+		}
+		throw redirect({
+			to: "/$language/admin/verify-email",
+			params: { language: context.language },
+			search: {
+				type: "password_reset",
+			},
+		});
+	});
 
 export const ResetPasswordSchema = z
 	.object({
@@ -202,66 +234,22 @@ export const ResetPasswordSchema = z
 		path: ["passwordConfirmation"],
 	});
 
-export const resetPasswordFromEmail = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware])
-	.validator(ResetPasswordEmailSchema)
-	.handler(async ({ data, context }) => {
-		const user = await db.query.users.findFirst({
-			where: eq(users.email, data.email),
-		});
-		if (!user) return { error: "Invalid email" };
-
-		await createAndSendPasswordReset(user.id, user.email);
-		throw redirect({
-			to: "/$language/admin/verify-email",
-			params: { language: context.language },
-			search: {
-				type: "password_reset",
-			},
-		});
-	});
-
 export const resetPassword = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware, authMiddleware])
+	.middleware([languageMiddleware])
 	.validator(ResetPasswordSchema)
 	.handler(async ({ data, context }) => {
-		const verficationCookie = getCookie("password_reset");
-		if (!verficationCookie)
-			return { error: "Invalid code. Please try again." };
-
-		const passwordReset = await db.query.passwordResets.findFirst({
-			where: eq(passwordResets.id, verficationCookie),
-		});
-		if (!passwordReset) return { error: "Invalid code. Please try again." };
-
-		if (passwordReset.expiresAt < new Date()) {
-			return {
-				error: "The password reset code was expired. Please request a new password reset.",
-			};
-		}
-
-		const user = await db.query.users.findFirst({
-			where: eq(users.id, passwordReset.userId),
-		});
-		if (!user) return { error: "Invalid user" };
+		const passwordReset = await validatePasswordResetSession();
+		if ("error" in passwordReset) return passwordReset;
 
 		await db
 			.update(users)
 			.set({
-				passwordHash: await argon2id({
-					password: data.password,
-					salt: crypto.getRandomValues(new Uint8Array(16)),
-					parallelism: 1,
-					iterations: 2,
-					memorySize: 19456,
-					hashLength: 32,
-					outputType: "encoded",
-				}),
+				passwordHash: await hashPassword(data.password),
 			})
-			.where(eq(users.id, user.id));
+			.where(eq(users.id, passwordReset.userId));
 
 		const sessionToken = generateSessionToken();
-		const session = await createSession(sessionToken, user.id);
+		const session = await createSession(sessionToken, passwordReset.userId);
 		setSessionTokenCookie(sessionToken, session.expiresAt);
 
 		await db
@@ -275,42 +263,38 @@ export const resetPassword = createServerFn({ method: "POST" })
 	});
 
 export const verifyPasswordResetEmail = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware, authMiddleware])
+	.middleware([languageMiddleware])
 	.validator(VerifyEmailSchema)
 	.handler(async ({ data, context }) => {
-		const verficationCookie = getCookie("password_reset");
-		if (!verficationCookie)
-			return { error: "Invalid code. Please try again." };
-
-		const passwordReset = await db.query.passwordResets.findFirst({
-			where: eq(passwordResets.id, verficationCookie),
-			with: {
-				user: true,
-			},
-		});
-		if (!passwordReset) return { error: "Invalid code. Please try again." };
-
-		if (passwordReset.expiresAt < new Date()) {
-			return {
-				error: "The password reset code was expired. Please request a new password reset.",
-			};
-		}
+		const passwordReset = await validatePasswordResetSession();
+		if ("error" in passwordReset) return passwordReset;
 
 		if (passwordReset.code !== data.code)
 			return { error: "Invalid code. Please try again." };
 
+		// Verify password reset
 		await db
 			.update(passwordResets)
 			.set({
 				emailVerified: new Date(),
 			})
 			.where(eq(passwordResets.id, passwordReset.id));
+
+		// Verify user email if not already verified
 		await db
 			.update(users)
 			.set({
 				emailVerified: new Date(),
 			})
-			.where(eq(users.id, passwordReset.userId));
+			.where(
+				and(
+					eq(users.id, passwordReset.userId),
+					isNull(users.emailVerified),
+				),
+			);
+		await db
+			.delete(emailVerifications)
+			.where(eq(emailVerifications.userId, passwordReset.userId));
 
 		throw redirect({
 			to: "/$language/admin/reset-password",
@@ -321,37 +305,23 @@ export const verifyPasswordResetEmail = createServerFn({ method: "POST" })
 export const isPasswordResetVerified = createServerFn({
 	method: "GET",
 }).handler(async () => {
-	const resetPasswordCookie = getCookie("password_reset");
-	if (!resetPasswordCookie) return false;
+	const passwordReset = await validatePasswordResetSession();
+	if ("error" in passwordReset) return false;
 
-	const passwordReset = await db.query.passwordResets.findFirst({
-		where: eq(passwordResets.id, resetPasswordCookie),
-	});
-	return passwordReset?.emailVerified ?? false;
+	return passwordReset.emailVerified !== null;
 });
 
 export const resendPasswordResetVerification = createServerFn({
 	method: "POST",
-})
-	.middleware([languageMiddleware, authMiddleware])
-	.handler(async ({ context }) => {
-		const resetPasswordCookie = getCookie("password_reset");
-		if (!resetPasswordCookie)
-			return { error: "No password reset cookie found" };
+}).handler(async () => {
+	const passwordReset = await validatePasswordResetSession();
+	if ("error" in passwordReset) return passwordReset;
 
-		const passwordReset = await db.query.passwordResets.findFirst({
-			where: eq(passwordResets.id, resetPasswordCookie),
-			with: {
-				user: true,
-			},
-		});
-		if (!passwordReset) return { error: "Invalid code. Please try again." };
-
-		await createAndSendPasswordReset(
-			passwordReset.user.id,
-			passwordReset.user.email,
-		);
-	});
+	await createAndSendPasswordReset(
+		passwordReset.userId,
+		passwordReset.user.email,
+	);
+});
 
 // Other
 

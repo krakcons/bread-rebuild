@@ -77,7 +77,7 @@ function RouteComponent() {
 				})}
 			>
 				<ArrowLeft size={20} />
-				{t.common.back} {t.common.bread}
+				{t.common.back} {t.common.to} {t.common.bread}
 			</Link>
 			<h1>{t.admin.auth.login.title}</h1>
 			<p className="text-sm text-muted-foreground">

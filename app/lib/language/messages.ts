@@ -3,7 +3,8 @@ export const english = {
 	description:
 		"Bread is a directory of food resources in the greater Calgary area.",
 	common: {
-		back: "Back to",
+		back: "Back",
+		to: "to",
 		bread: "Bread",
 		submit: "Submit",
 	},
@@ -74,13 +75,19 @@ export const english = {
 			},
 			verifyEmail: {
 				title: "Verify Email",
-				description: "Please enter the code sent to your email.",
+				description: {
+					email_verification:
+						"Please enter the code sent to your email. ",
+					password_reset:
+						"Please enter the code sent to your email. If you didn't receive it, make sure you entered the correct email.",
+				},
 				form: {
 					code: "Code",
 				},
 				resend: {
 					preface: "Need another code?",
 					link: "Resend Code",
+					success: "Code resent",
 				},
 			},
 			signup: {
@@ -115,7 +122,8 @@ export const french: typeof english = {
 	description:
 		"Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
 	common: {
-		back: "Retour à",
+		back: "Retour",
+		to: "à",
 		bread: "Bread",
 		submit: "Soumettre",
 	},
@@ -187,13 +195,19 @@ export const french: typeof english = {
 			},
 			verifyEmail: {
 				title: "Vérifier votre email",
-				description: "Veuillez entrer le code envoyé à votre email.",
+				description: {
+					email_verification:
+						"Veuillez entrer le code envoyé à votre email.",
+					password_reset:
+						"Veuillez entrer le code envoyé à votre email. Si vous ne l'avez pas reçu, veuillez vérifier votre adresse email.",
+				},
 				form: {
 					code: "Code",
 				},
 				resend: {
 					preface: "Besoin d'un autre code?",
 					link: "Renvoyer le code",
+					success: "Code renvoyé",
 				},
 			},
 			signup: {
