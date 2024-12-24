@@ -1,46 +1,42 @@
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { useStore } from "@tanstack/react-store";
+import { Store } from "@tanstack/store";
 
 type Saved = { id: string; day?: string; seen?: boolean };
 
-const useSaved = create<{
-	saved: Saved[];
-	toggleSaved: (id: string) => void;
-	isSaved: (id: string) => boolean;
-	updateDay: (id: string, day?: string) => void;
-	getDay: (id: string) => string | undefined;
-	resetSeen: () => void;
-}>()(
-	persist(
-		(set, get) => ({
-			saved: [],
-			unseen: [],
-			toggleSaved: (id) => {
-				const isSaved = get().saved.some((s) => s.id === id);
-				set((state) => ({
-					saved: isSaved
-						? state.saved.filter((s) => s.id !== id)
-						: [...state.saved, { id, seen: false }],
-				}));
-			},
-			isSaved: (id) => get().saved.some((s) => s.id === id),
-			updateDay: (id, day) =>
-				set((state) => ({
-					saved: state.saved.map((s) =>
-						s.id === id ? { ...s, day } : s,
-					),
-				})),
-			getDay: (id) => get().saved.find((s) => s.id === id)?.day,
-			resetSeen: () =>
-				set({
-					saved: get().saved.map((s) => ({ ...s, seen: true })),
-				}),
-		}),
-		{
-			name: "saved",
-			storage: createJSONStorage(() => localStorage),
-		},
-	),
+// You can use @tanstack/store outside of React components too!
+export const savedStore = new Store<Saved[]>(
+	typeof window !== "undefined"
+		? JSON.parse(localStorage.getItem("saved-meals") || "[]")
+		: [],
 );
 
-export default useSaved;
+savedStore.subscribe(() => {
+	localStorage.setItem("saved-meals", JSON.stringify(savedStore.state));
+});
+
+export const toggleSaved = (id: string) => {
+	savedStore.setState((saved) => {
+		const isSaved = saved.some((s) => s.id === id);
+		return isSaved
+			? saved.filter((s) => s.id !== id)
+			: [...saved, { id, seen: false }];
+	});
+};
+
+export const updateDay = (id: string, day: string) => {
+	savedStore.setState((saved) =>
+		saved.map((s) => (s.id === id ? { ...s, day } : s)),
+	);
+};
+
+export const resetSeen = () => {
+	savedStore.setState((saved) => saved.map((s) => ({ ...s, seen: true })));
+};
+
+export const useSaved = () => {
+	return useStore(savedStore, (saved) => saved);
+};
+
+export const useSavedResource = (id: string) => {
+	return useStore(savedStore, (saved) => saved.find((s) => s.id === id));
+};

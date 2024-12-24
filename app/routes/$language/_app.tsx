@@ -6,7 +6,7 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/Popover";
 import { getTranslations, setLanguage } from "@/lib/language";
-import useSaved from "@/lib/saved";
+import { useSaved } from "@/lib/saved";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { Bookmark, Menu, Printer } from "lucide-react";
@@ -56,9 +56,9 @@ function LayoutComponent() {
 							<p className="hidden sm:block">
 								{translations.saved.title}
 							</p>
-							{saved.saved.filter((s) => !s.seen).length > 0 && (
+							{saved.filter((s) => !s.seen).length > 0 && (
 								<span className="absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-secondary text-xs text-white">
-									{saved.saved.filter((s) => !s.seen).length}
+									{saved.filter((s) => !s.seen).length}
 								</span>
 							)}
 						</Link>

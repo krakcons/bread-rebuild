@@ -39,6 +39,8 @@ export const english = {
 	transit: "Transit",
 	filters: {
 		title: "Filters",
+		description:
+			"Filter resources by the following options and dietary requirements.",
 		free: "Free",
 		preparationRequired: "Preparation Required",
 		parkingAvailable: "Parking",
@@ -141,6 +143,8 @@ export const french: typeof english = {
 	transit: "Transit",
 	filters: {
 		title: "Filtres",
+		description:
+			"Filtrer les ressources par les options suivantes et les exigences alimentaires.",
 		free: "Gratuit",
 		preparationRequired: "Préparation Requise",
 		parkingAvailable: "Parking",

@@ -11,10 +11,9 @@ import { getMeals } from "@/lib/bread";
 import { days } from "@/lib/hours";
 import { getTranslations, translate } from "@/lib/language";
 import { STYLE } from "@/lib/map";
-import useSaved from "@/lib/saved";
+import { resetSeen, useSaved } from "@/lib/saved";
 import { ResourceType } from "@cords/sdk";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { clientOnly } from "@tanstack/start";
 import { CalendarDays, List, MapIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { Map } from "react-map-gl/maplibre";
@@ -45,14 +44,10 @@ export const Route = createFileRoute("/$language/_app/saved")({
 	loader: async () => await getMeals(),
 });
 
-const map = clientOnly(() => <></>);
-
 function SavedPage() {
 	const { language } = Route.useParams();
-	const saved = useSaved((s) => s.saved);
-	const getDay = useSaved((s) => s.getDay);
-	const resetSeen = useSaved((s) => s.resetSeen);
 	const meals = Route.useLoaderData();
+	const saved = useSaved();
 	const navigate = useNavigate({
 		from: Route.fullPath,
 	});
@@ -60,8 +55,14 @@ function SavedPage() {
 
 	const results = useMemo(() => {
 		return saved
-			.map(({ id, day }) => meals.find((meal) => meal.id === id))
-			.filter(Boolean) as ResourceType[];
+			.map((savedResource) => {
+				const resource = meals.find(
+					(meal) => meal.id === savedResource.id,
+				);
+				if (!resource) return null;
+				return { ...resource, day: savedResource.day };
+			})
+			.filter(Boolean) as (ResourceType & { day?: string })[];
 	}, [saved]);
 
 	useEffect(() => {
@@ -136,14 +137,17 @@ function SavedPage() {
 							{Object.entries(
 								results.reduce(
 									(acc, resource) => {
-										const day = getDay(resource.id);
 										// Group items without a day under "unassigned"
-										const key = day || "unassigned";
+										const key =
+											resource.day || "unassigned";
 										if (!acc[key]) acc[key] = [];
 										acc[key].push(resource);
 										return acc;
 									},
-									{} as Record<string, ResourceType[]>,
+									{} as Record<
+										string,
+										(ResourceType & { day?: string })[]
+									>,
 								),
 							)
 								.sort(([dayA], [dayB]) => {

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/Select";
 import { days } from "@/lib/hours";
 import { getTranslations } from "@/lib/language";
-import useSaved from "@/lib/saved";
+import { toggleSaved, updateDay, useSavedResource } from "@/lib/saved";
 import { cn } from "@/lib/utils";
 import { ResourceType } from "@cords/sdk";
 import { useParams } from "@tanstack/react-router";
@@ -23,7 +23,7 @@ export const ResourceActions = ({
 	resource: ResourceType;
 	children?: React.ReactNode;
 }) => {
-	const saved = useSaved();
+	const saved = useSavedResource(resource.id);
 	const { language } = useParams({
 		from: "/$language",
 	});
@@ -39,33 +39,29 @@ export const ResourceActions = ({
 			{children}
 			<Button
 				onClick={() => {
-					saved.toggleSaved(resource.id);
+					toggleSaved(resource.id);
 				}}
 				className="no-print"
 			>
 				<Bookmark
 					size={18}
 					className={
-						saved.isSaved(resource.id)
-							? "fill-primary text-primary"
-							: "fill-none"
+						saved ? "fill-primary text-primary" : "fill-none"
 					}
 				/>
-				{saved.isSaved(resource.id)
-					? translations.saved.saved
-					: translations.saved.save}
+				{saved ? translations.saved.saved : translations.saved.save}
 			</Button>
-			{saved.isSaved(resource.id) && (
+			{saved && (
 				<Select
-					value={saved.getDay(resource.id) ?? undefined}
+					value={saved.day ?? undefined}
 					onValueChange={(value) => {
-						saved.updateDay(resource.id, value);
+						updateDay(resource.id, value);
 					}}
 				>
 					<SelectTrigger
 						className={cn(
 							"w-auto shrink gap-2",
-							saved.getDay(resource.id) ? "" : "no-print",
+							saved.day ? "" : "no-print",
 						)}
 					>
 						<CalendarDays size={18} />

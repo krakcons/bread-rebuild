@@ -31,7 +31,9 @@
 		"@react-email/components": "^0.0.31",
 		"@tanstack/react-form": "^0.40.4",
 		"@tanstack/react-router": "^1.91.2",
+		"@tanstack/react-store": "^0.6.1",
 		"@tanstack/start": "^1.91.2",
+		"@tanstack/store": "^0.6.0",
 		"@types/pg": "^8.11.10",
 		"@types/zxcvbn": "^4.4.5",
 		"class-variance-authority": "^0.7.1",
@@ -50,9 +52,7 @@
 		"sst": "3.4.21",
 		"tailwind-merge": "^2.5.5",
 		"vinxi": "^0.5.1",
-		"wrangler": "^3.93.0",
 		"zod": "^3.24.1",
-		"zustand": "^5.0.2",
 		"zxcvbn": "^4.4.2"
 	},
 	"devDependencies": {

@@ -41,6 +41,10 @@ export const Route = createRootRouteWithContext<SessionValidationResult>()({
 		],
 	}),
 	component: RootComponent,
+	errorComponent: ({ error }) => {
+		console.error(error);
+		return <div>{error.message}</div>;
+	},
 });
 
 function RootComponent() {

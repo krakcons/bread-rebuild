@@ -2,8 +2,15 @@
 const tenant = "bread";
 const profile = "krak";
 const stageMap = new Map<string, { name: string; domain: string }>([
-	["prod", { name: `${tenant}-prod`, domain: `${tenant}.nuonn.com` }],
+	["prod", { name: `${tenant}-prod`, domain: `${tenant}-prod.nuonn.com` }],
 	["dev", { name: `${tenant}-dev`, domain: `${tenant}-dev.nuonn.com` }],
+	[
+		"billyhawkes",
+		{
+			name: `${tenant}-billyhawkes`,
+			domain: `${tenant}-billyhawkes.nuonn.com`,
+		},
+	],
 ]);
 
 export default $config({
@@ -26,10 +33,7 @@ export default $config({
 		let stage = stageMap.get($app.stage);
 		// Personal stage
 		if (!stage) {
-			stage = {
-				name: `${tenant}-${$app.stage}`,
-				domain: `${tenant}-${$app.stage}.nuonn.com`,
-			};
+			throw new Error(`Stage ${$app.stage} not found`);
 		}
 		const { name, domain } = stage;
 

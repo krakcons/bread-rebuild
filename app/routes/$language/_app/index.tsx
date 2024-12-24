@@ -1,7 +1,14 @@
 import { Resource } from "@/components/Resource";
 import { MapResource } from "@/components/Resource/Map";
 import { Button } from "@/components/ui/Button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/Dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/Dialog";
 import { dietaryOptions as breadDietaryOptions, getMeals } from "@/lib/bread";
 import { getLocalizedField, getTranslations } from "@/lib/language";
 import { STYLE } from "@/lib/map";
@@ -196,73 +203,69 @@ function Home() {
 								</p>
 							</Button>
 						</DialogTrigger>
-						<DialogContent className="max-h-screen overflow-y-auto sm:max-w-lg">
-							<div className="flex flex-col gap-2">
-								<h2 className="text-lg font-medium">
+						<DialogContent className="flex max-h-screen flex-col gap-2 overflow-y-auto sm:max-w-lg">
+							<DialogHeader className="flex flex-col items-start text-left">
+								<DialogTitle>
 									{translations.filters.title}
-								</h2>
-								{Object.entries(filters).map(
-									([name, value]) => (
-										<Button
-											key={name}
-											onClick={() =>
-												navigate({
-													search: (prev) => ({
-														...prev,
-														[name]:
-															!value || undefined,
-													}),
-												})
-											}
-											active={value}
-											className="justify-start"
-										>
-											{filterIcons[name]}
-											{translations.filters[name]}
-										</Button>
-									),
-								)}
-								<h2 className="mt-4 text-lg font-medium">
-									{translations.dietaryOptions}
-								</h2>
-								<div className="flex flex-wrap gap-2">
-									{breadDietaryOptions.map((option) => (
-										<Button
-											key={
-												option[
-													language === "en" ? 0 : 1
-												]
-											}
-											onClick={() =>
-												navigate({
-													search: (prev) => ({
-														...prev,
-														dietaryOptions:
-															dietaryOptions.includes(
-																option[0],
-															)
-																? dietaryOptions.filter(
-																		(o) =>
-																			o !==
-																			option[0],
-																	)
-																: [
-																		...dietaryOptions,
+								</DialogTitle>
+								<DialogDescription>
+									{translations.filters.description}
+								</DialogDescription>
+							</DialogHeader>
+							{Object.entries(filters).map(([name, value]) => (
+								<Button
+									key={name}
+									onClick={() =>
+										navigate({
+											search: (prev) => ({
+												...prev,
+												[name]: !value || undefined,
+											}),
+										})
+									}
+									active={value}
+									className="justify-start"
+								>
+									{filterIcons[name]}
+									{translations.filters[name]}
+								</Button>
+							))}
+							<p className="mt-2 text-lg font-semibold leading-none tracking-tight">
+								{translations.dietaryOptions}
+							</p>
+							<div className="flex flex-wrap gap-2">
+								{breadDietaryOptions.map((option) => (
+									<Button
+										key={option[language === "en" ? 0 : 1]}
+										onClick={() =>
+											navigate({
+												search: (prev) => ({
+													...prev,
+													dietaryOptions:
+														dietaryOptions.includes(
+															option[0],
+														)
+															? dietaryOptions.filter(
+																	(o) =>
+																		o !==
 																		option[0],
-																	],
-													}),
-												})
-											}
-											active={dietaryOptions.includes(
-												option[0],
-											)}
-											className="flex-grow justify-start"
-										>
-											<Utensils size={18} />
-											{option[language === "en" ? 0 : 1]}
-										</Button>
-									))}
-								</div>
+																)
+															: [
+																	...dietaryOptions,
+																	option[0],
+																],
+												}),
+											})
+										}
+										active={dietaryOptions.includes(
+											option[0],
+										)}
+										className="flex-grow justify-start"
+									>
+										<Utensils size={18} />
+										{option[language === "en" ? 0 : 1]}
+									</Button>
+								))}
 							</div>
 						</DialogContent>
 					</Dialog>
