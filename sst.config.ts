@@ -42,6 +42,7 @@ export default $config({
 		const rds = sst.aws.Postgres.get("RDS", {
 			id: "krak-prod-rdsinstance",
 		});
+		const redis = sst.aws.Redis.get("Redis", "krak-prod-redis");
 
 		const environment = {
 			TENANT_STAGE_NAME: name,
@@ -52,7 +53,7 @@ export default $config({
 			sender: domain,
 		});
 		new sst.aws.TanstackStart("Web", {
-			link: [rds, email],
+			link: [rds, email, redis],
 			domain,
 			vpc,
 			environment,

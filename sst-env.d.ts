@@ -19,6 +19,13 @@ declare module "sst" {
       "type": "sst.aws.Postgres"
       "username": string
     }
+    "Redis": {
+      "host": string
+      "password": string
+      "port": number
+      "type": "sst.aws.Redis"
+      "username": string
+    }
     "Vpc": {
       "bastion": string
       "type": "sst.aws.Vpc"

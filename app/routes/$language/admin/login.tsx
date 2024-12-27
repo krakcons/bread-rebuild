@@ -160,6 +160,7 @@ function RouteComponent() {
 											size: "auto",
 										}),
 									)}
+									preload={false}
 								>
 									{t.admin.auth.login.forgotPassword}
 								</Link>
