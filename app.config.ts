@@ -1,8 +1,7 @@
 import { defineConfig } from "@tanstack/start/config";
-import { App } from "vinxi";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 
-const tanstackApp = defineConfig({
+export default defineConfig({
 	server: {
 		preset: "aws-lambda",
 	},
@@ -14,20 +13,3 @@ const tanstackApp = defineConfig({
 		],
 	},
 });
-
-const routers = tanstackApp.config.routers.map((r) => {
-	return {
-		...r,
-		middleware: r.target === "server" ? "./app/middleware.tsx" : undefined,
-	};
-});
-
-const app: App = {
-	...tanstackApp,
-	config: {
-		...tanstackApp.config,
-		routers: routers,
-	},
-};
-
-export default app;

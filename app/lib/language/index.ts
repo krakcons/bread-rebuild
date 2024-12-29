@@ -1,7 +1,11 @@
 import { createServerFn } from "@tanstack/start";
-import { getCookie, getEvent, getHeader, setCookie } from "vinxi/http";
+import { getCookie, getHeader, setCookie } from "vinxi/http";
 import { z } from "zod";
 import { english, french } from "./messages";
+
+export const languages = ["en", "fr"];
+export const LanguageSchema = z.enum(["en", "fr"]);
+export type Language = z.infer<typeof LanguageSchema>;
 
 export const getTranslations = (language: string) => {
 	return language === "fr" ? french : english;
@@ -10,16 +14,13 @@ export const getTranslations = (language: string) => {
 export const getLanguage = createServerFn({
 	method: "GET",
 }).handler(() => {
-	const event = getEvent();
-	const language = getCookie(event, "language");
+	const language = getCookie("language");
 	if (language) {
 		return language;
 	} else {
-		const acceptLanguage = getHeader(event, "accept-language")?.split(
-			",",
-		)[0];
+		const acceptLanguage = getHeader("accept-language")?.split(",")[0];
 		const language = acceptLanguage?.startsWith("fr") ? "fr" : "en";
-		setCookie(event, "language", language);
+		setCookie("language", language);
 		return language;
 	}
 });
@@ -27,7 +28,7 @@ export const getLanguage = createServerFn({
 export const setLanguage = createServerFn({
 	method: "POST",
 })
-	.validator(z.enum(["en", "fr"]).optional().default("en"))
+	.validator(LanguageSchema)
 	.handler(({ data: language }) => {
 		setCookie("language", language);
 	});

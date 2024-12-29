@@ -1,8 +1,7 @@
 import { getLanguage } from "@/lib/language";
-import { createMiddleware, registerGlobalMiddleware } from "@tanstack/start";
-import { getCookie, getRequestIP, setResponseHeader } from "vinxi/http";
+import { createMiddleware } from "@tanstack/start";
+import { getCookie } from "vinxi/http";
 import { validateSessionToken } from "./auth";
-import { redis } from "./redis";
 
 export const languageMiddleware = createMiddleware().server(
 	async ({ next }) => {
@@ -44,61 +43,3 @@ export const protectedMiddleware = createMiddleware()
 			},
 		});
 	});
-
-const rateLimitByKey = async (
-	key: string,
-	{
-		limit,
-		window,
-	}: {
-		limit: number;
-		window: number;
-	},
-) => {
-	const result = await redis.get(key);
-
-	if (result === null) {
-		await redis.setex(key, window, 0);
-	}
-
-	const count = await redis.incr(key);
-	if (count > limit) {
-		throw new Error("Too many requests");
-	}
-
-	const time = await redis.ttl(key);
-
-	setResponseHeader("X-RateLimit-Remaining", limit - count);
-	setResponseHeader("X-RateLimit-Limit", limit);
-	setResponseHeader("X-RateLimit-Reset", time);
-};
-
-export const rateLimitMiddleware = ({
-	limit,
-	window,
-}: {
-	limit: number;
-	window: number;
-}) => {
-	return createMiddleware()
-		.middleware([authMiddleware])
-		.server(async ({ next, context }) => {
-			if (context.user) {
-				await rateLimitByKey(context.user.id, { limit, window });
-			} else {
-				const ip = getRequestIP();
-
-				if (!ip) {
-					throw new Error("IP not found");
-				}
-
-				await rateLimitByKey(ip, { limit, window });
-			}
-
-			return next();
-		});
-};
-
-registerGlobalMiddleware({
-	middleware: [rateLimitMiddleware({ limit: 100, window: 60 })],
-});

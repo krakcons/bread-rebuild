@@ -1,8 +1,10 @@
 import globalStyles from "@/index.css?url";
+import { getLanguage, languages, setLanguage } from "@/lib/language";
 import { SessionValidationResult } from "@/server/auth";
 import {
 	createRootRouteWithContext,
 	Outlet,
+	redirect,
 	ScrollRestoration,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
@@ -44,6 +46,17 @@ export const Route = createRootRouteWithContext<SessionValidationResult>()({
 	errorComponent: ({ error }) => {
 		console.error(error);
 		return <div>{error.message}</div>;
+	},
+	beforeLoad: async ({ location }) => {
+		let language = location.pathname.split("/")[1];
+		if (!languages.includes(language)) {
+			language = await getLanguage();
+			throw redirect({
+				href: `/${language}${location.pathname}`,
+			});
+		} else {
+			await setLanguage({ data: language as "fr" | "en" });
+		}
 	},
 });
 

@@ -13,7 +13,6 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
 import { Route as LanguageAppImport } from './routes/$language/_app'
 import { Route as LanguageAppIndexImport } from './routes/$language/_app/index'
 import { Route as LanguageAdminVerifyEmailImport } from './routes/$language/admin/verify-email'
@@ -37,12 +36,6 @@ const LanguageAdminImport = createFileRoute('/$language/admin')()
 const LanguageRoute = LanguageImport.update({
   id: '/$language',
   path: '/$language',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -128,13 +121,6 @@ const LanguageAppResourcesIdRoute = LanguageAppResourcesIdImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/$language': {
       id: '/$language'
       path: '/$language'
@@ -304,7 +290,6 @@ const LanguageRouteWithChildren = LanguageRoute._addFileChildren(
 )
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/$language': typeof LanguageAppRouteWithChildren
   '/$language/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
   '/$language/saved': typeof LanguageAppSavedRoute
@@ -320,7 +305,6 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/$language': typeof LanguageAppIndexRoute
   '/$language/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
   '/$language/saved': typeof LanguageAppSavedRoute
@@ -335,7 +319,6 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
   '/$language': typeof LanguageRouteWithChildren
   '/$language/_app': typeof LanguageAppRouteWithChildren
   '/$language/_app/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
@@ -355,7 +338,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/$language'
     | '/$language/privacy-policy'
     | '/$language/saved'
@@ -370,7 +352,6 @@ export interface FileRouteTypes {
     | '/$language/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/$language'
     | '/$language/privacy-policy'
     | '/$language/saved'
@@ -383,7 +364,6 @@ export interface FileRouteTypes {
     | '/$language/resources/$id'
   id:
     | '__root__'
-    | '/'
     | '/$language'
     | '/$language/_app'
     | '/$language/_app/privacy-policy'
@@ -402,12 +382,10 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   LanguageRoute: typeof LanguageRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   LanguageRoute: LanguageRouteWithChildren,
 }
 
@@ -421,12 +399,8 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
         "/$language"
       ]
-    },
-    "/": {
-      "filePath": "index.tsx"
     },
     "/$language": {
       "filePath": "$language",

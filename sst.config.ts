@@ -26,6 +26,7 @@ export default $config({
 					// Under main account
 					profile,
 				},
+				cloudflare: true,
 			},
 		};
 	},
@@ -42,19 +43,26 @@ export default $config({
 		const rds = sst.aws.Postgres.get("RDS", {
 			id: "krak-prod-rdsinstance",
 		});
-		const redis = sst.aws.Redis.get("Redis", "krak-prod-redis");
 
 		const environment = {
 			TENANT_STAGE_NAME: name,
 		};
 
+		const dns = sst.cloudflare.dns({
+			proxy: true,
+		});
+
 		// Per-tenant resources
 		const email = new sst.aws.Email("Email", {
 			sender: domain,
+			dns,
 		});
 		new sst.aws.TanstackStart("Web", {
-			link: [rds, email, redis],
-			domain,
+			link: [rds, email],
+			domain: {
+				name: domain,
+				dns,
+			},
 			vpc,
 			environment,
 		});

@@ -51,12 +51,10 @@ const filterIcons = {
 export const Route = createFileRoute("/$language/_app/")({
 	component: Home,
 	validateSearch: SearchParamsSchema,
-	beforeLoad: async ({ search }) => {
-		return search;
-	},
+	loaderDeps: ({ search }) => search,
 	loader: async ({
 		params: { language },
-		context: { query, tab, dietaryOptions = [], ...filters },
+		deps: { query, tab, dietaryOptions = [], ...filters },
 	}) => {
 		const meals = await getMeals();
 		return meals

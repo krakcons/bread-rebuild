@@ -5,7 +5,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/Popover";
-import { getTranslations, setLanguage } from "@/lib/language";
+import { getTranslations } from "@/lib/language";
 import { useSaved } from "@/lib/saved";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
@@ -14,9 +14,6 @@ import { Bookmark, Menu, Printer } from "lucide-react";
 export const Route = createFileRoute("/$language/_app")({
 	component: LayoutComponent,
 	notFoundComponent: NotFound,
-	beforeLoad: ({ params }) => {
-		setLanguage({ data: params.language as "en" | "fr" });
-	},
 });
 
 function LayoutComponent() {
