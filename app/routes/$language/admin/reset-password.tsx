@@ -1,6 +1,7 @@
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { Button, buttonVariants } from "@/components/ui/Button";
-import { Error, FieldError } from "@/components/ui/Error";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { FieldError } from "@/components/ui/FieldError";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { getTranslations } from "@/lib/language";
@@ -12,12 +13,13 @@ import {
 	ResetPasswordSchema,
 } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/$language/admin/reset-password")({
 	component: RouteComponent,
+	errorComponent: ErrorComponent,
 	beforeLoad: async () => {
 		const verified = await isPasswordResetVerified();
 		return { verified };
@@ -85,7 +87,9 @@ const EmailForm = () => {
 				}}
 			>
 				<div className="flex flex-col gap-4">
-					{serverError && <Error text={serverError as string} />}
+					{serverError && (
+						<ErrorMessage text={serverError as string} />
+					)}
 					<form.Field
 						name="email"
 						children={(field) => (
@@ -182,7 +186,9 @@ const PasswordForm = () => {
 				}}
 			>
 				<div className="flex flex-col gap-4">
-					{serverError && <Error text={serverError as string} />}
+					{serverError && (
+						<ErrorMessage text={serverError as string} />
+					)}
 					<form.Field
 						name="password"
 						children={(field) => (

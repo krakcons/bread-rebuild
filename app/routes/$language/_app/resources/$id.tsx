@@ -6,7 +6,11 @@ import { getLocalizedField, getTranslations, translate } from "@/lib/language";
 import { STYLE } from "@/lib/map";
 import { cn } from "@/lib/utils";
 import { formatServiceAddress } from "@cords/sdk";
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	notFound,
+} from "@tanstack/react-router";
 import {
 	Accessibility,
 	Bus,
@@ -24,6 +28,7 @@ import { Map, Marker } from "react-map-gl/maplibre";
 export const Route = createFileRoute("/$language/_app/resources/$id")({
 	component: ResourceDetail,
 	notFoundComponent: NotFound,
+	errorComponent: ErrorComponent,
 	loader: async ({ params: { id } }) => {
 		const resource = await getMeal({ data: id });
 		if (!resource) throw notFound();

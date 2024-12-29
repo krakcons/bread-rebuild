@@ -1,17 +1,24 @@
 import { Button, buttonVariants } from "@/components/ui/Button";
-import { Error, FieldError } from "@/components/ui/Error";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { FieldError } from "@/components/ui/FieldError";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { getTranslations } from "@/lib/language";
 import { cn } from "@/lib/utils";
 import { login, LoginSchema } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	Link,
+	redirect,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/$language/admin/login")({
 	component: RouteComponent,
+	errorComponent: ErrorComponent,
 	beforeLoad: async ({ context, params }) => {
 		if (context.user !== null) {
 			if (context.user.emailVerified !== null) {
@@ -103,7 +110,9 @@ function RouteComponent() {
 				}}
 			>
 				<div className="flex flex-col gap-4">
-					{serverError && <Error text={serverError as string} />}
+					{serverError && (
+						<ErrorMessage text={serverError as string} />
+					)}
 					<form.Field
 						name="email"
 						children={(field) => (

@@ -13,7 +13,11 @@ import { getTranslations, translate } from "@/lib/language";
 import { STYLE } from "@/lib/map";
 import { resetSeen, useSaved } from "@/lib/saved";
 import { ResourceType } from "@cords/sdk";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	useNavigate,
+} from "@tanstack/react-router";
 import { CalendarDays, List, MapIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { Map } from "react-map-gl/maplibre";
@@ -26,6 +30,7 @@ const SearchParamsSchema = z.object({
 
 export const Route = createFileRoute("/$language/_app/saved")({
 	component: SavedPage,
+	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
 	head: ({ params: { language } }) => {
 		const translations = getTranslations(language);

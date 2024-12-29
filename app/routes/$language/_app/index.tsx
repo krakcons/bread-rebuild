@@ -12,7 +12,7 @@ import {
 import { dietaryOptions as breadDietaryOptions, getMeals } from "@/lib/bread";
 import { getLocalizedField, getTranslations } from "@/lib/language";
 import { STYLE } from "@/lib/map";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import {
 	Accessibility,
 	Bus,
@@ -50,6 +50,7 @@ const filterIcons = {
 
 export const Route = createFileRoute("/$language/_app/")({
 	component: Home,
+	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
 	loaderDeps: ({ search }) => search,
 	loader: async ({

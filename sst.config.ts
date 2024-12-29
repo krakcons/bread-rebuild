@@ -32,7 +32,6 @@ export default $config({
 	},
 	async run() {
 		let stage = stageMap.get($app.stage);
-		// Personal stage
 		if (!stage) {
 			throw new Error(`Stage ${$app.stage} not found`);
 		}

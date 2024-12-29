@@ -3,6 +3,7 @@ import { getLanguage, languages, setLanguage } from "@/lib/language";
 import { SessionValidationResult } from "@/server/auth";
 import {
 	createRootRouteWithContext,
+	ErrorComponent,
 	Outlet,
 	redirect,
 	ScrollRestoration,
@@ -43,10 +44,7 @@ export const Route = createRootRouteWithContext<SessionValidationResult>()({
 		],
 	}),
 	component: RootComponent,
-	errorComponent: ({ error }) => {
-		console.error(error);
-		return <div>{error.message}</div>;
-	},
+	errorComponent: ErrorComponent,
 	beforeLoad: async ({ location }) => {
 		let language = location.pathname.split("/")[1];
 		if (!languages.includes(language)) {

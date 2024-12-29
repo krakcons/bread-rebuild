@@ -8,11 +8,17 @@ import {
 import { getTranslations } from "@/lib/language";
 import { useSaved } from "@/lib/saved";
 import { cn } from "@/lib/utils";
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	Link,
+	Outlet,
+} from "@tanstack/react-router";
 import { Bookmark, Menu, Printer } from "lucide-react";
 
 export const Route = createFileRoute("/$language/_app")({
 	component: LayoutComponent,
+	errorComponent: ErrorComponent,
 	notFoundComponent: NotFound,
 });
 

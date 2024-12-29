@@ -1,8 +1,9 @@
 import { getTranslations } from "@/lib/language";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/$language/_app/privacy-policy")({
 	component: RouteComponent,
+	errorComponent: ErrorComponent,
 	head: ({ params: { language } }) => {
 		const translations = getTranslations(language);
 		return {

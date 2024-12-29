@@ -1,8 +1,14 @@
 import { getAuth, sendVerificationEmail } from "@/server/auth/actions";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	Outlet,
+	redirect,
+} from "@tanstack/react-router";
 
 export const Route = createFileRoute("/$language/admin/_admin")({
 	component: RouteComponent,
+	errorComponent: ErrorComponent,
 	beforeLoad: async ({ params }) => {
 		const { user, session } = await getAuth();
 		if (user === null) {

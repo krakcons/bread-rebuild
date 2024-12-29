@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
-import { Error, FieldError } from "@/components/ui/Error";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { FieldError } from "@/components/ui/FieldError";
 import {
 	InputOTP,
 	InputOTPGroup,
@@ -15,7 +16,11 @@ import {
 	verifyPasswordResetEmail,
 } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	useRouter,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -24,6 +29,7 @@ import { z } from "zod";
 
 export const Route = createFileRoute("/$language/admin/verify-email")({
 	component: RouteComponent,
+	errorComponent: ErrorComponent,
 	validateSearch: z.object({
 		type: z.enum(["email_verification", "password_reset"]).optional(),
 	}),
@@ -110,7 +116,9 @@ function RouteComponent() {
 				}}
 			>
 				<div className="flex flex-col gap-4">
-					{serverError && <Error text={serverError as string} />}
+					{serverError && (
+						<ErrorMessage text={serverError as string} />
+					)}
 					<form.Field
 						name="code"
 						children={(field) => (
