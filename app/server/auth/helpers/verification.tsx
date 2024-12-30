@@ -1,5 +1,5 @@
 import { db } from "@/server/db";
-import { emailVerifications, passwordResets } from "@/server/db/schema";
+import { emailVerifications, passwordResets } from "@/server/db/auth/schema";
 import { sendEmail } from "@/server/email";
 import { eq } from "drizzle-orm";
 import { setCookie } from "vinxi/http";

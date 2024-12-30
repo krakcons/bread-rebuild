@@ -1,4 +1,5 @@
 import { formatAddress } from "@/lib/address";
+import { getTranslations } from "@/lib/language";
 import { FullResourceType } from "@/server/types";
 import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall } from "lucide-react";
@@ -8,6 +9,7 @@ export const Resource = ({ resource }: { resource: FullResourceType }) => {
 	const { language } = useParams({
 		from: "/$language",
 	});
+	const t = getTranslations(language);
 
 	return (
 		<Link
@@ -18,9 +20,7 @@ export const Resource = ({ resource }: { resource: FullResourceType }) => {
 			}}
 			className="flex flex-col items-start gap-2 rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
 		>
-			{/* <p className="text-xl font-semibold">
-				{getLocalizedA(resource.name, language)}
-			</p> */}
+			<p className="text-xl font-semibold">{resource.name}</p>
 			{/* Address section */}
 			{resource.street1 && (
 				<div className="flex items-center gap-2 text-muted-foreground">
@@ -39,10 +39,10 @@ export const Resource = ({ resource }: { resource: FullResourceType }) => {
 				</div>
 			))}
 			{/* Fees section */}
-			{resource.body.fees && (
+			{resource.free && (
 				<div className="mb-2 flex items-center gap-2 text-muted-foreground">
 					<DollarSign size={20} />
-					{resource.body.fees}
+					{t.free}
 				</div>
 			)}
 			<ResourceActions resource={resource} />

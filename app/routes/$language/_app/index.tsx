@@ -9,22 +9,11 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/Dialog";
-import { getDietaryOptions } from "@/lib/bread";
-import { getLocalizedArray, getTranslations } from "@/lib/language";
+import { getTranslations } from "@/lib/language";
 import { STYLE } from "@/lib/map";
-import { db } from "@/server/db";
-import {
-	dietaryOptions,
-	dietaryOptionsTranslations,
-	providers,
-	providerTranslations,
-	resources,
-} from "@/server/db/schema";
-import { languageMiddleware } from "@/server/middleware";
-import { FullResourceType } from "@/server/types";
+import { getDietaryOptionsFn } from "@/server/actions/dietary";
+import { searchFn, SearchParamsSchema } from "@/server/actions/resource";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
-import { and, eq, exists, ilike, inArray } from "drizzle-orm";
 import {
 	Accessibility,
 	Bus,
@@ -38,18 +27,6 @@ import {
 	UtensilsCrossed,
 } from "lucide-react";
 import { Map } from "react-map-gl/maplibre";
-import { z } from "zod";
-
-const SearchParamsSchema = z.object({
-	query: z.string().optional(),
-	tab: z.enum(["map", "list"]).optional(),
-	free: z.boolean().optional(),
-	preparationRequired: z.boolean().optional(),
-	parkingAvailable: z.boolean().optional(),
-	transitAvailable: z.boolean().optional(),
-	wheelchairAccessible: z.boolean().optional(),
-	dietaryOptionsIds: z.string().array().optional(),
-});
 
 const filterIcons = {
 	free: <DollarSign size={18} />,
@@ -60,91 +37,15 @@ const filterIcons = {
 	dietaryOptionsIds: <Utensils size={18} />,
 };
 
-const searchFn = createServerFn()
-	.middleware([languageMiddleware])
-	.validator(SearchParamsSchema)
-	.handler(
-		async ({
-			context: { language },
-			data: { query, dietaryOptionsIds = [], ...filters },
-		}) => {
-			const meals = await db.query.resources.findMany({
-				where: and(
-					query
-						? exists(
-								db
-									.select()
-									.from(providers)
-									.fullJoin(
-										providerTranslations,
-										eq(
-											providers.id,
-											providerTranslations.providerId,
-										),
-									)
-									.where(
-										ilike(
-											providerTranslations.name,
-											`%${query}%`,
-										),
-									),
-							)
-						: undefined,
-					filters.free ? eq(resources.free, true) : undefined,
-					filters.preparationRequired
-						? eq(resources.preparationRequired, true)
-						: undefined,
-					filters.parkingAvailable
-						? eq(resources.parkingAvailable, true)
-						: undefined,
-					filters.transitAvailable
-						? eq(resources.transitAvailable, true)
-						: undefined,
-					filters.wheelchairAccessible
-						? eq(resources.wheelchairAccessible, true)
-						: undefined,
-					dietaryOptionsIds.length > 0
-						? exists(
-								db
-									.select()
-									.from(dietaryOptions)
-									.fullJoin(
-										dietaryOptionsTranslations,
-										eq(
-											dietaryOptions.id,
-											dietaryOptionsTranslations.dietaryOptionId,
-										),
-									)
-									.where(
-										inArray(
-											dietaryOptionsTranslations.dietaryOptionId,
-											dietaryOptionsIds,
-										),
-									),
-							)
-						: undefined,
-				),
-				with: {
-					bodyTranslations: true,
-					phoneNumbers: true,
-				},
-			});
-			return meals.map((meal) => ({
-				...meal,
-				body: getLocalizedArray(meal.bodyTranslations, language),
-			})) satisfies FullResourceType[];
-		},
-	);
-
 export const Route = createFileRoute("/$language/_app/")({
 	component: Home,
 	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
 	loaderDeps: ({ search }) => search,
-	loader: async ({ params: { language }, deps }) => {
-		const meals = await searchFn({ data: deps });
-		const dietaryOptions = await getDietaryOptions();
-		return { meals, dietaryOptions };
+	loader: async ({ deps }) => {
+		const resources = await searchFn({ data: deps });
+		const dietaryOptions = await getDietaryOptionsFn();
+		return { resources, dietaryOptions };
 	},
 	head: ({ params: { language } }) => {
 		const translations = getTranslations(language);
@@ -175,7 +76,7 @@ function Home() {
 		wheelchairAccessible = false,
 		dietaryOptionsIds = [],
 	} = Route.useSearch();
-	const { meals, dietaryOptions } = Route.useLoaderData();
+	const { resources, dietaryOptions } = Route.useLoaderData();
 	const translations = getTranslations(language);
 
 	const filters: Record<string, boolean> = {
@@ -278,8 +179,16 @@ function Home() {
 									active={value}
 									className="justify-start"
 								>
-									{filterIcons[name]}
-									{translations.filters[name]}
+									{
+										filterIcons[
+											name as keyof typeof filterIcons
+										]
+									}
+									{
+										translations.filters[
+											name as keyof typeof translations.filters
+										]
+									}
 								</Button>
 							))}
 							<p className="mt-2 text-lg font-semibold leading-none tracking-tight">
@@ -288,29 +197,29 @@ function Home() {
 							<div className="flex flex-wrap gap-2">
 								{dietaryOptions.map((option) => (
 									<Button
-										key={option[language === "en" ? 0 : 1]}
+										key={option.id}
 										onClick={() =>
 											navigate({
 												search: (prev) => ({
 													...prev,
 													dietaryOptionsIds:
 														dietaryOptionsIds.includes(
-															option[0],
+															option.id,
 														)
 															? dietaryOptionsIds.filter(
 																	(o) =>
 																		o !==
-																		option[0],
+																		option.id,
 																)
 															: [
 																	...dietaryOptionsIds,
-																	option[0],
+																	option.id,
 																],
 												}),
 											})
 										}
 										active={dietaryOptionsIds.includes(
-											option[0],
+											option.id,
 										)}
 										className="flex-grow justify-start"
 									>
@@ -332,7 +241,7 @@ function Home() {
 			{tab === "list" && (
 				<>
 					<div className="flex flex-col gap-3">
-						{meals.map((resource) => (
+						{resources.map((resource) => (
 							<Resource key={resource.id} resource={resource} />
 						))}
 					</div>
@@ -349,7 +258,7 @@ function Home() {
 						style={{ width: "100%", height: "80vh" }}
 						mapStyle={STYLE}
 					>
-						{meals.map((resource) => (
+						{resources.map((resource) => (
 							<MapResource
 								key={resource.id}
 								resource={resource}

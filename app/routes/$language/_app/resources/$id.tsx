@@ -1,11 +1,11 @@
 import { NotFound } from "@/components/NotFound";
 import { ResourceActions } from "@/components/Resource/Actions";
-import { getMeal } from "@/lib/bread";
+import { formatAddress } from "@/lib/address";
 import { useHours } from "@/lib/hours";
-import { getLocalizedField, getTranslations, translate } from "@/lib/language";
+import { getTranslations, translate } from "@/lib/language";
 import { STYLE } from "@/lib/map";
 import { cn } from "@/lib/utils";
-import { formatServiceAddress } from "@cords/sdk";
+import { getResourceFn } from "@/server/actions/resource";
 import {
 	createFileRoute,
 	ErrorComponent,
@@ -30,24 +30,22 @@ export const Route = createFileRoute("/$language/_app/resources/$id")({
 	notFoundComponent: NotFound,
 	errorComponent: ErrorComponent,
 	loader: async ({ params: { id } }) => {
-		const resource = await getMeal({ data: id });
+		const resource = await getResourceFn({ data: { id } });
 		if (!resource) throw notFound();
 		return resource;
 	},
-	head: ({ loaderData, params: { language } }) => {
+	head: ({ loaderData }) => {
 		if (!loaderData) return {};
 		const description =
-			formatServiceAddress(loaderData.address) +
+			formatAddress(loaderData) +
 			", " +
 			loaderData.phoneNumbers.map((phone) => phone.phone).join(", ") +
 			", " +
-			Object.values(getLocalizedField(loaderData.body, language) || {})
-				.join(", ")
-				.slice(0, 155);
+			Object.values(loaderData.body).join(", ").slice(0, 155);
 		return {
 			meta: [
 				{
-					title: getLocalizedField(loaderData.name, language) || "",
+					title: loaderData.name,
 				},
 				{
 					name: "description",
@@ -64,7 +62,7 @@ const Contact = ({
 	icon,
 }: {
 	label: string;
-	value: string;
+	value: string | null;
 	icon: React.ReactNode;
 }) => {
 	return (
@@ -74,7 +72,7 @@ const Contact = ({
 			</div>
 			<div>
 				<p className="mb-1 font-medium">{label}</p>
-				<p className="text-gray-600">{value}</p>
+				<p className="text-gray-600">{value || "-"}</p>
 			</div>
 		</div>
 	);
@@ -83,13 +81,9 @@ const Contact = ({
 function ResourceDetail() {
 	const { language } = Route.useParams();
 	const resource = Route.useLoaderData();
-	const translations = getTranslations(language);
+	const t = getTranslations(language);
 
-	console.log(getLocalizedField(resource.body, language)?.hours);
-
-	const hours = useHours(
-		getLocalizedField(resource.body, language)?.hours || "",
-	);
+	const hours = useHours(resource.body.hours || "");
 
 	const todaysDayOfWeek = new Date().toLocaleDateString("en-US", {
 		weekday: "short",
@@ -98,25 +92,23 @@ function ResourceDetail() {
 	return (
 		<div className="mx-auto flex max-w-3xl flex-col gap-4 py-8">
 			{/* Header */}
-			<h1 className="text-3xl font-bold">
-				{getLocalizedField(resource.name, language)}
-			</h1>
+			<h1 className="text-3xl font-bold">{resource.name}</h1>
 			<ResourceActions resource={resource} />
 			<div className="flex flex-col gap-3">
 				{/* Map */}
 				<div className="overflow-hidden rounded-lg border">
 					<Map
 						initialViewState={{
-							longitude: resource.address.lng!,
-							latitude: resource.address.lat!,
+							longitude: resource.lng!,
+							latitude: resource.lat!,
 							zoom: 14,
 						}}
 						style={{ width: "100%", height: 300 }}
 						mapStyle={STYLE} // Use the same STYLE object from your index page
 					>
 						<Marker
-							latitude={resource.address.lat!}
-							longitude={resource.address.lng!}
+							latitude={resource.lat!}
+							longitude={resource.lng!}
 							anchor="bottom"
 						>
 							<div className="rounded-full bg-white p-2 shadow-sm">
@@ -126,21 +118,19 @@ function ResourceDetail() {
 					</Map>
 				</div>
 				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
-					<h2 className="mb-4 text-xl font-bold">
-						{translations.contact}
-					</h2>
+					<h2 className="mb-4 text-xl font-bold">{t.contact}</h2>
 					{/* Address */}
 					<Contact
-						label={translations.address}
-						value={formatServiceAddress(resource.address)}
+						label={t.address}
+						value={formatAddress(resource)}
 						icon={<MapPin size={20} className="text-gray-500" />}
 					/>
 
 					{/* Email */}
-					{getLocalizedField(resource.email, language) && (
+					{resource.email && (
 						<Contact
-							label={translations.email}
-							value={getLocalizedField(resource.email, language)!}
+							label={t.email}
+							value={resource.email}
 							icon={<Mail size={20} className="text-gray-500" />}
 						/>
 					)}
@@ -150,7 +140,7 @@ function ResourceDetail() {
 						resource.phoneNumbers.map((phone) => (
 							<Contact
 								key={phone.phone}
-								label={translations.phoneTypes[phone.type]}
+								label={phone.type ?? t.phoneTypes.phone}
 								value={resource.phoneNumbers
 									.map((phone) => phone.phone)
 									.join(", ")}
@@ -165,33 +155,23 @@ function ResourceDetail() {
 				</div>
 				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 					<h2 className="mb-4 text-xl font-bold">
-						{translations.additionalInfo}
+						{t.additionalInfo}
 					</h2>{" "}
 					{/* Dietary Options */}
-					{getLocalizedField(resource.body, language)
-						?.dietaryOptions && (
+					{resource.dietaryOptions.length > 0 && (
 						<Contact
-							label={translations.dietaryOptions}
-							value={
-								getLocalizedField(
-									resource.body,
-									language,
-								)?.dietaryOptions?.join(", ") || ""
-							}
+							label={t.dietaryOptions}
+							value={resource.dietaryOptions.join(", ") || ""}
 							icon={
 								<Utensils size={20} className="text-gray-500" />
 							}
 						/>
 					)}
 					{/* Accessibility */}
-					{getLocalizedField(resource.body, language)
-						?.accessibility && (
+					{resource.body.accessibility && (
 						<Contact
-							label={translations.accessibility}
-							value={
-								getLocalizedField(resource.body, language)!
-									.accessibility
-							}
+							label={t.accessibility}
+							value={resource.body.accessibility}
 							icon={
 								<Accessibility
 									size={20}
@@ -201,38 +181,26 @@ function ResourceDetail() {
 						/>
 					)}
 					{/* Application Process */}
-					{getLocalizedField(resource.body, language)
-						?.applicationProcess && (
+					{resource.body.applicationProcess && (
 						<Contact
-							label={translations.applicationProcess}
-							value={
-								getLocalizedField(resource.body, language)!
-									.applicationProcess
-							}
+							label={t.applicationProcess}
+							value={resource.body.applicationProcess}
 							icon={<File size={20} className="text-gray-500" />}
 						/>
 					)}
 					{/* Parking */}
-					{getLocalizedField(resource.body, language)
-						?.parkingAvailable && (
+					{resource.parkingAvailable && (
 						<Contact
-							label={translations.parking}
-							value={
-								getLocalizedField(resource.body, language)!
-									.parkingNotes!
-							}
+							label={t.parking}
+							value={resource.body.parking}
 							icon={<Car size={20} className="text-gray-500" />}
 						/>
 					)}
 					{/* Preparation Required */}
-					{getLocalizedField(resource.body, language)
-						?.preparationRequired! && (
+					{resource.preparationRequired && (
 						<Contact
-							label={translations.preparationRequired}
-							value={
-								getLocalizedField(resource.body, language)!
-									.preparationNotes!
-							}
+							label={t.preparationRequired}
+							value={resource.body.preparation}
 							icon={
 								<UtensilsCrossed
 									size={20}
@@ -242,33 +210,18 @@ function ResourceDetail() {
 						/>
 					)}
 					{/* Transit */}
-					{getLocalizedField(resource.body, language)
-						?.transitStop && (
+					{resource.transitAvailable && (
 						<Contact
-							label={translations.transit}
-							value={
-								getLocalizedField(resource.body, language)!
-									.transitStop!
-							}
+							label={t.transit}
+							value={resource.body.transit}
 							icon={<Bus size={20} className="text-gray-500" />}
 						/>
 					)}
 					{/* Fees */}
-					{getLocalizedField(resource.body, language)?.fees && (
+					{resource.body.fees && (
 						<Contact
-							label={translations.fees}
-							value={
-								getLocalizedField(resource.body, language)!
-									.fees +
-								(getLocalizedField(resource.body, language)!
-									.costNotes
-									? ". " +
-										getLocalizedField(
-											resource.body,
-											language,
-										)!.costNotes
-									: "")
-							}
+							label={t.fees}
+							value={resource.body.fees}
 							icon={
 								<DollarSign
 									size={20}
@@ -280,9 +233,7 @@ function ResourceDetail() {
 				</div>
 				{hours.length > 0 && (
 					<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
-						<h2 className="mb-4 text-xl font-bold">
-							{translations.hours}
-						</h2>
+						<h2 className="mb-4 text-xl font-bold">{t.hours}</h2>
 						{/* Hours */}
 						{hours &&
 							hours.map((hour) => (

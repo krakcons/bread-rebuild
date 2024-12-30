@@ -6,7 +6,7 @@ import {
 } from "@oslojs/encoding";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { sessions, users, type Session, type User } from "../db/schema";
+import { sessions, users, type Session, type User } from "../db/auth/schema";
 
 const random: RandomReader = {
 	read(bytes) {

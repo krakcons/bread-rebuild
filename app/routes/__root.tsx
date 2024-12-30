@@ -2,6 +2,7 @@ import globalStyles from "@/index.css?url";
 import { languages } from "@/lib/language";
 import { getLanguage, setLanguage } from "@/lib/language/actions";
 import { SessionValidationResult } from "@/server/auth";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
 	createRootRouteWithContext,
 	ErrorComponent,
@@ -76,6 +77,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body>
 				<main className="font-[Inter,sans-serif]">{children}</main>
 				<ScrollRestoration />
+				<ReactQueryDevtools initialIsOpen={false} />
 				<Scripts />
 			</body>
 		</html>

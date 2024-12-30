@@ -7,19 +7,20 @@ import {
 	AccordionTrigger,
 } from "@/components/ui/Accordion";
 import { Button } from "@/components/ui/Button";
-import { getMeals } from "@/lib/bread";
 import { days } from "@/lib/hours";
 import { getTranslations, translate } from "@/lib/language";
 import { STYLE } from "@/lib/map";
-import { resetSeen, useSaved } from "@/lib/saved";
-import { ResourceType } from "@cords/sdk";
+import { queryClient } from "@/router";
+import { getResourcesFn } from "@/server/actions/resource";
+import { getSavedFn, resetSavedFn } from "@/server/actions/saved";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
 	createFileRoute,
 	ErrorComponent,
 	useNavigate,
+	useRouter,
 } from "@tanstack/react-router";
 import { CalendarDays, List, MapIcon } from "lucide-react";
-import { useEffect, useMemo } from "react";
 import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
@@ -32,6 +33,7 @@ export const Route = createFileRoute("/$language/_app/saved")({
 	component: SavedPage,
 	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
+	ssr: false,
 	head: ({ params: { language } }) => {
 		const translations = getTranslations(language);
 		return {
@@ -46,35 +48,44 @@ export const Route = createFileRoute("/$language/_app/saved")({
 			],
 		};
 	},
-	loader: async () => await getMeals(),
+	loader: async () => {
+		await resetSavedFn();
+		await queryClient.invalidateQueries({
+			queryKey: ["saved"],
+		});
+		const saved = await queryClient.ensureQueryData({
+			queryKey: ["saved"],
+			queryFn: () => getSavedFn(),
+		});
+		const resources = await getResourcesFn({
+			data: {
+				ids: saved.map((savedResource) => savedResource.resourceId),
+			},
+		});
+		return {
+			resources,
+		};
+	},
 });
 
 function SavedPage() {
+	const { data: saved } = useSuspenseQuery({
+		queryKey: ["saved"],
+		queryFn: () => getSavedFn(),
+	});
+	const router = useRouter();
 	const { language } = Route.useParams();
-	const meals = Route.useLoaderData();
-	const saved = useSaved();
+	const { resources } = Route.useLoaderData();
 	const navigate = useNavigate({
 		from: Route.fullPath,
 	});
 	const { tab = "list", day = true } = Route.useSearch();
 
-	const results = useMemo(() => {
-		return saved
-			.map((savedResource) => {
-				const resource = meals.find(
-					(meal) => meal.id === savedResource.id,
-				);
-				if (!resource) return null;
-				return { ...resource, day: savedResource.day };
-			})
-			.filter(Boolean) as (ResourceType & { day?: string })[];
-	}, [saved]);
-
-	useEffect(() => {
-		resetSeen();
-	}, [resetSeen]);
-
 	const translations = getTranslations(language);
+
+	const activeDays = saved.map(
+		(savedResource) => savedResource.day ?? "unassigned",
+	);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -139,23 +150,8 @@ function SavedPage() {
 							type="multiple"
 							defaultValue={[...days, "unassigned"]}
 						>
-							{Object.entries(
-								results.reduce(
-									(acc, resource) => {
-										// Group items without a day under "unassigned"
-										const key =
-											resource.day || "unassigned";
-										if (!acc[key]) acc[key] = [];
-										acc[key].push(resource);
-										return acc;
-									},
-									{} as Record<
-										string,
-										(ResourceType & { day?: string })[]
-									>,
-								),
-							)
-								.sort(([dayA], [dayB]) => {
+							{activeDays
+								.sort((dayA, dayB) => {
 									// Put unassigned at the bottom
 									if (dayA === "unassigned") return 1;
 									if (dayB === "unassigned") return -1;
@@ -164,7 +160,7 @@ function SavedPage() {
 										days.indexOf(dayA) - days.indexOf(dayB)
 									);
 								})
-								.map(([day, resources]) => (
+								.map((day) => (
 									<AccordionItem key={day} value={day}>
 										<AccordionTrigger className="text-xl font-semibold">
 											{day === "unassigned"
@@ -175,19 +171,31 @@ function SavedPage() {
 													)}
 										</AccordionTrigger>
 										<AccordionContent className="flex flex-col gap-3">
-											{resources.map((resource) => (
-												<Resource
-													key={resource.id}
-													resource={resource}
-												/>
-											))}
+											{resources
+												.filter((resource) => {
+													const savedResource =
+														saved.find(
+															(savedResource) =>
+																savedResource.resourceId ===
+																resource.id,
+														)?.day ?? "unassigned";
+													return (
+														savedResource === day
+													);
+												})
+												.map((resource) => (
+													<Resource
+														key={resource.id}
+														resource={resource}
+													/>
+												))}
 										</AccordionContent>
 									</AccordionItem>
 								))}
 						</Accordion>
 					) : (
 						<div className="flex flex-col gap-4">
-							{results.map((resource) => (
+							{resources.map((resource) => (
 								<Resource
 									key={resource.id}
 									resource={resource}
@@ -209,7 +217,7 @@ function SavedPage() {
 						style={{ width: "100%", height: "80vh" }}
 						mapStyle={STYLE}
 					>
-						{results.map((resource) => (
+						{resources.map((resource) => (
 							<MapResource
 								key={resource.id}
 								resource={resource}

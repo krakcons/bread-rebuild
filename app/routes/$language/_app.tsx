@@ -6,8 +6,9 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/Popover";
 import { getTranslations } from "@/lib/language";
-import { useSaved } from "@/lib/saved";
 import { cn } from "@/lib/utils";
+import { getSavedFn } from "@/server/actions/saved";
+import { useQuery } from "@tanstack/react-query";
 import {
 	createFileRoute,
 	ErrorComponent,
@@ -26,7 +27,10 @@ function LayoutComponent() {
 	const { language } = Route.useParams();
 	const navigate = Route.useNavigate();
 	const translations = getTranslations(language);
-	const saved = useSaved();
+	const { data: saved } = useQuery({
+		queryKey: ["saved"],
+		queryFn: () => getSavedFn(),
+	});
 
 	return (
 		<div>
@@ -59,11 +63,12 @@ function LayoutComponent() {
 							<p className="hidden sm:block">
 								{translations.saved.title}
 							</p>
-							{saved.filter((s) => !s.seen).length > 0 && (
-								<span className="absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-secondary text-xs text-white">
-									{saved.filter((s) => !s.seen).length}
-								</span>
-							)}
+							{saved &&
+								saved.filter((s) => !s.seen).length > 0 && (
+									<span className="absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-secondary text-xs text-white">
+										{saved.filter((s) => !s.seen).length}
+									</span>
+								)}
 						</Link>
 						<Button
 							onClick={() => {

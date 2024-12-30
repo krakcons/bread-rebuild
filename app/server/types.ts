@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import {
-	dietaryOptions,
+	anonymousSessionsToResources,
 	dietaryOptionsTranslations,
 	phoneNumbers,
 	providers,
@@ -22,17 +22,21 @@ export type ProviderType = z.infer<typeof ProviderSchema>;
 export const PhoneNumberSchema = createSelectSchema(phoneNumbers);
 export type PhoneNumberType = z.infer<typeof PhoneNumberSchema>;
 
-export const DietaryOptionSchema = createSelectSchema(dietaryOptions);
-export type DietaryOptionType = z.infer<typeof DietaryOptionSchema>;
-
-export const DietaryOptionTranslationSchema = createSelectSchema(
+export const DietaryOptionSchema = createSelectSchema(
 	dietaryOptionsTranslations,
 );
-export type DietaryOptionTranslationType = z.infer<
-	typeof DietaryOptionTranslationSchema
->;
+export type DietaryOptionType = z.infer<typeof DietaryOptionSchema>;
 
 export type FullResourceType = ResourceType & {
+	name: string;
 	body: ResourceBodyType;
 	phoneNumbers: PhoneNumberType[];
+	dietaryOptions: DietaryOptionType[];
 };
+
+export const SavedResourceSchema = createSelectSchema(
+	anonymousSessionsToResources,
+).omit({
+	anonymousSessionId: true,
+});
+export type SavedResourceType = z.infer<typeof SavedResourceSchema>;

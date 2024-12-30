@@ -1,8 +1,13 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgEnum, pgTable, real, text } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	pgEnum,
+	pgTable,
+	primaryKey,
+	real,
+	text,
+} from "drizzle-orm/pg-core";
 import { generateId } from "../auth";
-
-export * from "./auth/schema";
 
 // Enums
 export const languageEnum = pgEnum("language", ["en", "fr"]);
@@ -110,14 +115,18 @@ export const resourceBodyTranslations = pgTable("resource_body_translations", {
 });
 
 // Dietary Options
-export const resourceToDietaryOptions = pgTable("resource_to_dietary_options", {
-	resourceId: text("resource_id")
-		.notNull()
-		.references(() => resources.id),
-	dietaryOptionId: text("dietary_option_id")
-		.notNull()
-		.references(() => dietaryOptions.id),
-});
+export const resourceToDietaryOptions = pgTable(
+	"resource_to_dietary_options",
+	{
+		resourceId: text("resource_id")
+			.notNull()
+			.references(() => resources.id),
+		dietaryOptionId: text("dietary_option_id")
+			.notNull()
+			.references(() => dietaryOptions.id),
+	},
+	(t) => [primaryKey({ columns: [t.resourceId, t.dietaryOptionId] })],
+);
 
 export const dietaryOptions = pgTable("dietary_options", {
 	id: text("id")
@@ -139,9 +148,64 @@ export const dietaryOptionsTranslations = pgTable(
 	},
 );
 
+// Anonymous Users
+export const daysEnum = pgEnum("days", [
+	"unassigned",
+	"mon",
+	"tue",
+	"wed",
+	"thu",
+	"fri",
+	"sat",
+	"sun",
+]);
+
+export const anonymousSessions = pgTable("anonymous_sessions", {
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => generateId(16)),
+});
+
+export const anonymousSessionsToResources = pgTable(
+	"anonymous_sessions_to_resources",
+	{
+		anonymousSessionId: text("anonymous_session_id")
+			.notNull()
+			.references(() => anonymousSessions.id),
+		resourceId: text("resource_id")
+			.notNull()
+			.references(() => resources.id),
+		day: daysEnum("day").notNull().default("unassigned"),
+		seen: boolean("seen").notNull().default(false),
+	},
+	(t) => [primaryKey({ columns: [t.anonymousSessionId, t.resourceId] })],
+);
+
 // Relations
+export const anonymousSessionsToResourcesRelations = relations(
+	anonymousSessionsToResources,
+	({ one }) => ({
+		anonymousSession: one(anonymousSessions, {
+			fields: [anonymousSessionsToResources.anonymousSessionId],
+			references: [anonymousSessions.id],
+		}),
+		resource: one(resources, {
+			fields: [anonymousSessionsToResources.resourceId],
+			references: [resources.id],
+		}),
+	}),
+);
+
+export const anonymousSessionsRelations = relations(
+	anonymousSessions,
+	({ many }) => ({
+		anonymousSessionsToResources: many(anonymousSessionsToResources),
+	}),
+);
+
 export const providerRelations = relations(providers, ({ many }) => ({
 	resources: many(resources),
+	providerTranslations: many(providerTranslations),
 }));
 
 export const providerTranslationsRelations = relations(
@@ -161,7 +225,8 @@ export const resourceRelations = relations(resources, ({ many, one }) => ({
 		fields: [resources.providerId],
 		references: [providers.id],
 	}),
-	dietaryOptions: many(resourceToDietaryOptions),
+	resourceToDietaryOptions: many(resourceToDietaryOptions),
+	anonymousSessionsToResources: many(anonymousSessionsToResources),
 }));
 
 export const resourceBodyTranslationsRelations = relations(
@@ -198,6 +263,7 @@ export const resourceToDietaryOptionsRelations = relations(
 export const dietaryOptionsRelations = relations(
 	dietaryOptions,
 	({ many }) => ({
+		resourceToDietaryOptions: many(resourceToDietaryOptions),
 		dietaryOptionsTranslations: many(dietaryOptionsTranslations),
 	}),
 );

@@ -9,9 +9,15 @@ import {
 } from "@/components/ui/Select";
 import { days } from "@/lib/hours";
 import { getTranslations } from "@/lib/language";
-import { toggleSaved, updateDay, useSavedResource } from "@/lib/saved";
 import { cn } from "@/lib/utils";
-import { FullResourceType } from "@/server/types";
+import { queryClient } from "@/router";
+import {
+	getSavedFn,
+	toggleSavedFn,
+	updateSavedFn,
+} from "@/server/actions/saved";
+import { FullResourceType, SavedResourceType } from "@/server/types";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { Bookmark, CalendarDays } from "lucide-react";
 import { Button } from "../ui/Button";
@@ -23,11 +29,19 @@ export const ResourceActions = ({
 	resource: FullResourceType;
 	children?: React.ReactNode;
 }) => {
-	const saved = useSavedResource(resource.id);
+	const { data: saved } = useSuspenseQuery({
+		queryKey: ["saved"],
+		queryFn: () => getSavedFn(),
+	});
+
 	const { language } = useParams({
 		from: "/$language",
 	});
 	const translations = getTranslations(language);
+	const savedResource = saved.find(
+		(savedResource) => savedResource.resourceId === resource.id,
+	);
+
 	return (
 		<div
 			className="-m-4 flex flex-wrap items-center justify-start gap-2 p-4"
@@ -38,30 +52,49 @@ export const ResourceActions = ({
 		>
 			{children}
 			<Button
-				onClick={() => {
-					toggleSaved(resource.id);
+				onClick={async () => {
+					await toggleSavedFn({ data: { resourceId: resource.id } });
+					await queryClient.invalidateQueries({
+						queryKey: ["saved"],
+					});
 				}}
 				className="no-print"
 			>
 				<Bookmark
 					size={18}
 					className={
-						saved ? "fill-primary text-primary" : "fill-none"
+						savedResource
+							? "fill-primary text-primary"
+							: "fill-none"
 					}
 				/>
-				{saved ? translations.saved.saved : translations.saved.save}
+				{savedResource
+					? translations.saved.saved
+					: translations.saved.save}
 			</Button>
-			{saved && (
+			{savedResource && (
 				<Select
-					value={saved.day ?? undefined}
-					onValueChange={(value) => {
-						updateDay(resource.id, value);
+					value={
+						savedResource.day !== "unassigned"
+							? savedResource.day
+							: undefined
+					}
+					onValueChange={async (value) => {
+						await updateSavedFn({
+							data: {
+								resourceId: resource.id,
+								day: value as SavedResourceType["day"],
+							},
+						});
+						await queryClient.invalidateQueries({
+							queryKey: ["saved"],
+						});
 					}}
 				>
 					<SelectTrigger
 						className={cn(
 							"w-auto shrink gap-2",
-							saved.day ? "" : "no-print",
+							savedResource?.day ? "" : "no-print",
 						)}
 					>
 						<CalendarDays size={18} />
