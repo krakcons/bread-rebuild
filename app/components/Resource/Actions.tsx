@@ -11,7 +11,7 @@ import { days } from "@/lib/hours";
 import { getTranslations } from "@/lib/language";
 import { toggleSaved, updateDay, useSavedResource } from "@/lib/saved";
 import { cn } from "@/lib/utils";
-import { ResourceType } from "@cords/sdk";
+import { FullResourceType } from "@/server/types";
 import { useParams } from "@tanstack/react-router";
 import { Bookmark, CalendarDays } from "lucide-react";
 import { Button } from "../ui/Button";
@@ -20,7 +20,7 @@ export const ResourceActions = ({
 	resource,
 	children,
 }: {
-	resource: ResourceType;
+	resource: FullResourceType;
 	children?: React.ReactNode;
 }) => {
 	const saved = useSavedResource(resource.id);

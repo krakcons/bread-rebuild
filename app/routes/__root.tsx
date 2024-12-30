@@ -1,5 +1,6 @@
 import globalStyles from "@/index.css?url";
-import { getLanguage, languages, setLanguage } from "@/lib/language";
+import { languages } from "@/lib/language";
+import { getLanguage, setLanguage } from "@/lib/language/actions";
 import { SessionValidationResult } from "@/server/auth";
 import {
 	createRootRouteWithContext,

@@ -1,4 +1,4 @@
-import { getLanguage } from "@/lib/language";
+import { getLanguage } from "@/lib/language/actions";
 import { createMiddleware } from "@tanstack/start";
 import { getCookie } from "vinxi/http";
 import { validateSessionToken } from "./auth";

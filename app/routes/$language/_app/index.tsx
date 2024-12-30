@@ -9,10 +9,22 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/Dialog";
-import { dietaryOptions as breadDietaryOptions, getMeals } from "@/lib/bread";
-import { getLocalizedField, getTranslations } from "@/lib/language";
+import { getDietaryOptions } from "@/lib/bread";
+import { getLocalizedArray, getTranslations } from "@/lib/language";
 import { STYLE } from "@/lib/map";
+import { db } from "@/server/db";
+import {
+	dietaryOptions,
+	dietaryOptionsTranslations,
+	providers,
+	providerTranslations,
+	resources,
+} from "@/server/db/schema";
+import { languageMiddleware } from "@/server/middleware";
+import { FullResourceType } from "@/server/types";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/start";
+import { and, eq, exists, ilike, inArray } from "drizzle-orm";
 import {
 	Accessibility,
 	Bus,
@@ -34,9 +46,9 @@ const SearchParamsSchema = z.object({
 	free: z.boolean().optional(),
 	preparationRequired: z.boolean().optional(),
 	parkingAvailable: z.boolean().optional(),
-	nearTransit: z.boolean().optional(),
+	transitAvailable: z.boolean().optional(),
 	wheelchairAccessible: z.boolean().optional(),
-	dietaryOptions: z.string().array().optional(),
+	dietaryOptionsIds: z.string().array().optional(),
 });
 
 const filterIcons = {
@@ -45,53 +57,94 @@ const filterIcons = {
 	parkingAvailable: <Car size={18} />,
 	nearTransit: <Bus size={18} />,
 	wheelchairAccessible: <Accessibility size={18} />,
-	dietaryOptions: <Utensils size={18} />,
+	dietaryOptionsIds: <Utensils size={18} />,
 };
+
+const searchFn = createServerFn()
+	.middleware([languageMiddleware])
+	.validator(SearchParamsSchema)
+	.handler(
+		async ({
+			context: { language },
+			data: { query, dietaryOptionsIds = [], ...filters },
+		}) => {
+			const meals = await db.query.resources.findMany({
+				where: and(
+					query
+						? exists(
+								db
+									.select()
+									.from(providers)
+									.fullJoin(
+										providerTranslations,
+										eq(
+											providers.id,
+											providerTranslations.providerId,
+										),
+									)
+									.where(
+										ilike(
+											providerTranslations.name,
+											`%${query}%`,
+										),
+									),
+							)
+						: undefined,
+					filters.free ? eq(resources.free, true) : undefined,
+					filters.preparationRequired
+						? eq(resources.preparationRequired, true)
+						: undefined,
+					filters.parkingAvailable
+						? eq(resources.parkingAvailable, true)
+						: undefined,
+					filters.transitAvailable
+						? eq(resources.transitAvailable, true)
+						: undefined,
+					filters.wheelchairAccessible
+						? eq(resources.wheelchairAccessible, true)
+						: undefined,
+					dietaryOptionsIds.length > 0
+						? exists(
+								db
+									.select()
+									.from(dietaryOptions)
+									.fullJoin(
+										dietaryOptionsTranslations,
+										eq(
+											dietaryOptions.id,
+											dietaryOptionsTranslations.dietaryOptionId,
+										),
+									)
+									.where(
+										inArray(
+											dietaryOptionsTranslations.dietaryOptionId,
+											dietaryOptionsIds,
+										),
+									),
+							)
+						: undefined,
+				),
+				with: {
+					bodyTranslations: true,
+					phoneNumbers: true,
+				},
+			});
+			return meals.map((meal) => ({
+				...meal,
+				body: getLocalizedArray(meal.bodyTranslations, language),
+			})) satisfies FullResourceType[];
+		},
+	);
 
 export const Route = createFileRoute("/$language/_app/")({
 	component: Home,
 	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
 	loaderDeps: ({ search }) => search,
-	loader: async ({
-		params: { language },
-		deps: { query, tab, dietaryOptions = [], ...filters },
-	}) => {
-		const meals = await getMeals();
-		return meals
-			.map((meal) => {
-				const isFree = meal.body?.en?.fees === "Free";
-				return {
-					...meal,
-					body: {
-						en: {
-							...meal.body?.en,
-							free: isFree,
-						},
-						fr: {
-							...meal.body?.fr,
-							free: isFree,
-						},
-					},
-				};
-			})
-			.filter(
-				(resource) =>
-					(query
-						? getLocalizedField(resource.name, language)
-								?.toLowerCase()
-								.includes(query.toLowerCase())
-						: true) &&
-					Object.entries(filters).every(([name, value]) => {
-						return value
-							? getLocalizedField(resource.body, language)?.[name]
-							: true;
-					}) &&
-					(dietaryOptions?.length === 0 ||
-						resource.body?.en?.dietaryOptions?.filter((option) => {
-							return dietaryOptions!.includes(option);
-						})?.length === dietaryOptions?.length),
-			);
+	loader: async ({ params: { language }, deps }) => {
+		const meals = await searchFn({ data: deps });
+		const dietaryOptions = await getDietaryOptions();
+		return { meals, dietaryOptions };
 	},
 	head: ({ params: { language } }) => {
 		const translations = getTranslations(language);
@@ -118,18 +171,18 @@ function Home() {
 		free = false,
 		preparationRequired = false,
 		parkingAvailable = false,
-		nearTransit = false,
+		transitAvailable = false,
 		wheelchairAccessible = false,
-		dietaryOptions = [],
+		dietaryOptionsIds = [],
 	} = Route.useSearch();
-	const meals = Route.useLoaderData();
+	const { meals, dietaryOptions } = Route.useLoaderData();
 	const translations = getTranslations(language);
 
 	const filters: Record<string, boolean> = {
 		free,
 		preparationRequired,
 		parkingAvailable,
-		nearTransit,
+		transitAvailable,
 		wheelchairAccessible,
 	};
 
@@ -193,7 +246,7 @@ function Home() {
 								active={
 									Object.values(filters).some(
 										(filter) => filter,
-									) || dietaryOptions.length > 0
+									) || dietaryOptionsIds.length > 0
 								}
 							>
 								<Filter size={18} />
@@ -233,36 +286,42 @@ function Home() {
 								{translations.dietaryOptions}
 							</p>
 							<div className="flex flex-wrap gap-2">
-								{breadDietaryOptions.map((option) => (
+								{dietaryOptions.map((option) => (
 									<Button
 										key={option[language === "en" ? 0 : 1]}
 										onClick={() =>
 											navigate({
 												search: (prev) => ({
 													...prev,
-													dietaryOptions:
-														dietaryOptions.includes(
+													dietaryOptionsIds:
+														dietaryOptionsIds.includes(
 															option[0],
 														)
-															? dietaryOptions.filter(
+															? dietaryOptionsIds.filter(
 																	(o) =>
 																		o !==
 																		option[0],
 																)
 															: [
-																	...dietaryOptions,
+																	...dietaryOptionsIds,
 																	option[0],
 																],
 												}),
 											})
 										}
-										active={dietaryOptions.includes(
+										active={dietaryOptionsIds.includes(
 											option[0],
 										)}
 										className="flex-grow justify-start"
 									>
 										<Utensils size={18} />
-										{option[language === "en" ? 0 : 1]}
+										{
+											option.dietaryOptionsTranslations.find(
+												(translation) =>
+													translation.language ===
+													language,
+											)?.name
+										}
 									</Button>
 								))}
 							</div>

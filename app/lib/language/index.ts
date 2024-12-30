@@ -1,5 +1,3 @@
-import { createServerFn } from "@tanstack/start";
-import { getCookie, getHeader, setCookie } from "vinxi/http";
 import { z } from "zod";
 import { english, french } from "./messages";
 
@@ -10,28 +8,6 @@ export type Language = z.infer<typeof LanguageSchema>;
 export const getTranslations = (language: string) => {
 	return language === "fr" ? french : english;
 };
-
-export const getLanguage = createServerFn({
-	method: "GET",
-}).handler(() => {
-	const language = getCookie("language");
-	if (language) {
-		return language;
-	} else {
-		const acceptLanguage = getHeader("accept-language")?.split(",")[0];
-		const language = acceptLanguage?.startsWith("fr") ? "fr" : "en";
-		setCookie("language", language);
-		return language;
-	}
-});
-
-export const setLanguage = createServerFn({
-	method: "POST",
-})
-	.validator(LanguageSchema)
-	.handler(({ data: language }) => {
-		setCookie("language", language);
-	});
 
 export type LocalizationObject<T> = {
 	en?: T | null;
@@ -44,6 +20,10 @@ export const getLocalizedField = <T>(
 ): T | undefined | null => {
 	if (locale === "fr" && obj["fr"] !== "") return obj[locale];
 	else return obj["en"];
+};
+
+export const getLocalizedArray = <T>(obj: T[], locale: string): T => {
+	return obj.find((item) => item[locale] !== null) ?? obj[0];
 };
 
 const commonTranslations = new Map<string, string>([
