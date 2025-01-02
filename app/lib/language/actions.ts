@@ -11,11 +11,16 @@ export const getLanguage = createServerFn({
 }).handler(() => {
 	const language = getCookie("language");
 	if (language) {
-		return language;
+		return language as "en" | "fr";
 	} else {
 		const acceptLanguage = getHeader("accept-language")?.split(",")[0];
 		const language = acceptLanguage?.startsWith("fr") ? "fr" : "en";
-		setCookie("language", language);
+		setCookie("language", language, {
+			path: "/",
+			httpOnly: true,
+			secure: true,
+			sameSite: "lax",
+		});
 		return language;
 	}
 });

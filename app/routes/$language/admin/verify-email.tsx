@@ -171,11 +171,11 @@ function RouteComponent() {
 					disabled={resendCodeSent}
 					variant="link"
 					size="auto"
-					onClick={() => {
+					onClick={async () => {
 						if (type === "email_verification") {
-							resendEmailVerificationMutation();
+							await resendEmailVerificationMutation();
 						} else if (type === "password_reset") {
-							resendPasswordResetVerificationMutation();
+							await resendPasswordResetVerificationMutation();
 						}
 						setResendCodeSent(true);
 					}}

@@ -18,9 +18,9 @@ import {
 	createFileRoute,
 	ErrorComponent,
 	useNavigate,
-	useRouter,
 } from "@tanstack/react-router";
 import { CalendarDays, List, MapIcon } from "lucide-react";
+import { useMemo } from "react";
 import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
@@ -73,7 +73,6 @@ function SavedPage() {
 		queryKey: ["saved"],
 		queryFn: () => getSavedFn(),
 	});
-	const router = useRouter();
 	const { language } = Route.useParams();
 	const { resources } = Route.useLoaderData();
 	const navigate = useNavigate({
@@ -83,8 +82,12 @@ function SavedPage() {
 
 	const translations = getTranslations(language);
 
-	const activeDays = saved.map(
-		(savedResource) => savedResource.day ?? "unassigned",
+	const activeDays = useMemo(
+		() =>
+			new Set(
+				saved.map((savedResource) => savedResource.day ?? "unassigned"),
+			),
+		[saved],
 	);
 
 	return (
@@ -150,7 +153,7 @@ function SavedPage() {
 							type="multiple"
 							defaultValue={[...days, "unassigned"]}
 						>
-							{activeDays
+							{Array.from(activeDays)
 								.sort((dayA, dayB) => {
 									// Put unassigned at the bottom
 									if (dayA === "unassigned") return 1;

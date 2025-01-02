@@ -8,36 +8,13 @@ import { getTranslations } from "@/lib/language";
 import { cn } from "@/lib/utils";
 import { signup, SignupSchema } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import {
-	createFileRoute,
-	ErrorComponent,
-	Link,
-	redirect,
-} from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/$language/admin/signup")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
-	beforeLoad: async ({ context, params }) => {
-		if (context.user !== null) {
-			if (context.user.emailVerified !== null) {
-				throw redirect({
-					to: "/$language/admin",
-					params,
-				});
-			} else {
-				throw redirect({
-					to: "/$language/admin/verify-email",
-					params,
-					search: {
-						type: "email_verification",
-					},
-				});
-			}
-		}
-	},
 });
 
 function RouteComponent() {

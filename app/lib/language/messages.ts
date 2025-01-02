@@ -3,6 +3,7 @@ export const english = {
 	description:
 		"Bread is a directory of food resources in the greater Calgary area.",
 	common: {
+		optional: "Optional",
 		back: "Back",
 		to: "to",
 		bread: "Bread",
@@ -16,6 +17,9 @@ export const english = {
 	fees: "Fees",
 	phoneTypes: {
 		phone: "Phone",
+		fax: "Fax",
+		tollFree: "Toll Free",
+		tty: "TTY",
 	},
 	accessibility: "Accessibility",
 	applicationProcess: "Application Process",
@@ -54,6 +58,26 @@ export const english = {
 	dietaryOptions: "Dietary Options",
 	admin: {
 		title: "Admin",
+		onboarding: {
+			title: "Create Your Provider",
+			description:
+				"Please enter your provider's name and contact information.",
+			form: {
+				name: "Name",
+				description: "Description",
+				email: "Email",
+				website: "Website",
+				number: "Number",
+				type: "Type",
+				phoneNumbers: "Phone Numbers",
+				addPhoneNumber: "Add Phone Number",
+			},
+			contact: {
+				title: "Contact Information",
+				description:
+					"This will allow users to contact your provider. It can be overridden by the contact information in a specific listing.",
+			},
+		},
 		auth: {
 			form: {
 				email: "Email",
@@ -122,6 +146,7 @@ export const french: typeof english = {
 	description:
 		"Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
 	common: {
+		optional: "Optionnel",
 		back: "Retour",
 		to: "à",
 		bread: "Bread",
@@ -135,6 +160,9 @@ export const french: typeof english = {
 	fees: "Frais",
 	phoneTypes: {
 		phone: "Téléphone",
+		fax: "Fax",
+		tollFree: "Téléphone sans frais",
+		tty: "TTY",
 	},
 	accessibility: "Accessibilité",
 	applicationProcess: "Processus d'application",
@@ -173,6 +201,26 @@ export const french: typeof english = {
 	dietaryOptions: "Options Diététiques",
 	admin: {
 		title: "Admin",
+		onboarding: {
+			title: "Créer Votre Fournisseur",
+			description:
+				"Veuillez entrer le nom et les informations de contact de votre fournisseur.",
+			form: {
+				name: "Nom",
+				description: "Description",
+				email: "Courriel de contact",
+				website: "Site Web",
+				number: "Numéro",
+				type: "Type",
+				phoneNumbers: "Téléphones",
+				addPhoneNumber: "Ajouter un téléphone",
+			},
+			contact: {
+				title: "Informations de contact",
+				description:
+					"Cela permet aux utilisateurs de contacter votre fournisseur. Il peut être remplacé par les informations de contact dans une liste spécifique.",
+			},
+		},
 		auth: {
 			form: {
 				email: "Courriel",

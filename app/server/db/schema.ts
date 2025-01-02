@@ -8,6 +8,7 @@ import {
 	text,
 } from "drizzle-orm/pg-core";
 import { generateId } from "../auth";
+import { users } from "./auth/schema";
 
 // Enums
 export const languageEnum = pgEnum("language", ["en", "fr"]);
@@ -21,13 +22,19 @@ export const offeringEnum = pgEnum("offering", [
 	"market",
 ]);
 
+export const phoneNumberTypeEnum = pgEnum("phone_number_type", [
+	"phone",
+	"fax",
+	"toll-free",
+	"tty",
+]);
+
 // Providers
 export const providers = pgTable("providers", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => generateId(16)),
-	website: text("website"),
-	email: text("email"),
+	userId: text("user_id").references(() => users.id),
 });
 
 export const providerTranslations = pgTable("provider_translations", {
@@ -36,10 +43,28 @@ export const providerTranslations = pgTable("provider_translations", {
 		.$defaultFn(() => generateId(16)),
 	providerId: text("provider_id")
 		.notNull()
-		.references(() => providers.id),
+		.references(() => providers.id, {
+			onDelete: "cascade",
+		}),
 	language: languageEnum("language").notNull(),
 	name: text("name").notNull(),
 	description: text("description"),
+	website: text("website"),
+	email: text("email"),
+});
+
+// Provider Phone Numbers
+export const providerPhoneNumbers = pgTable("provider_phone_numbers", {
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => generateId(16)),
+	providerId: text("provider_id")
+		.notNull()
+		.references(() => providers.id, {
+			onDelete: "cascade",
+		}),
+	phone: text("phone").notNull(),
+	type: phoneNumberTypeEnum("type").notNull(),
 });
 
 // Base Table
@@ -47,7 +72,9 @@ export const resources = pgTable("resources", {
 	id: text("id").primaryKey(),
 	providerId: text("provider_id")
 		.notNull()
-		.references(() => providers.id),
+		.references(() => providers.id, {
+			onDelete: "cascade",
+		}),
 
 	// Contact
 	email: text("email"),
@@ -80,10 +107,11 @@ export const phoneNumbers = pgTable("phone_numbers", {
 		.$defaultFn(() => generateId(16)),
 	resourceId: text("resource_id")
 		.notNull()
-		.references(() => resources.id),
+		.references(() => resources.id, {
+			onDelete: "cascade",
+		}),
 	phone: text("phone").notNull(),
-	name: text("name"),
-	type: text("type"),
+	type: phoneNumberTypeEnum("type").notNull(),
 });
 
 // Extended Resource Info
@@ -93,7 +121,9 @@ export const resourceBodyTranslations = pgTable("resource_body_translations", {
 		.$defaultFn(() => generateId(16)),
 	resourceId: text("resource_id")
 		.notNull()
-		.references(() => resources.id),
+		.references(() => resources.id, {
+			onDelete: "cascade",
+		}),
 	language: languageEnum("language").notNull(),
 
 	// Basic info
@@ -120,10 +150,14 @@ export const resourceToDietaryOptions = pgTable(
 	{
 		resourceId: text("resource_id")
 			.notNull()
-			.references(() => resources.id),
+			.references(() => resources.id, {
+				onDelete: "cascade",
+			}),
 		dietaryOptionId: text("dietary_option_id")
 			.notNull()
-			.references(() => dietaryOptions.id),
+			.references(() => dietaryOptions.id, {
+				onDelete: "cascade",
+			}),
 	},
 	(t) => [primaryKey({ columns: [t.resourceId, t.dietaryOptionId] })],
 );
@@ -142,7 +176,9 @@ export const dietaryOptionsTranslations = pgTable(
 			.$defaultFn(() => generateId(16)),
 		dietaryOptionId: text("dietary_option_id")
 			.notNull()
-			.references(() => dietaryOptions.id),
+			.references(() => dietaryOptions.id, {
+				onDelete: "cascade",
+			}),
 		language: languageEnum("language").notNull(),
 		name: text("name").notNull(),
 	},
@@ -171,10 +207,14 @@ export const anonymousSessionsToResources = pgTable(
 	{
 		anonymousSessionId: text("anonymous_session_id")
 			.notNull()
-			.references(() => anonymousSessions.id),
+			.references(() => anonymousSessions.id, {
+				onDelete: "cascade",
+			}),
 		resourceId: text("resource_id")
 			.notNull()
-			.references(() => resources.id),
+			.references(() => resources.id, {
+				onDelete: "cascade",
+			}),
 		day: daysEnum("day").notNull().default("unassigned"),
 		seen: boolean("seen").notNull().default(false),
 	},
@@ -206,6 +246,7 @@ export const anonymousSessionsRelations = relations(
 export const providerRelations = relations(providers, ({ many }) => ({
 	resources: many(resources),
 	providerTranslations: many(providerTranslations),
+	providerPhoneNumbers: many(providerPhoneNumbers),
 }));
 
 export const providerTranslationsRelations = relations(
@@ -213,6 +254,16 @@ export const providerTranslationsRelations = relations(
 	({ one }) => ({
 		provider: one(providers, {
 			fields: [providerTranslations.providerId],
+			references: [providers.id],
+		}),
+	}),
+);
+
+export const providerPhoneNumbersRelations = relations(
+	providerPhoneNumbers,
+	({ one }) => ({
+		provider: one(providers, {
+			fields: [providerPhoneNumbers.providerId],
 			references: [providers.id],
 		}),
 	}),

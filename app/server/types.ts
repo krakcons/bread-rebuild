@@ -4,7 +4,9 @@ import {
 	anonymousSessionsToResources,
 	dietaryOptionsTranslations,
 	phoneNumbers,
+	providerPhoneNumbers,
 	providers,
+	providerTranslations,
 	resourceBodyTranslations,
 	resources,
 } from "./db/schema";
@@ -19,8 +21,16 @@ export type ResourceBodyType = z.infer<typeof ResourceBodySchema>;
 export const ProviderSchema = createSelectSchema(providers);
 export type ProviderType = z.infer<typeof ProviderSchema>;
 
+export const ProviderTranslationSchema =
+	createSelectSchema(providerTranslations);
+export type ProviderTranslationType = z.infer<typeof ProviderTranslationSchema>;
+
 export const PhoneNumberSchema = createSelectSchema(phoneNumbers);
 export type PhoneNumberType = z.infer<typeof PhoneNumberSchema>;
+
+export const ProviderPhoneNumberSchema =
+	createSelectSchema(providerPhoneNumbers);
+export type ProviderPhoneNumberType = z.infer<typeof ProviderPhoneNumberSchema>;
 
 export const DietaryOptionSchema = createSelectSchema(
 	dietaryOptionsTranslations,

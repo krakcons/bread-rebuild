@@ -12,6 +12,7 @@ import {
 } from ".";
 import { db } from "../db";
 import { emailVerifications, passwordResets, users } from "../db/auth/schema";
+import { providers } from "../db/schema";
 import { authMiddleware, languageMiddleware } from "../middleware";
 import {
 	deleteSessionTokenCookie,
@@ -357,4 +358,17 @@ export const logout = createServerFn({ method: "POST" })
 				params: { language: context.language },
 			});
 		}
+	});
+
+export const getUserNeedsOnboarding = createServerFn({ method: "GET" })
+	.middleware([authMiddleware])
+	.handler(async ({ context }) => {
+		if (context.user === null) return false;
+
+		// Check if user has a provider
+		const provider = await db.query.providers.findFirst({
+			where: eq(providers.userId, context.user.id),
+		});
+
+		return !provider;
 	});

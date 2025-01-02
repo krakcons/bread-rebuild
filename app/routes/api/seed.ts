@@ -4,22 +4,18 @@ import { createAPIFileRoute } from "@tanstack/start/api";
 import { generateId } from "@/server/auth";
 import { db } from "@/server/db";
 import {
+	anonymousSessionsToResources,
 	dietaryOptions,
 	dietaryOptionsTranslations,
 	phoneNumbers,
+	providerPhoneNumbers,
 	providers,
 	providerTranslations,
 	resourceBodyTranslations,
 	resources,
 	resourceToDietaryOptions,
 } from "@/server/db/schema";
-import {
-	PhoneNumberType,
-	ResourceBodyType,
-	ResourceType,
-} from "@/server/types";
-import dietary from "../../data/dietary.json";
-import meals from "../../data/meals.json";
+import { ResourceBodyType, ResourceSchema, ResourceType } from "@/server/types";
 import { translate } from "../../lib/language";
 
 type LocalizedFieldType = {
@@ -106,9 +102,44 @@ const parseHours = (drupalData: any) => {
 
 export const APIRoute = createAPIFileRoute("/api/seed")({
 	GET: async () => {
+		let meals: any[] = [];
+		let mealPage = 0;
+		while (true) {
+			const mealsResponse = await fetch(
+				`https://bread.help/api/meals?page[limit]=50&page[offset]=${mealPage * 50}`,
+			);
+			const mealsData = await mealsResponse.json();
+			console.log("meals", mealsData.data.data.length);
+			if (mealsData.data.data.length === 0) {
+				break;
+			}
+			meals.push(...mealsData.data.data);
+			mealPage++;
+		}
+
+		let organizations: any[] = [];
+		let organizationPage = 0;
+		while (true) {
+			const organizationsResponse = await fetch(
+				`https://drupal.bread.help/jsonapi/taxonomy_term/organization?page[limit]=50&page[offset]=${organizationPage * 50}`,
+			);
+			const organizationsData = await organizationsResponse.json();
+			console.log(organizationsData.data.length);
+			if (organizationsData.data.length === 0) {
+				break;
+			}
+			organizations.push(...organizationsData.data);
+			organizationPage++;
+		}
+
+		const dietaryOptionsResponse = await fetch(
+			"https://bread.help/api/dietary",
+		);
+		const dietary = await dietaryOptionsResponse.json();
+
 		// Convert Drupal meal/pantry to ResourceType
 		const convertDrupalToResource = (
-			drupalData: (typeof meals)[number],
+			drupalData: any,
 			providerId: string,
 		): {
 			resource: ResourceType;
@@ -116,20 +147,30 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 				en: Omit<ResourceBodyType, "id">;
 				fr: Omit<ResourceBodyType, "id">;
 			};
-			phoneNumber: PhoneNumberType | null;
+			phone: string | null;
 			dietaryOptions: string[];
 		} => {
 			const contactInfo = parseContactInfo(
 				drupalData.attributes.field_registration_notes ?? "",
 			);
 			const hours = parseHours(drupalData);
-			const dietaryOptions: string[] = dietary
+			const dietaryOptions: string[] = dietary.data
 				.filter((dietary) =>
 					drupalData.relationships.field_dietary.data.some(
 						({ id }) => dietary.id === id,
 					),
 				)
 				.map((dietary) => dietary.attributes.name);
+
+			let offering: ResourceType["offering"];
+			const offeringParsed = ResourceSchema.shape.offering.safeParse(
+				drupalData.attributes.field_service_type.toLowerCase(),
+			);
+			if (offeringParsed.success) {
+				offering = offeringParsed.data;
+			} else {
+				offering = "meal";
+			}
 
 			const resource: ResourceType = {
 				id: generateId(16),
@@ -148,14 +189,7 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 					drupalData.attributes.field__near_transit_bool || false,
 				registrationRequired:
 					drupalData.attributes.field_registration_bool || false,
-				offering:
-					drupalData.attributes.field_service_type.toLowerCase() as
-						| "meal"
-						| "pantry"
-						| "groceries"
-						| "delivery"
-						| "hamper"
-						| "drop-in",
+				offering,
 				street1:
 					drupalData.attributes.field_pickup_address.address_line1,
 				street2:
@@ -171,16 +205,6 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 				lat: drupalData.attributes.field_geofield?.lat ?? null,
 				lng: drupalData.attributes.field_geofield?.lon ?? null,
 			};
-
-			const phoneNumber: PhoneNumberType | null = contactInfo.phone
-				? {
-						id: generateId(16),
-						phone: contactInfo.phone,
-						name: "Main",
-						type: translate("phone", "en"),
-						resourceId: resource.id,
-					}
-				: null;
 
 			const body: {
 				en: Omit<ResourceBodyType, "id">;
@@ -233,20 +257,22 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			return {
 				resource,
 				body,
-				phoneNumber,
 				dietaryOptions,
+				phone: contactInfo.phone,
 			};
 		};
 
-		// Clear existing data
+		// Clear existing data in correct order (dependent tables first)
 		await db.delete(resourceToDietaryOptions);
+		await db.delete(providerPhoneNumbers);
 		await db.delete(dietaryOptionsTranslations);
 		await db.delete(dietaryOptions);
 		await db.delete(phoneNumbers);
 		await db.delete(resourceBodyTranslations);
-		await db.delete(resources);
 		await db.delete(providerTranslations);
-		await db.delete(providers);
+		await db.delete(anonymousSessionsToResources);
+		await db.delete(resources); // Move resources delete after its dependent tables
+		await db.delete(providers); // Move providers delete last
 
 		// Create dietary restrictions
 		const dietaryMap = new Map();
@@ -281,22 +307,53 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			]);
 		}
 
-		const providerId = generateId(16);
-		await db.insert(providers).values({
-			id: providerId,
-			website: "https://bread-dev.nuonn.com",
-			email: "contact@bread-dev.nuonn.com",
-		});
+		const providerMap = new Map();
+		const providerIdMap = new Map();
 
-		await db.insert(providerTranslations).values({
-			providerId,
-			language: "en",
-			name: "Bread",
-		});
+		for (const organization of organizations) {
+			const existing = providerMap.get(organization.attributes.name);
+			if (existing) {
+				providerIdMap.set(organization.id, existing.id);
+				continue;
+			}
+			const id = generateId(16);
+			providerMap.set(organization.attributes.name, {
+				id,
+				name: organization.attributes.name,
+				email: organization.attributes.field_primary_contact_email_addr,
+			});
+			providerIdMap.set(organization.id, id);
+		}
+
+		for (const provider of providerMap.values()) {
+			await db.insert(providers).values(provider);
+			await db.insert(providerTranslations).values({
+				providerId: provider.id,
+				language: "en",
+				name: provider.name,
+				email: provider.email,
+			});
+			await db.insert(providerTranslations).values({
+				providerId: provider.id,
+				language: "fr",
+				name: provider.name,
+				email: provider.email,
+			});
+		}
 
 		// Convert and insert resources
 		for (const meal of meals) {
-			const { resource, body, phoneNumber, dietaryOptions } =
+			const providerId: any = providerIdMap.get(
+				meal.relationships.field_organization_name.data.id,
+			);
+			console.log("providerId", providerId);
+			if (!providerId) {
+				console.warn(
+					`No provider found for meal ${meal.id} (org: ${meal.relationships.field_organization_name.data?.id})`,
+				);
+				continue;
+			}
+			const { resource, body, phone, dietaryOptions } =
 				convertDrupalToResource(meal, providerId);
 
 			// Insert resource
@@ -307,8 +364,12 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			await db.insert(resourceBodyTranslations).values(body.fr);
 
 			// Insert phone numbers
-			if (phoneNumber) {
-				await db.insert(phoneNumbers).values(phoneNumber);
+			if (phone) {
+				await db.insert(providerPhoneNumbers).values({
+					providerId,
+					phone,
+					type: "phone",
+				});
 			}
 
 			// Insert dietary restrictions

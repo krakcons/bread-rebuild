@@ -13,7 +13,7 @@ function RouteComponent() {
 
 	return (
 		<div>
-			Hello "/$language/admin/"!
+			Hello "/$language/admin/_admin"!
 			<Button onClick={() => logoutFn()}>Logout</Button>
 		</div>
 	);

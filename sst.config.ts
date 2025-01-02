@@ -1,6 +1,7 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 const tenant = "bread";
 const profile = "krak";
+
 const stageMap = new Map<string, { name: string; domain: string }>([
 	["prod", { name: `${tenant}-prod`, domain: `${tenant}-prod.nuonn.com` }],
 	["dev", { name: `${tenant}-dev`, domain: `${tenant}-dev.nuonn.com` }],
