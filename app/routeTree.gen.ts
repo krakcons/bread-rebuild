@@ -27,6 +27,7 @@ import { Route as LanguageAppSavedImport } from './routes/$language/_app/saved'
 import { Route as LanguageAppPrivacyPolicyImport } from './routes/$language/_app/privacy-policy'
 import { Route as LanguageAdminAdminIndexImport } from './routes/$language/admin/_admin/index'
 import { Route as LanguageAdminAdminProviderImport } from './routes/$language/admin/_admin/provider'
+import { Route as LanguageAdminAdminAnalyticsImport } from './routes/$language/admin/_admin/analytics'
 import { Route as LanguageAppResourcesIdImport } from './routes/$language/_app/resources/$id'
 
 // Create Virtual Routes
@@ -126,6 +127,13 @@ const LanguageAdminAdminProviderRoute = LanguageAdminAdminProviderImport.update(
     getParentRoute: () => LanguageAdminAdminRoute,
   } as any,
 )
+
+const LanguageAdminAdminAnalyticsRoute =
+  LanguageAdminAdminAnalyticsImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => LanguageAdminAdminRoute,
+  } as any)
 
 const LanguageAppResourcesIdRoute = LanguageAppResourcesIdImport.update({
   id: '/resources/$id',
@@ -235,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LanguageAppResourcesIdImport
       parentRoute: typeof LanguageAppImport
     }
+    '/$language/admin/_admin/analytics': {
+      id: '/$language/admin/_admin/analytics'
+      path: '/analytics'
+      fullPath: '/$language/admin/analytics'
+      preLoaderRoute: typeof LanguageAdminAdminAnalyticsImport
+      parentRoute: typeof LanguageAdminAdminImport
+    }
     '/$language/admin/_admin/provider': {
       id: '/$language/admin/_admin/provider'
       path: '/provider'
@@ -275,11 +290,13 @@ const LanguageAppRouteWithChildren = LanguageAppRoute._addFileChildren(
 )
 
 interface LanguageAdminAdminRouteChildren {
+  LanguageAdminAdminAnalyticsRoute: typeof LanguageAdminAdminAnalyticsRoute
   LanguageAdminAdminProviderRoute: typeof LanguageAdminAdminProviderRoute
   LanguageAdminAdminIndexRoute: typeof LanguageAdminAdminIndexRoute
 }
 
 const LanguageAdminAdminRouteChildren: LanguageAdminAdminRouteChildren = {
+  LanguageAdminAdminAnalyticsRoute: LanguageAdminAdminAnalyticsRoute,
   LanguageAdminAdminProviderRoute: LanguageAdminAdminProviderRoute,
   LanguageAdminAdminIndexRoute: LanguageAdminAdminIndexRoute,
 }
@@ -336,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/$language/admin/verify-email': typeof LanguageAdminVerifyEmailRoute
   '/$language/': typeof LanguageAppIndexRoute
   '/$language/resources/$id': typeof LanguageAppResourcesIdRoute
+  '/$language/admin/analytics': typeof LanguageAdminAdminAnalyticsRoute
   '/$language/admin/provider': typeof LanguageAdminAdminProviderRoute
   '/$language/admin/': typeof LanguageAdminAdminIndexRoute
 }
@@ -352,6 +370,7 @@ export interface FileRoutesByTo {
   '/$language/admin/signup': typeof LanguageAdminSignupRoute
   '/$language/admin/verify-email': typeof LanguageAdminVerifyEmailRoute
   '/$language/resources/$id': typeof LanguageAppResourcesIdRoute
+  '/$language/admin/analytics': typeof LanguageAdminAdminAnalyticsRoute
   '/$language/admin/provider': typeof LanguageAdminAdminProviderRoute
 }
 
@@ -371,6 +390,7 @@ export interface FileRoutesById {
   '/$language/admin/verify-email': typeof LanguageAdminVerifyEmailRoute
   '/$language/_app/': typeof LanguageAppIndexRoute
   '/$language/_app/resources/$id': typeof LanguageAppResourcesIdRoute
+  '/$language/admin/_admin/analytics': typeof LanguageAdminAdminAnalyticsRoute
   '/$language/admin/_admin/provider': typeof LanguageAdminAdminProviderRoute
   '/$language/admin/_admin/': typeof LanguageAdminAdminIndexRoute
 }
@@ -390,6 +410,7 @@ export interface FileRouteTypes {
     | '/$language/admin/verify-email'
     | '/$language/'
     | '/$language/resources/$id'
+    | '/$language/admin/analytics'
     | '/$language/admin/provider'
     | '/$language/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -405,6 +426,7 @@ export interface FileRouteTypes {
     | '/$language/admin/signup'
     | '/$language/admin/verify-email'
     | '/$language/resources/$id'
+    | '/$language/admin/analytics'
     | '/$language/admin/provider'
   id:
     | '__root__'
@@ -422,6 +444,7 @@ export interface FileRouteTypes {
     | '/$language/admin/verify-email'
     | '/$language/_app/'
     | '/$language/_app/resources/$id'
+    | '/$language/admin/_admin/analytics'
     | '/$language/admin/_admin/provider'
     | '/$language/admin/_admin/'
   fileRoutesById: FileRoutesById
@@ -494,6 +517,7 @@ export const routeTree = rootRoute
       "filePath": "$language/admin/_admin.tsx",
       "parent": "/$language/admin",
       "children": [
+        "/$language/admin/_admin/analytics",
         "/$language/admin/_admin/provider",
         "/$language/admin/_admin/"
       ]
@@ -525,6 +549,10 @@ export const routeTree = rootRoute
     "/$language/_app/resources/$id": {
       "filePath": "$language/_app/resources/$id.tsx",
       "parent": "/$language/_app"
+    },
+    "/$language/admin/_admin/analytics": {
+      "filePath": "$language/admin/_admin/analytics.tsx",
+      "parent": "/$language/admin/_admin"
     },
     "/$language/admin/_admin/provider": {
       "filePath": "$language/admin/_admin/provider.tsx",

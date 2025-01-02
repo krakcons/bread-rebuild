@@ -65,7 +65,7 @@ function RouteComponent() {
 										}}
 									>
 										<Utensils />
-										<span>Listings</span>
+										Listings
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
@@ -78,20 +78,20 @@ function RouteComponent() {
 										}}
 									>
 										<Building />
-										<span>Provider</span>
+										Provider
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 							<SidebarMenuItem>
 								<SidebarMenuButton asChild>
 									<Link
-										to="/$language/admin"
+										to="/$language/admin/analytics"
 										params={{
 											language,
 										}}
 									>
 										<BarChart />
-										<span>Analytics</span>
+										Analytics
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
