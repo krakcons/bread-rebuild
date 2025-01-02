@@ -18,7 +18,7 @@ export const english = {
 	phoneTypes: {
 		phone: "Phone",
 		fax: "Fax",
-		tollFree: "Toll Free",
+		"toll-free": "Toll Free",
 		tty: "TTY",
 	},
 	accessibility: "Accessibility",
@@ -161,7 +161,7 @@ export const french: typeof english = {
 	phoneTypes: {
 		phone: "Téléphone",
 		fax: "Fax",
-		tollFree: "Téléphone sans frais",
+		"toll-free": "Téléphone sans frais",
 		tty: "TTY",
 	},
 	accessibility: "Accessibilité",

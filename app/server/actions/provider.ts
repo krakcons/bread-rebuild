@@ -1,12 +1,23 @@
+import { getLocalizedArray } from "@/lib/language";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { generateId } from "../auth";
 import { db } from "../db";
-import { providers, providerTranslations } from "../db/schema";
-import { languageMiddleware, protectedMiddleware } from "../middleware";
+import {
+	providerPhoneNumbers,
+	providers,
+	providerTranslations,
+} from "../db/schema";
+import {
+	languageMiddleware,
+	protectedMiddleware,
+	providerMiddleware,
+} from "../middleware";
+import { FullProviderType } from "../types";
 
-export const ProviderOnboardingSchema = z.object({
+export const ProviderFormSchema = z.object({
 	name: z.string().min(1),
 	email: z.string().email().optional(),
 	website: z.string().url().optional(),
@@ -27,12 +38,44 @@ export const ProviderOnboardingSchema = z.object({
 		.array()
 		.optional(),
 });
+export type ProviderFormSchema = z.infer<typeof ProviderFormSchema>;
+
+export const getProviderFn = createServerFn({
+	method: "GET",
+})
+	.middleware([languageMiddleware, protectedMiddleware])
+	.handler(async ({ context }): Promise<FullProviderType> => {
+		const provider = await db.query.providers.findFirst({
+			where: eq(providers.userId, context.user.id),
+			with: {
+				providerTranslations: true,
+				providerPhoneNumbers: true,
+			},
+		});
+
+		if (!provider) {
+			throw redirect({
+				to: "/$language/admin/onboarding",
+				params: { language: context.language },
+			});
+		}
+
+		return {
+			...getLocalizedArray(
+				provider.providerTranslations,
+				context.language,
+			),
+			phoneNumbers: provider.providerPhoneNumbers,
+			id: provider.id,
+			userId: provider.userId,
+		};
+	});
 
 export const onboardProviderFn = createServerFn({
 	method: "POST",
 })
 	.middleware([languageMiddleware, protectedMiddleware])
-	.validator(ProviderOnboardingSchema)
+	.validator(ProviderFormSchema)
 	.handler(async ({ data, context }) => {
 		const { name, email, website, description } = data;
 		const providerId = generateId(16);
@@ -52,4 +95,38 @@ export const onboardProviderFn = createServerFn({
 			to: "/$language/admin",
 			params: { language: context.language },
 		});
+	});
+
+export const editProviderFn = createServerFn({
+	method: "POST",
+})
+	.middleware([providerMiddleware])
+	.validator(ProviderFormSchema)
+	.handler(async ({ data, context }) => {
+		const { name, email, website, description, phoneNumbers } = data;
+
+		await db
+			.update(providerTranslations)
+			.set({
+				name,
+				email,
+				website,
+				description,
+			})
+			.where(eq(providerTranslations.providerId, context.provider.id));
+
+		if (phoneNumbers) {
+			await db
+				.delete(providerPhoneNumbers)
+				.where(
+					eq(providerPhoneNumbers.providerId, context.provider.id),
+				);
+			await db.insert(providerPhoneNumbers).values(
+				phoneNumbers.map((phoneNumber) => ({
+					providerId: context.provider.id,
+					phone: phoneNumber.phone,
+					type: phoneNumber.type,
+				})) ?? [],
+			);
+		}
 	});

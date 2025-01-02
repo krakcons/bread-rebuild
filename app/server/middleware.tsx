@@ -1,7 +1,11 @@
 import { getLanguage } from "@/lib/language/actions";
+import { redirect } from "@tanstack/react-router";
 import { createMiddleware } from "@tanstack/start";
+import { eq } from "drizzle-orm";
 import { getCookie } from "vinxi/http";
 import { validateSessionToken } from "./auth";
+import { db } from "./db";
+import { providers } from "./db/schema";
 
 export const languageMiddleware = createMiddleware().server(
 	async ({ next }) => {
@@ -40,6 +44,27 @@ export const protectedMiddleware = createMiddleware()
 			context: {
 				session: context.session,
 				user: context.user,
+			},
+		});
+	});
+
+export const providerMiddleware = createMiddleware()
+	.middleware([languageMiddleware, protectedMiddleware])
+	.server(async ({ next, context }) => {
+		const provider = await db.query.providers.findFirst({
+			where: eq(providers.userId, context.user.id),
+		});
+
+		if (!provider) {
+			throw redirect({
+				to: "/$language/admin/onboarding",
+				params: { language: context.language },
+			});
+		}
+
+		return next({
+			context: {
+				provider,
 			},
 		});
 	});

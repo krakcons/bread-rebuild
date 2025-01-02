@@ -25,6 +25,11 @@ export const ProviderTranslationSchema =
 	createSelectSchema(providerTranslations);
 export type ProviderTranslationType = z.infer<typeof ProviderTranslationSchema>;
 
+export type FullProviderType = ProviderType &
+	ProviderTranslationType & {
+		phoneNumbers: ProviderPhoneNumberType[];
+	};
+
 export const PhoneNumberSchema = createSelectSchema(phoneNumbers);
 export type PhoneNumberType = z.infer<typeof PhoneNumberSchema>;
 

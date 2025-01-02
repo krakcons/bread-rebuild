@@ -347,7 +347,7 @@ export const sendVerificationEmail = createServerFn({ method: "POST" })
 		);
 	});
 
-export const logout = createServerFn({ method: "POST" })
+export const logoutFn = createServerFn({ method: "POST" })
 	.middleware([languageMiddleware, authMiddleware])
 	.handler(async ({ context }) => {
 		if (context.session) {
