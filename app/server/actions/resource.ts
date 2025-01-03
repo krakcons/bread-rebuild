@@ -1,4 +1,4 @@
-import { getLocalizedArray } from "@/lib/locale";
+import { flattenLocalizedObject } from "@/lib/locale";
 import { db } from "@/server/db";
 import {
 	dietaryOptions,
@@ -8,7 +8,11 @@ import {
 	resources,
 } from "@/server/db/schema";
 import { localeMiddleware } from "@/server/middleware";
-import { FullResourceType } from "@/server/types";
+import {
+	LocalizedQuerySchema,
+	LocalizedQueryType,
+	ResourceType,
+} from "@/server/types";
 import { createServerFn } from "@tanstack/start";
 import { and, eq, exists, ilike, inArray } from "drizzle-orm";
 import { z } from "zod";
@@ -28,192 +32,189 @@ export const searchFn = createServerFn({
 	method: "GET",
 })
 	.middleware([localeMiddleware])
-	.validator(SearchParamsSchema)
-	.handler(
-		async ({
-			context: { locale },
-			data: { query, dietaryOptionsIds = [], ...filters },
-		}): Promise<FullResourceType[]> => {
-			const meals = await db.query.resources.findMany({
-				where: and(
-					query
-						? exists(
-								db
-									.select()
-									.from(providers)
-									.fullJoin(
-										providerTranslations,
-										eq(
-											providers.id,
-											providerTranslations.providerId,
-										),
-									)
-									.where(
-										ilike(
-											providerTranslations.name,
-											`%${query}%`,
-										),
-									),
-							)
-						: undefined,
-					filters.free ? eq(resources.free, true) : undefined,
-					filters.preparationRequired
-						? eq(resources.preparationRequired, true)
-						: undefined,
-					filters.parkingAvailable
-						? eq(resources.parkingAvailable, true)
-						: undefined,
-					filters.transitAvailable
-						? eq(resources.transitAvailable, true)
-						: undefined,
-					filters.wheelchairAccessible
-						? eq(resources.wheelchairAccessible, true)
-						: undefined,
-					dietaryOptionsIds.length > 0
-						? exists(
-								db
-									.select()
-									.from(dietaryOptions)
-									.fullJoin(
-										dietaryOptionsTranslations,
-										eq(
-											dietaryOptions.id,
-											dietaryOptionsTranslations.dietaryOptionId,
-										),
-									)
-									.where(
-										inArray(
-											dietaryOptionsTranslations.dietaryOptionId,
-											dietaryOptionsIds,
-										),
-									),
-							)
-						: undefined,
-				),
-				with: {
-					provider: {
-						with: {
-							providerTranslations: true,
-						},
-					},
-					bodyTranslations: true,
-					phoneNumbers: true,
-					resourceToDietaryOptions: {
-						with: {
-							dietaryOption: {
-								with: {
-									dietaryOptionsTranslations: true,
-								},
-							},
-						},
-					},
-				},
-			});
-			return meals.map((meal) => ({
-				...meal,
-				name: getLocalizedArray(
-					meal.provider.providerTranslations,
-					locale,
-				).name,
-				body: getLocalizedArray(meal.bodyTranslations, locale),
-				dietaryOptions: meal.resourceToDietaryOptions.map((r) =>
-					getLocalizedArray(
-						r.dietaryOption.dietaryOptionsTranslations,
-						locale,
-					),
-				),
-			}));
-		},
-	);
-
-export const getResourceFn = createServerFn({
-	method: "GET",
-})
-	.middleware([localeMiddleware])
-	.validator(z.object({ id: z.string() }))
-	.handler(
-		async ({
-			data: { id },
-			context: { locale },
-		}): Promise<FullResourceType | undefined> => {
-			const resource = await db.query.resources.findFirst({
-				where: eq(resources.id, id),
-				with: {
-					provider: {
-						with: {
-							providerTranslations: true,
-						},
-					},
-					bodyTranslations: true,
-					phoneNumbers: true,
-					resourceToDietaryOptions: {
-						with: {
-							dietaryOption: {
-								with: {
-									dietaryOptionsTranslations: true,
-								},
-							},
-						},
-					},
-				},
-			});
-			if (!resource) return undefined;
-			return {
-				...resource,
-				name: getLocalizedArray(
-					resource.provider.providerTranslations,
-					locale,
-				).name,
-				body: getLocalizedArray(resource.bodyTranslations, locale),
-				dietaryOptions: resource.resourceToDietaryOptions.map((r) =>
-					getLocalizedArray(
-						r.dietaryOption.dietaryOptionsTranslations,
-						locale,
-					),
-				),
-			};
-		},
-	);
-
-export const getResourcesFn = createServerFn({
-	method: "GET",
-})
-	.middleware([localeMiddleware])
-	.validator(z.object({ ids: z.string().array() }))
-	.handler(async ({ context: { locale }, data: { ids } }) => {
+	.validator(SearchParamsSchema.and(LocalizedQuerySchema))
+	.handler(async ({ context, data }): Promise<ResourceType[]> => {
+		const localeOpts: Required<LocalizedQueryType> = {
+			locale: data?.locale ?? context.locale,
+			fallback: data?.fallback ?? true,
+		};
 		const resourceList = await db.query.resources.findMany({
-			where: inArray(resources.id, ids),
+			where: and(
+				data.query
+					? exists(
+							db
+								.select()
+								.from(providers)
+								.fullJoin(
+									providerTranslations,
+									eq(
+										providers.id,
+										providerTranslations.providerId,
+									),
+								)
+								.where(
+									ilike(
+										providerTranslations.name,
+										`%${data.query}%`,
+									),
+								),
+						)
+					: undefined,
+				data.free ? eq(resources.free, true) : undefined,
+				data.preparationRequired
+					? eq(resources.preparationRequired, true)
+					: undefined,
+				data.parkingAvailable
+					? eq(resources.parkingAvailable, true)
+					: undefined,
+				data.transitAvailable
+					? eq(resources.transitAvailable, true)
+					: undefined,
+				data.wheelchairAccessible
+					? eq(resources.wheelchairAccessible, true)
+					: undefined,
+				data.dietaryOptionsIds && data.dietaryOptionsIds.length > 0
+					? exists(
+							db
+								.select()
+								.from(dietaryOptions)
+								.fullJoin(
+									dietaryOptionsTranslations,
+									eq(
+										dietaryOptions.id,
+										dietaryOptionsTranslations.dietaryOptionId,
+									),
+								)
+								.where(
+									inArray(
+										dietaryOptionsTranslations.dietaryOptionId,
+										data.dietaryOptionsIds,
+									),
+								),
+						)
+					: undefined,
+			),
 			with: {
 				provider: {
 					with: {
-						providerTranslations: true,
+						translations: true,
 					},
 				},
-				bodyTranslations: true,
+				translations: true,
 				phoneNumbers: true,
 				resourceToDietaryOptions: {
 					with: {
 						dietaryOption: {
 							with: {
-								dietaryOptionsTranslations: true,
+								translations: true,
 							},
 						},
 					},
 				},
 			},
 		});
-		return resourceList.map((resource) => ({
-			...resource,
-			name: getLocalizedArray(
-				resource.provider.providerTranslations,
-				locale,
-			).name,
-			body: getLocalizedArray(resource.bodyTranslations, locale),
-			dietaryOptions: resource.resourceToDietaryOptions.map((r) =>
-				getLocalizedArray(
-					r.dietaryOption.dietaryOptionsTranslations,
-					locale,
+		return resourceList.map((resource) => {
+			const { provider, resourceToDietaryOptions, ...rest } = resource;
+			return flattenLocalizedObject(
+				{
+					...rest,
+					provider: flattenLocalizedObject(provider, localeOpts),
+					dietaryOptions: resourceToDietaryOptions.map((r) =>
+						flattenLocalizedObject(r.dietaryOption, localeOpts),
+					),
+				},
+				localeOpts,
+			)!;
+		});
+	});
+
+export const getResourceFn = createServerFn({
+	method: "GET",
+})
+	.middleware([localeMiddleware])
+	.validator(z.object({ id: z.string() }).and(LocalizedQuerySchema))
+	.handler(async ({ data, context }): Promise<ResourceType | undefined> => {
+		const localeOpts: Required<LocalizedQueryType> = {
+			locale: data?.locale ?? context.locale,
+			fallback: data?.fallback ?? true,
+		};
+		const resource = await db.query.resources.findFirst({
+			where: eq(resources.id, data.id),
+			with: {
+				provider: {
+					with: {
+						translations: true,
+					},
+				},
+				translations: true,
+				phoneNumbers: true,
+				resourceToDietaryOptions: {
+					with: {
+						dietaryOption: {
+							with: {
+								translations: true,
+							},
+						},
+					},
+				},
+			},
+		});
+		if (!resource) return undefined;
+		const { provider, resourceToDietaryOptions, ...rest } = resource;
+		return flattenLocalizedObject(
+			{
+				...rest,
+				provider: flattenLocalizedObject(provider, localeOpts),
+				dietaryOptions: resourceToDietaryOptions.map((r) =>
+					flattenLocalizedObject(r.dietaryOption, localeOpts),
 				),
-			),
-		}));
+			},
+			localeOpts,
+		);
+	});
+
+export const getResourcesFn = createServerFn({
+	method: "GET",
+})
+	.middleware([localeMiddleware])
+	.validator(z.object({ ids: z.string().array() }).and(LocalizedQuerySchema))
+	.handler(async ({ context, data }): Promise<ResourceType[]> => {
+		const localeOpts: Required<LocalizedQueryType> = {
+			locale: data?.locale ?? context.locale,
+			fallback: data?.fallback ?? true,
+		};
+		const resourceList = await db.query.resources.findMany({
+			where: inArray(resources.id, data.ids),
+			with: {
+				provider: {
+					with: {
+						translations: true,
+					},
+				},
+				translations: true,
+				phoneNumbers: true,
+				resourceToDietaryOptions: {
+					with: {
+						dietaryOption: {
+							with: {
+								translations: true,
+							},
+						},
+					},
+				},
+			},
+		});
+		return resourceList.map((resource) => {
+			const { provider, resourceToDietaryOptions, ...rest } = resource;
+			return flattenLocalizedObject(
+				{
+					...rest,
+					provider: flattenLocalizedObject(provider, localeOpts),
+					dietaryOptions: resourceToDietaryOptions.map((r) =>
+						flattenLocalizedObject(r.dietaryOption, localeOpts),
+					),
+				},
+				localeOpts,
+			)!;
+		});
 	});

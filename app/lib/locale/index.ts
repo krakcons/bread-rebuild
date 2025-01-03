@@ -1,4 +1,4 @@
-import { LocalizedType } from "@/server/types";
+import { LocalizedQueryType } from "@/server/types";
 import { z } from "zod";
 import { english, french } from "./messages";
 
@@ -37,7 +37,7 @@ export const flattenLocalizedObject = <
 	TResult = FlattenedLocalized<TBase, TTranslation>,
 >(
 	obj?: TBase,
-	options?: LocalizedType,
+	options?: LocalizedQueryType,
 ): TResult | undefined => {
 	if (!obj) return undefined;
 	const { locale, fallback = true } = options ?? {};

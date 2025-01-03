@@ -318,7 +318,7 @@ export const dietaryOptionsRelations = relations(
 	dietaryOptions,
 	({ many }) => ({
 		resourceToDietaryOptions: many(resourceToDietaryOptions),
-		dietaryOptionsTranslations: many(dietaryOptionsTranslations),
+		translations: many(dietaryOptionsTranslations),
 	}),
 );
 

@@ -16,6 +16,7 @@ import {
 	resourceTranslations,
 } from "@/server/db/schema";
 import {
+	BaseResourceType,
 	ResourceSchema,
 	ResourceTranslationType,
 	ResourceType,
@@ -146,7 +147,7 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			drupalData: any,
 			providerId: string,
 		): {
-			resource: ResourceType;
+			resource: BaseResourceType;
 			body: {
 				en: Omit<ResourceTranslationType, "id">;
 				fr: Omit<ResourceTranslationType, "id">;
@@ -176,7 +177,7 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 				offering = "meal";
 			}
 
-			const resource: ResourceType = {
+			const resource: BaseResourceType = {
 				id: generateId(16),
 				providerId,
 				...contactInfo,

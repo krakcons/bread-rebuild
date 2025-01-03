@@ -16,7 +16,7 @@ import {
 	toggleSavedFn,
 	updateSavedFn,
 } from "@/server/actions/saved";
-import { FullResourceType, SavedResourceType } from "@/server/types";
+import { ResourceType, SavedResourceType } from "@/server/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { Bookmark, CalendarDays } from "lucide-react";
@@ -26,7 +26,7 @@ export const ResourceActions = ({
 	resource,
 	children,
 }: {
-	resource: FullResourceType;
+	resource: ResourceType;
 	children?: React.ReactNode;
 }) => {
 	const { data: saved } = useSuspenseQuery({

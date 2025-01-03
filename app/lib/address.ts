@@ -1,8 +1,8 @@
-import { FullResourceType } from "@/server/types";
+import { ResourceType } from "@/server/types";
 
 import { formatServiceAddress } from "@cords/sdk";
 
-export const formatAddress = (address: FullResourceType) => {
+export const formatAddress = (address: ResourceType) => {
 	return formatServiceAddress({
 		street1: address.street1 ?? "",
 		street2: address.street2 ?? "",

@@ -1,6 +1,6 @@
 import { formatAddress } from "@/lib/address";
 import { getTranslations } from "@/lib/locale";
-import { FullResourceType } from "@/server/types";
+import { ResourceType } from "@/server/types";
 import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
 import { useState } from "react";
@@ -8,7 +8,7 @@ import { Marker, Popup } from "react-map-gl/maplibre";
 import { Button, buttonVariants } from "../ui/Button";
 import { ResourceActions } from "./Actions";
 
-export const MapResource = ({ resource }: { resource: FullResourceType }) => {
+export const MapResource = ({ resource }: { resource: ResourceType }) => {
 	const { locale } = useParams({ from: "/$locale" });
 	const [popupOpen, setPopupOpen] = useState<boolean>(false);
 	const translations = getTranslations(locale);
@@ -57,7 +57,7 @@ export const MapResource = ({ resource }: { resource: FullResourceType }) => {
 							}}
 							className="text-lg font-semibold hover:underline"
 						>
-							{resource.name}
+							{resource.provider.name}
 						</Link>
 						{/* Address section */}
 						{resource.street1 && (
@@ -77,10 +77,10 @@ export const MapResource = ({ resource }: { resource: FullResourceType }) => {
 							</div>
 						))}
 						{/* Fees section */}
-						{resource.body.fees && (
+						{resource.fees && (
 							<div className="mb-2 flex items-center gap-2 text-muted-foreground">
 								<DollarSign size={20} />
-								{resource.body.fees}
+								{resource.fees}
 							</div>
 						)}
 						<ResourceActions resource={resource}>

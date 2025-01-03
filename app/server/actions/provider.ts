@@ -15,7 +15,12 @@ import {
 	protectedMiddleware,
 	providerMiddleware,
 } from "../middleware";
-import { LocalizedInputSchema, LocalizedSchema, ProviderType } from "../types";
+import {
+	LocalizedInputSchema,
+	LocalizedQuerySchema,
+	LocalizedQueryType,
+	ProviderType,
+} from "../types";
 
 export const ProviderFormSchema = z.object({
 	name: z.string().min(1),
@@ -44,20 +49,28 @@ export const getProviderFn = createServerFn({
 	method: "GET",
 })
 	.middleware([localeMiddleware, protectedMiddleware])
-	.validator(LocalizedSchema)
+	.validator(LocalizedQuerySchema)
 	.handler(async ({ context, data }): Promise<ProviderType | undefined> => {
+		const localeOpts: Required<LocalizedQueryType> = {
+			locale: data?.locale ?? context.locale,
+			fallback: data?.fallback ?? true,
+		};
 		const provider = await db.query.providers.findFirst({
 			where: eq(providers.userId, context.user.id),
 			with: {
-				translations: !data?.locale
+				translations: localeOpts.fallback
 					? true
 					: {
-							where: eq(providerTranslations.locale, data.locale),
+							where: eq(
+								providerTranslations.locale,
+								localeOpts.locale,
+							),
 						},
 				phoneNumbers: true,
 			},
 		});
-		return flattenLocalizedObject(provider, data);
+
+		return flattenLocalizedObject(provider, localeOpts);
 	});
 
 export const onboardProviderFn = createServerFn({
