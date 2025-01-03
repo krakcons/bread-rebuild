@@ -40,16 +40,19 @@ const convertTime = (time: string): string => {
 			hour += 12;
 		}
 
-		return hour.toString().padStart(2, "0") + minute.toString().padStart(2, "0");
+		return (
+			hour.toString().padStart(2, "0") +
+			minute.toString().padStart(2, "0")
+		);
 	}
 
 	throw new Error(`Invalid time: ${time}`);
 };
-const formatTime = (time: string, language: string): string => {
+const formatTime = (time: string, locale: string): string => {
 	const hour = parseInt(time.slice(0, 2), 10);
 	const minute = time.slice(2);
 
-	if (language === "fr") {
+	if (locale === "fr") {
 		return `${hour}h${minute.padStart(2, "0")}`;
 	} else {
 		const period = hour < 12 ? "am" : "pm";
@@ -61,7 +64,10 @@ const formatTime = (time: string, language: string): string => {
 	}
 };
 
-export const parseSchedule = (hoursString: string, language: string): DaySchedule[] => {
+export const parseSchedule = (
+	hoursString: string,
+	locale: string,
+): DaySchedule[] => {
 	const scheduleArray = hoursString
 		.split(";")
 		.map((s) => s.trim())
@@ -80,7 +86,7 @@ export const parseSchedule = (hoursString: string, language: string): DaySchedul
 			throw new Error(`Invalid day: ${day}`);
 		}
 
-		if (language === "fr") {
+		if (locale === "fr") {
 			const frenchDay = frenchDays[days.indexOf(day)];
 			if (!frenchDay) throw new Error(`Invalid day: ${day}`);
 			day = frenchDay;
@@ -88,8 +94,8 @@ export const parseSchedule = (hoursString: string, language: string): DaySchedul
 
 		result.push({
 			day,
-			open: formatTime(convertTime(open), language),
-			close: formatTime(convertTime(close), language),
+			open: formatTime(convertTime(open), locale),
+			close: formatTime(convertTime(close), locale),
 		});
 	}
 

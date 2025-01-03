@@ -1,21 +1,21 @@
 import { formatAddress } from "@/lib/address";
-import { getTranslations } from "@/lib/language";
+import { getTranslations } from "@/lib/locale";
 import { FullResourceType } from "@/server/types";
 import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall } from "lucide-react";
 import { ResourceActions } from "./Actions";
 
 export const Resource = ({ resource }: { resource: FullResourceType }) => {
-	const { language } = useParams({
-		from: "/$language",
+	const { locale } = useParams({
+		from: "/$locale",
 	});
-	const t = getTranslations(language);
+	const t = getTranslations(locale);
 
 	return (
 		<Link
-			to="/$language/resources/$id"
+			to="/$locale/resources/$id"
 			params={{
-				language,
+				locale,
 				id: resource.id,
 			}}
 			className="flex flex-col items-start gap-2 rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"

@@ -13,7 +13,7 @@ import {
 import { db } from "../db";
 import { emailVerifications, passwordResets, users } from "../db/auth/schema";
 import { providers } from "../db/schema";
-import { authMiddleware, languageMiddleware } from "../middleware";
+import { authMiddleware, localeMiddleware } from "../middleware";
 import {
 	deleteSessionTokenCookie,
 	setSessionTokenCookie,
@@ -30,7 +30,7 @@ export const LoginSchema = z.object({
 });
 
 export const login = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware])
+	.middleware([localeMiddleware])
 	.validator(LoginSchema)
 	.handler(async ({ data, context }) => {
 		const user = await db.query.users.findFirst({
@@ -52,13 +52,13 @@ export const login = createServerFn({ method: "POST" })
 		if (!user.emailVerified) {
 			await createAndSendEmailVerification(user.id, user.email);
 			throw redirect({
-				to: "/$language/admin/verify-email",
-				params: { language: context.language },
+				to: "/$locale/admin/verify-email",
+				params: { locale: context.locale },
 			});
 		} else {
 			throw redirect({
-				to: "/$language/admin",
-				params: { language: context.language },
+				to: "/$locale/admin",
+				params: { locale: context.locale },
 			});
 		}
 	});
@@ -74,7 +74,7 @@ export const SignupSchema = LoginSchema.extend({
 export type SignupSchema = z.infer<typeof SignupSchema>;
 
 export const signup = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware])
+	.middleware([localeMiddleware])
 	.validator(SignupSchema)
 	.handler(async ({ data, context }) => {
 		// Verify email is not already in use
@@ -100,8 +100,8 @@ export const signup = createServerFn({ method: "POST" })
 		setSessionTokenCookie(sessionToken, session.expiresAt);
 
 		throw redirect({
-			to: "/$language/admin/verify-email",
-			params: { language: context.language },
+			to: "/$locale/admin/verify-email",
+			params: { locale: context.locale },
 		});
 	});
 
@@ -112,13 +112,13 @@ export const VerifyEmailSchema = z.object({
 });
 
 export const verifyEmail = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware, authMiddleware])
+	.middleware([localeMiddleware, authMiddleware])
 	.validator(VerifyEmailSchema)
 	.handler(async ({ data, context }) => {
 		if (context.session === null) {
 			throw redirect({
-				to: "/$language/admin/login",
-				params: { language: context.language },
+				to: "/$locale/admin/login",
+				params: { locale: context.locale },
 			});
 		}
 
@@ -159,18 +159,18 @@ export const verifyEmail = createServerFn({ method: "POST" })
 			.where(eq(users.id, context.user.id));
 
 		throw redirect({
-			to: "/$language/admin",
-			params: { language: context.language },
+			to: "/$locale/admin",
+			params: { locale: context.locale },
 		});
 	});
 
 export const resendEmailVerification = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware, authMiddleware])
+	.middleware([localeMiddleware, authMiddleware])
 	.handler(async ({ context }) => {
 		if (context.session === null) {
 			throw redirect({
-				to: "/$language/admin/login",
-				params: { language: context.language },
+				to: "/$locale/admin/login",
+				params: { locale: context.locale },
 			});
 		}
 		await createAndSendEmailVerification(
@@ -207,7 +207,7 @@ export const ResetPasswordEmailSchema = z.object({
 });
 
 export const resetPasswordFromEmail = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware])
+	.middleware([localeMiddleware])
 	.validator(ResetPasswordEmailSchema)
 	.handler(async ({ data, context }): Promise<{ error?: string }> => {
 		const user = await db.query.users.findFirst({
@@ -217,8 +217,8 @@ export const resetPasswordFromEmail = createServerFn({ method: "POST" })
 			await createAndSendPasswordReset(user.id, user.email);
 		}
 		throw redirect({
-			to: "/$language/admin/verify-email",
-			params: { language: context.language },
+			to: "/$locale/admin/verify-email",
+			params: { locale: context.locale },
 			search: {
 				type: "password_reset",
 			},
@@ -236,7 +236,7 @@ export const ResetPasswordSchema = z
 	});
 
 export const resetPassword = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware])
+	.middleware([localeMiddleware])
 	.validator(ResetPasswordSchema)
 	.handler(async ({ data, context }) => {
 		const passwordReset = await validatePasswordResetSession();
@@ -258,13 +258,13 @@ export const resetPassword = createServerFn({ method: "POST" })
 			.where(eq(passwordResets.id, passwordReset.id));
 
 		throw redirect({
-			to: "/$language/admin",
-			params: { language: context.language },
+			to: "/$locale/admin",
+			params: { locale: context.locale },
 		});
 	});
 
 export const verifyPasswordResetEmail = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware])
+	.middleware([localeMiddleware])
 	.validator(VerifyEmailSchema)
 	.handler(async ({ data, context }) => {
 		const passwordReset = await validatePasswordResetSession();
@@ -298,8 +298,8 @@ export const verifyPasswordResetEmail = createServerFn({ method: "POST" })
 			.where(eq(emailVerifications.userId, passwordReset.userId));
 
 		throw redirect({
-			to: "/$language/admin/reset-password",
-			params: { language: context.language },
+			to: "/$locale/admin/reset-password",
+			params: { locale: context.locale },
 		});
 	});
 
@@ -333,12 +333,12 @@ export const getAuth = createServerFn({ method: "GET" })
 	});
 
 export const sendVerificationEmail = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware, authMiddleware])
+	.middleware([localeMiddleware, authMiddleware])
 	.handler(async ({ context }) => {
 		if (context.user === null) {
 			throw redirect({
-				to: "/$language/admin/login",
-				params: { language: context.language },
+				to: "/$locale/admin/login",
+				params: { locale: context.locale },
 			});
 		}
 		await createAndSendEmailVerification(
@@ -348,14 +348,14 @@ export const sendVerificationEmail = createServerFn({ method: "POST" })
 	});
 
 export const logoutFn = createServerFn({ method: "POST" })
-	.middleware([languageMiddleware, authMiddleware])
+	.middleware([localeMiddleware, authMiddleware])
 	.handler(async ({ context }) => {
 		if (context.session) {
 			await invalidateSession(context.session.id);
 			deleteSessionTokenCookie();
 			throw redirect({
-				to: "/$language/admin/login",
-				params: { language: context.language },
+				to: "/$locale/admin/login",
+				params: { locale: context.locale },
 			});
 		}
 	});

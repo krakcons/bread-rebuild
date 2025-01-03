@@ -7,16 +7,20 @@ import {
 	anonymousSessionsToResources,
 	dietaryOptions,
 	dietaryOptionsTranslations,
-	phoneNumbers,
 	providerPhoneNumbers,
 	providers,
 	providerTranslations,
-	resourceBodyTranslations,
+	resourcePhoneNumbers,
 	resources,
 	resourceToDietaryOptions,
+	resourceTranslations,
 } from "@/server/db/schema";
-import { ResourceBodyType, ResourceSchema, ResourceType } from "@/server/types";
-import { translate } from "../../lib/language";
+import {
+	ResourceSchema,
+	ResourceTranslationType,
+	ResourceType,
+} from "@/server/types";
+import { translate } from "../../lib/locale";
 
 type LocalizedFieldType = {
 	en: string;
@@ -144,8 +148,8 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 		): {
 			resource: ResourceType;
 			body: {
-				en: Omit<ResourceBodyType, "id">;
-				fr: Omit<ResourceBodyType, "id">;
+				en: Omit<ResourceTranslationType, "id">;
+				fr: Omit<ResourceTranslationType, "id">;
 			};
 			phone: string | null;
 			dietaryOptions: string[];
@@ -207,13 +211,15 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			};
 
 			const body: {
-				en: Omit<ResourceBodyType, "id">;
-				fr: Omit<ResourceBodyType, "id">;
+				en: Omit<ResourceTranslationType, "id">;
+				fr: Omit<ResourceTranslationType, "id">;
 			} = {
 				en: {
 					resourceId: resource.id,
+					email: contactInfo.email,
+					website: contactInfo.website,
 					fees: drupalData.attributes.field_cost_notes,
-					language: "en",
+					locale: "en",
 					hours,
 					eligibility: null,
 					accessibility: drupalData.attributes.field_wheelchair_notes,
@@ -233,8 +239,10 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 				},
 				fr: {
 					resourceId: resource.id,
+					email: contactInfo.email,
+					website: contactInfo.website,
 					fees: drupalData.attributes.field_cost_notes,
-					language: "fr",
+					locale: "fr",
 					hours,
 					eligibility: null,
 					accessibility: drupalData.attributes.field_wheelchair_notes,
@@ -267,8 +275,8 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 		await db.delete(providerPhoneNumbers);
 		await db.delete(dietaryOptionsTranslations);
 		await db.delete(dietaryOptions);
-		await db.delete(phoneNumbers);
-		await db.delete(resourceBodyTranslations);
+		await db.delete(resourcePhoneNumbers);
+		await db.delete(resourceTranslations);
 		await db.delete(providerTranslations);
 		await db.delete(anonymousSessionsToResources);
 		await db.delete(resources); // Move resources delete after its dependent tables
@@ -296,12 +304,12 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			await db.insert(dietaryOptionsTranslations).values([
 				{
 					dietaryOptionId: id,
-					language: "en",
+					locale: "en",
 					name: dietary.en,
 				},
 				{
 					dietaryOptionId: id,
-					language: "fr",
+					locale: "fr",
 					name: dietary.fr,
 				},
 			]);
@@ -329,13 +337,13 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			await db.insert(providers).values(provider);
 			await db.insert(providerTranslations).values({
 				providerId: provider.id,
-				language: "en",
+				locale: "en",
 				name: provider.name,
 				email: provider.email,
 			});
 			await db.insert(providerTranslations).values({
 				providerId: provider.id,
-				language: "fr",
+				locale: "fr",
 				name: provider.name,
 				email: provider.email,
 			});
@@ -360,8 +368,8 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			await db.insert(resources).values(resource);
 
 			// Insert resource body
-			await db.insert(resourceBodyTranslations).values(body.en);
-			await db.insert(resourceBodyTranslations).values(body.fr);
+			await db.insert(resourceTranslations).values(body.en);
+			await db.insert(resourceTranslations).values(body.fr);
 
 			// Insert phone numbers
 			if (phone) {

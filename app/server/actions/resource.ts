@@ -1,4 +1,4 @@
-import { getLocalizedArray } from "@/lib/language";
+import { getLocalizedArray } from "@/lib/locale";
 import { db } from "@/server/db";
 import {
 	dietaryOptions,
@@ -7,7 +7,7 @@ import {
 	providerTranslations,
 	resources,
 } from "@/server/db/schema";
-import { languageMiddleware } from "@/server/middleware";
+import { localeMiddleware } from "@/server/middleware";
 import { FullResourceType } from "@/server/types";
 import { createServerFn } from "@tanstack/start";
 import { and, eq, exists, ilike, inArray } from "drizzle-orm";
@@ -27,11 +27,11 @@ export const SearchParamsSchema = z.object({
 export const searchFn = createServerFn({
 	method: "GET",
 })
-	.middleware([languageMiddleware])
+	.middleware([localeMiddleware])
 	.validator(SearchParamsSchema)
 	.handler(
 		async ({
-			context: { language },
+			context: { locale },
 			data: { query, dietaryOptionsIds = [], ...filters },
 		}): Promise<FullResourceType[]> => {
 			const meals = await db.query.resources.findMany({
@@ -113,13 +113,13 @@ export const searchFn = createServerFn({
 				...meal,
 				name: getLocalizedArray(
 					meal.provider.providerTranslations,
-					language,
+					locale,
 				).name,
-				body: getLocalizedArray(meal.bodyTranslations, language),
+				body: getLocalizedArray(meal.bodyTranslations, locale),
 				dietaryOptions: meal.resourceToDietaryOptions.map((r) =>
 					getLocalizedArray(
 						r.dietaryOption.dietaryOptionsTranslations,
-						language,
+						locale,
 					),
 				),
 			}));
@@ -129,12 +129,12 @@ export const searchFn = createServerFn({
 export const getResourceFn = createServerFn({
 	method: "GET",
 })
-	.middleware([languageMiddleware])
+	.middleware([localeMiddleware])
 	.validator(z.object({ id: z.string() }))
 	.handler(
 		async ({
 			data: { id },
-			context: { language },
+			context: { locale },
 		}): Promise<FullResourceType | undefined> => {
 			const resource = await db.query.resources.findFirst({
 				where: eq(resources.id, id),
@@ -162,13 +162,13 @@ export const getResourceFn = createServerFn({
 				...resource,
 				name: getLocalizedArray(
 					resource.provider.providerTranslations,
-					language,
+					locale,
 				).name,
-				body: getLocalizedArray(resource.bodyTranslations, language),
+				body: getLocalizedArray(resource.bodyTranslations, locale),
 				dietaryOptions: resource.resourceToDietaryOptions.map((r) =>
 					getLocalizedArray(
 						r.dietaryOption.dietaryOptionsTranslations,
-						language,
+						locale,
 					),
 				),
 			};
@@ -178,9 +178,9 @@ export const getResourceFn = createServerFn({
 export const getResourcesFn = createServerFn({
 	method: "GET",
 })
-	.middleware([languageMiddleware])
+	.middleware([localeMiddleware])
 	.validator(z.object({ ids: z.string().array() }))
-	.handler(async ({ context: { language }, data: { ids } }) => {
+	.handler(async ({ context: { locale }, data: { ids } }) => {
 		const resourceList = await db.query.resources.findMany({
 			where: inArray(resources.id, ids),
 			with: {
@@ -206,13 +206,13 @@ export const getResourcesFn = createServerFn({
 			...resource,
 			name: getLocalizedArray(
 				resource.provider.providerTranslations,
-				language,
+				locale,
 			).name,
-			body: getLocalizedArray(resource.bodyTranslations, language),
+			body: getLocalizedArray(resource.bodyTranslations, locale),
 			dietaryOptions: resource.resourceToDietaryOptions.map((r) =>
 				getLocalizedArray(
 					r.dietaryOption.dietaryOptionsTranslations,
-					language,
+					locale,
 				),
 			),
 		}));

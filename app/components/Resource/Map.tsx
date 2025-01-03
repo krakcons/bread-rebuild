@@ -1,5 +1,5 @@
 import { formatAddress } from "@/lib/address";
-import { getTranslations } from "@/lib/language";
+import { getTranslations } from "@/lib/locale";
 import { FullResourceType } from "@/server/types";
 import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
@@ -9,9 +9,9 @@ import { Button, buttonVariants } from "../ui/Button";
 import { ResourceActions } from "./Actions";
 
 export const MapResource = ({ resource }: { resource: FullResourceType }) => {
-	const { language } = useParams({ from: "/$language" });
+	const { locale } = useParams({ from: "/$locale" });
 	const [popupOpen, setPopupOpen] = useState<boolean>(false);
-	const translations = getTranslations(language);
+	const translations = getTranslations(locale);
 
 	return (
 		<>
@@ -50,9 +50,9 @@ export const MapResource = ({ resource }: { resource: FullResourceType }) => {
 					</Button>
 					<div className="mt-4 flex flex-col gap-2">
 						<Link
-							to="/$language/resources/$id"
+							to="/$locale/resources/$id"
 							params={{
-								language,
+								locale,
 								id: resource.id,
 							}}
 							className="text-lg font-semibold hover:underline"
@@ -85,9 +85,9 @@ export const MapResource = ({ resource }: { resource: FullResourceType }) => {
 						)}
 						<ResourceActions resource={resource}>
 							<Link
-								to="/$language/resources/$id"
+								to="/$locale/resources/$id"
 								params={{
-									language,
+									locale,
 									id: resource.id,
 								}}
 								className={buttonVariants()}

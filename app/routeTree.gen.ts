@@ -13,449 +13,443 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LanguageAdminImport } from './routes/$language/admin'
-import { Route as LanguageAppImport } from './routes/$language/_app'
-import { Route as LanguageAppIndexImport } from './routes/$language/_app/index'
-import { Route as LanguageAdminVerifyEmailImport } from './routes/$language/admin/verify-email'
-import { Route as LanguageAdminSignupImport } from './routes/$language/admin/signup'
-import { Route as LanguageAdminResetPasswordImport } from './routes/$language/admin/reset-password'
-import { Route as LanguageAdminOnboardingImport } from './routes/$language/admin/onboarding'
-import { Route as LanguageAdminLoginImport } from './routes/$language/admin/login'
-import { Route as LanguageAdminAdminImport } from './routes/$language/admin/_admin'
-import { Route as LanguageAppTermsImport } from './routes/$language/_app/terms'
-import { Route as LanguageAppSavedImport } from './routes/$language/_app/saved'
-import { Route as LanguageAppPrivacyPolicyImport } from './routes/$language/_app/privacy-policy'
-import { Route as LanguageAdminAdminIndexImport } from './routes/$language/admin/_admin/index'
-import { Route as LanguageAdminAdminProviderImport } from './routes/$language/admin/_admin/provider'
-import { Route as LanguageAdminAdminAnalyticsImport } from './routes/$language/admin/_admin/analytics'
-import { Route as LanguageAppResourcesIdImport } from './routes/$language/_app/resources/$id'
+import { Route as LocaleAdminImport } from './routes/$locale/admin'
+import { Route as LocaleAppImport } from './routes/$locale/_app'
+import { Route as LocaleAppIndexImport } from './routes/$locale/_app/index'
+import { Route as LocaleAdminVerifyEmailImport } from './routes/$locale/admin/verify-email'
+import { Route as LocaleAdminSignupImport } from './routes/$locale/admin/signup'
+import { Route as LocaleAdminResetPasswordImport } from './routes/$locale/admin/reset-password'
+import { Route as LocaleAdminOnboardingImport } from './routes/$locale/admin/onboarding'
+import { Route as LocaleAdminLoginImport } from './routes/$locale/admin/login'
+import { Route as LocaleAdminAdminImport } from './routes/$locale/admin/_admin'
+import { Route as LocaleAppTermsImport } from './routes/$locale/_app/terms'
+import { Route as LocaleAppSavedImport } from './routes/$locale/_app/saved'
+import { Route as LocaleAppPrivacyPolicyImport } from './routes/$locale/_app/privacy-policy'
+import { Route as LocaleAdminAdminIndexImport } from './routes/$locale/admin/_admin/index'
+import { Route as LocaleAdminAdminProviderImport } from './routes/$locale/admin/_admin/provider'
+import { Route as LocaleAdminAdminAnalyticsImport } from './routes/$locale/admin/_admin/analytics'
+import { Route as LocaleAppResourcesIdImport } from './routes/$locale/_app/resources/$id'
 
 // Create Virtual Routes
 
-const LanguageImport = createFileRoute('/$language')()
+const LocaleImport = createFileRoute('/$locale')()
 
 // Create/Update Routes
 
-const LanguageRoute = LanguageImport.update({
-  id: '/$language',
-  path: '/$language',
+const LocaleRoute = LocaleImport.update({
+  id: '/$locale',
+  path: '/$locale',
   getParentRoute: () => rootRoute,
 } as any)
 
-const LanguageAdminRoute = LanguageAdminImport.update({
+const LocaleAdminRoute = LocaleAdminImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => LanguageRoute,
+  getParentRoute: () => LocaleRoute,
 } as any)
 
-const LanguageAppRoute = LanguageAppImport.update({
+const LocaleAppRoute = LocaleAppImport.update({
   id: '/_app',
-  getParentRoute: () => LanguageRoute,
+  getParentRoute: () => LocaleRoute,
 } as any)
 
-const LanguageAppIndexRoute = LanguageAppIndexImport.update({
+const LocaleAppIndexRoute = LocaleAppIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LanguageAppRoute,
+  getParentRoute: () => LocaleAppRoute,
 } as any)
 
-const LanguageAdminVerifyEmailRoute = LanguageAdminVerifyEmailImport.update({
+const LocaleAdminVerifyEmailRoute = LocaleAdminVerifyEmailImport.update({
   id: '/verify-email',
   path: '/verify-email',
-  getParentRoute: () => LanguageAdminRoute,
+  getParentRoute: () => LocaleAdminRoute,
 } as any)
 
-const LanguageAdminSignupRoute = LanguageAdminSignupImport.update({
+const LocaleAdminSignupRoute = LocaleAdminSignupImport.update({
   id: '/signup',
   path: '/signup',
-  getParentRoute: () => LanguageAdminRoute,
+  getParentRoute: () => LocaleAdminRoute,
 } as any)
 
-const LanguageAdminResetPasswordRoute = LanguageAdminResetPasswordImport.update(
-  {
-    id: '/reset-password',
-    path: '/reset-password',
-    getParentRoute: () => LanguageAdminRoute,
-  } as any,
-)
+const LocaleAdminResetPasswordRoute = LocaleAdminResetPasswordImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => LocaleAdminRoute,
+} as any)
 
-const LanguageAdminOnboardingRoute = LanguageAdminOnboardingImport.update({
+const LocaleAdminOnboardingRoute = LocaleAdminOnboardingImport.update({
   id: '/onboarding',
   path: '/onboarding',
-  getParentRoute: () => LanguageAdminRoute,
+  getParentRoute: () => LocaleAdminRoute,
 } as any)
 
-const LanguageAdminLoginRoute = LanguageAdminLoginImport.update({
+const LocaleAdminLoginRoute = LocaleAdminLoginImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => LanguageAdminRoute,
+  getParentRoute: () => LocaleAdminRoute,
 } as any)
 
-const LanguageAdminAdminRoute = LanguageAdminAdminImport.update({
+const LocaleAdminAdminRoute = LocaleAdminAdminImport.update({
   id: '/_admin',
-  getParentRoute: () => LanguageAdminRoute,
+  getParentRoute: () => LocaleAdminRoute,
 } as any)
 
-const LanguageAppTermsRoute = LanguageAppTermsImport.update({
+const LocaleAppTermsRoute = LocaleAppTermsImport.update({
   id: '/terms',
   path: '/terms',
-  getParentRoute: () => LanguageAppRoute,
+  getParentRoute: () => LocaleAppRoute,
 } as any)
 
-const LanguageAppSavedRoute = LanguageAppSavedImport.update({
+const LocaleAppSavedRoute = LocaleAppSavedImport.update({
   id: '/saved',
   path: '/saved',
-  getParentRoute: () => LanguageAppRoute,
+  getParentRoute: () => LocaleAppRoute,
 } as any)
 
-const LanguageAppPrivacyPolicyRoute = LanguageAppPrivacyPolicyImport.update({
+const LocaleAppPrivacyPolicyRoute = LocaleAppPrivacyPolicyImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
-  getParentRoute: () => LanguageAppRoute,
+  getParentRoute: () => LocaleAppRoute,
 } as any)
 
-const LanguageAdminAdminIndexRoute = LanguageAdminAdminIndexImport.update({
+const LocaleAdminAdminIndexRoute = LocaleAdminAdminIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LanguageAdminAdminRoute,
+  getParentRoute: () => LocaleAdminAdminRoute,
 } as any)
 
-const LanguageAdminAdminProviderRoute = LanguageAdminAdminProviderImport.update(
-  {
-    id: '/provider',
-    path: '/provider',
-    getParentRoute: () => LanguageAdminAdminRoute,
-  } as any,
-)
+const LocaleAdminAdminProviderRoute = LocaleAdminAdminProviderImport.update({
+  id: '/provider',
+  path: '/provider',
+  getParentRoute: () => LocaleAdminAdminRoute,
+} as any)
 
-const LanguageAdminAdminAnalyticsRoute =
-  LanguageAdminAdminAnalyticsImport.update({
-    id: '/analytics',
-    path: '/analytics',
-    getParentRoute: () => LanguageAdminAdminRoute,
-  } as any)
+const LocaleAdminAdminAnalyticsRoute = LocaleAdminAdminAnalyticsImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => LocaleAdminAdminRoute,
+} as any)
 
-const LanguageAppResourcesIdRoute = LanguageAppResourcesIdImport.update({
+const LocaleAppResourcesIdRoute = LocaleAppResourcesIdImport.update({
   id: '/resources/$id',
   path: '/resources/$id',
-  getParentRoute: () => LanguageAppRoute,
+  getParentRoute: () => LocaleAppRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/$language': {
-      id: '/$language'
-      path: '/$language'
-      fullPath: '/$language'
-      preLoaderRoute: typeof LanguageImport
+    '/$locale': {
+      id: '/$locale'
+      path: '/$locale'
+      fullPath: '/$locale'
+      preLoaderRoute: typeof LocaleImport
       parentRoute: typeof rootRoute
     }
-    '/$language/_app': {
-      id: '/$language/_app'
-      path: '/$language'
-      fullPath: '/$language'
-      preLoaderRoute: typeof LanguageAppImport
-      parentRoute: typeof LanguageRoute
+    '/$locale/_app': {
+      id: '/$locale/_app'
+      path: '/$locale'
+      fullPath: '/$locale'
+      preLoaderRoute: typeof LocaleAppImport
+      parentRoute: typeof LocaleRoute
     }
-    '/$language/admin': {
-      id: '/$language/admin'
+    '/$locale/admin': {
+      id: '/$locale/admin'
       path: '/admin'
-      fullPath: '/$language/admin'
-      preLoaderRoute: typeof LanguageAdminImport
-      parentRoute: typeof LanguageImport
+      fullPath: '/$locale/admin'
+      preLoaderRoute: typeof LocaleAdminImport
+      parentRoute: typeof LocaleImport
     }
-    '/$language/_app/privacy-policy': {
-      id: '/$language/_app/privacy-policy'
+    '/$locale/_app/privacy-policy': {
+      id: '/$locale/_app/privacy-policy'
       path: '/privacy-policy'
-      fullPath: '/$language/privacy-policy'
-      preLoaderRoute: typeof LanguageAppPrivacyPolicyImport
-      parentRoute: typeof LanguageAppImport
+      fullPath: '/$locale/privacy-policy'
+      preLoaderRoute: typeof LocaleAppPrivacyPolicyImport
+      parentRoute: typeof LocaleAppImport
     }
-    '/$language/_app/saved': {
-      id: '/$language/_app/saved'
+    '/$locale/_app/saved': {
+      id: '/$locale/_app/saved'
       path: '/saved'
-      fullPath: '/$language/saved'
-      preLoaderRoute: typeof LanguageAppSavedImport
-      parentRoute: typeof LanguageAppImport
+      fullPath: '/$locale/saved'
+      preLoaderRoute: typeof LocaleAppSavedImport
+      parentRoute: typeof LocaleAppImport
     }
-    '/$language/_app/terms': {
-      id: '/$language/_app/terms'
+    '/$locale/_app/terms': {
+      id: '/$locale/_app/terms'
       path: '/terms'
-      fullPath: '/$language/terms'
-      preLoaderRoute: typeof LanguageAppTermsImport
-      parentRoute: typeof LanguageAppImport
+      fullPath: '/$locale/terms'
+      preLoaderRoute: typeof LocaleAppTermsImport
+      parentRoute: typeof LocaleAppImport
     }
-    '/$language/admin/_admin': {
-      id: '/$language/admin/_admin'
+    '/$locale/admin/_admin': {
+      id: '/$locale/admin/_admin'
       path: ''
-      fullPath: '/$language/admin'
-      preLoaderRoute: typeof LanguageAdminAdminImport
-      parentRoute: typeof LanguageAdminImport
+      fullPath: '/$locale/admin'
+      preLoaderRoute: typeof LocaleAdminAdminImport
+      parentRoute: typeof LocaleAdminImport
     }
-    '/$language/admin/login': {
-      id: '/$language/admin/login'
+    '/$locale/admin/login': {
+      id: '/$locale/admin/login'
       path: '/login'
-      fullPath: '/$language/admin/login'
-      preLoaderRoute: typeof LanguageAdminLoginImport
-      parentRoute: typeof LanguageAdminImport
+      fullPath: '/$locale/admin/login'
+      preLoaderRoute: typeof LocaleAdminLoginImport
+      parentRoute: typeof LocaleAdminImport
     }
-    '/$language/admin/onboarding': {
-      id: '/$language/admin/onboarding'
+    '/$locale/admin/onboarding': {
+      id: '/$locale/admin/onboarding'
       path: '/onboarding'
-      fullPath: '/$language/admin/onboarding'
-      preLoaderRoute: typeof LanguageAdminOnboardingImport
-      parentRoute: typeof LanguageAdminImport
+      fullPath: '/$locale/admin/onboarding'
+      preLoaderRoute: typeof LocaleAdminOnboardingImport
+      parentRoute: typeof LocaleAdminImport
     }
-    '/$language/admin/reset-password': {
-      id: '/$language/admin/reset-password'
+    '/$locale/admin/reset-password': {
+      id: '/$locale/admin/reset-password'
       path: '/reset-password'
-      fullPath: '/$language/admin/reset-password'
-      preLoaderRoute: typeof LanguageAdminResetPasswordImport
-      parentRoute: typeof LanguageAdminImport
+      fullPath: '/$locale/admin/reset-password'
+      preLoaderRoute: typeof LocaleAdminResetPasswordImport
+      parentRoute: typeof LocaleAdminImport
     }
-    '/$language/admin/signup': {
-      id: '/$language/admin/signup'
+    '/$locale/admin/signup': {
+      id: '/$locale/admin/signup'
       path: '/signup'
-      fullPath: '/$language/admin/signup'
-      preLoaderRoute: typeof LanguageAdminSignupImport
-      parentRoute: typeof LanguageAdminImport
+      fullPath: '/$locale/admin/signup'
+      preLoaderRoute: typeof LocaleAdminSignupImport
+      parentRoute: typeof LocaleAdminImport
     }
-    '/$language/admin/verify-email': {
-      id: '/$language/admin/verify-email'
+    '/$locale/admin/verify-email': {
+      id: '/$locale/admin/verify-email'
       path: '/verify-email'
-      fullPath: '/$language/admin/verify-email'
-      preLoaderRoute: typeof LanguageAdminVerifyEmailImport
-      parentRoute: typeof LanguageAdminImport
+      fullPath: '/$locale/admin/verify-email'
+      preLoaderRoute: typeof LocaleAdminVerifyEmailImport
+      parentRoute: typeof LocaleAdminImport
     }
-    '/$language/_app/': {
-      id: '/$language/_app/'
+    '/$locale/_app/': {
+      id: '/$locale/_app/'
       path: '/'
-      fullPath: '/$language/'
-      preLoaderRoute: typeof LanguageAppIndexImport
-      parentRoute: typeof LanguageAppImport
+      fullPath: '/$locale/'
+      preLoaderRoute: typeof LocaleAppIndexImport
+      parentRoute: typeof LocaleAppImport
     }
-    '/$language/_app/resources/$id': {
-      id: '/$language/_app/resources/$id'
+    '/$locale/_app/resources/$id': {
+      id: '/$locale/_app/resources/$id'
       path: '/resources/$id'
-      fullPath: '/$language/resources/$id'
-      preLoaderRoute: typeof LanguageAppResourcesIdImport
-      parentRoute: typeof LanguageAppImport
+      fullPath: '/$locale/resources/$id'
+      preLoaderRoute: typeof LocaleAppResourcesIdImport
+      parentRoute: typeof LocaleAppImport
     }
-    '/$language/admin/_admin/analytics': {
-      id: '/$language/admin/_admin/analytics'
+    '/$locale/admin/_admin/analytics': {
+      id: '/$locale/admin/_admin/analytics'
       path: '/analytics'
-      fullPath: '/$language/admin/analytics'
-      preLoaderRoute: typeof LanguageAdminAdminAnalyticsImport
-      parentRoute: typeof LanguageAdminAdminImport
+      fullPath: '/$locale/admin/analytics'
+      preLoaderRoute: typeof LocaleAdminAdminAnalyticsImport
+      parentRoute: typeof LocaleAdminAdminImport
     }
-    '/$language/admin/_admin/provider': {
-      id: '/$language/admin/_admin/provider'
+    '/$locale/admin/_admin/provider': {
+      id: '/$locale/admin/_admin/provider'
       path: '/provider'
-      fullPath: '/$language/admin/provider'
-      preLoaderRoute: typeof LanguageAdminAdminProviderImport
-      parentRoute: typeof LanguageAdminAdminImport
+      fullPath: '/$locale/admin/provider'
+      preLoaderRoute: typeof LocaleAdminAdminProviderImport
+      parentRoute: typeof LocaleAdminAdminImport
     }
-    '/$language/admin/_admin/': {
-      id: '/$language/admin/_admin/'
+    '/$locale/admin/_admin/': {
+      id: '/$locale/admin/_admin/'
       path: '/'
-      fullPath: '/$language/admin/'
-      preLoaderRoute: typeof LanguageAdminAdminIndexImport
-      parentRoute: typeof LanguageAdminAdminImport
+      fullPath: '/$locale/admin/'
+      preLoaderRoute: typeof LocaleAdminAdminIndexImport
+      parentRoute: typeof LocaleAdminAdminImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface LanguageAppRouteChildren {
-  LanguageAppPrivacyPolicyRoute: typeof LanguageAppPrivacyPolicyRoute
-  LanguageAppSavedRoute: typeof LanguageAppSavedRoute
-  LanguageAppTermsRoute: typeof LanguageAppTermsRoute
-  LanguageAppIndexRoute: typeof LanguageAppIndexRoute
-  LanguageAppResourcesIdRoute: typeof LanguageAppResourcesIdRoute
+interface LocaleAppRouteChildren {
+  LocaleAppPrivacyPolicyRoute: typeof LocaleAppPrivacyPolicyRoute
+  LocaleAppSavedRoute: typeof LocaleAppSavedRoute
+  LocaleAppTermsRoute: typeof LocaleAppTermsRoute
+  LocaleAppIndexRoute: typeof LocaleAppIndexRoute
+  LocaleAppResourcesIdRoute: typeof LocaleAppResourcesIdRoute
 }
 
-const LanguageAppRouteChildren: LanguageAppRouteChildren = {
-  LanguageAppPrivacyPolicyRoute: LanguageAppPrivacyPolicyRoute,
-  LanguageAppSavedRoute: LanguageAppSavedRoute,
-  LanguageAppTermsRoute: LanguageAppTermsRoute,
-  LanguageAppIndexRoute: LanguageAppIndexRoute,
-  LanguageAppResourcesIdRoute: LanguageAppResourcesIdRoute,
+const LocaleAppRouteChildren: LocaleAppRouteChildren = {
+  LocaleAppPrivacyPolicyRoute: LocaleAppPrivacyPolicyRoute,
+  LocaleAppSavedRoute: LocaleAppSavedRoute,
+  LocaleAppTermsRoute: LocaleAppTermsRoute,
+  LocaleAppIndexRoute: LocaleAppIndexRoute,
+  LocaleAppResourcesIdRoute: LocaleAppResourcesIdRoute,
 }
 
-const LanguageAppRouteWithChildren = LanguageAppRoute._addFileChildren(
-  LanguageAppRouteChildren,
+const LocaleAppRouteWithChildren = LocaleAppRoute._addFileChildren(
+  LocaleAppRouteChildren,
 )
 
-interface LanguageAdminAdminRouteChildren {
-  LanguageAdminAdminAnalyticsRoute: typeof LanguageAdminAdminAnalyticsRoute
-  LanguageAdminAdminProviderRoute: typeof LanguageAdminAdminProviderRoute
-  LanguageAdminAdminIndexRoute: typeof LanguageAdminAdminIndexRoute
+interface LocaleAdminAdminRouteChildren {
+  LocaleAdminAdminAnalyticsRoute: typeof LocaleAdminAdminAnalyticsRoute
+  LocaleAdminAdminProviderRoute: typeof LocaleAdminAdminProviderRoute
+  LocaleAdminAdminIndexRoute: typeof LocaleAdminAdminIndexRoute
 }
 
-const LanguageAdminAdminRouteChildren: LanguageAdminAdminRouteChildren = {
-  LanguageAdminAdminAnalyticsRoute: LanguageAdminAdminAnalyticsRoute,
-  LanguageAdminAdminProviderRoute: LanguageAdminAdminProviderRoute,
-  LanguageAdminAdminIndexRoute: LanguageAdminAdminIndexRoute,
+const LocaleAdminAdminRouteChildren: LocaleAdminAdminRouteChildren = {
+  LocaleAdminAdminAnalyticsRoute: LocaleAdminAdminAnalyticsRoute,
+  LocaleAdminAdminProviderRoute: LocaleAdminAdminProviderRoute,
+  LocaleAdminAdminIndexRoute: LocaleAdminAdminIndexRoute,
 }
 
-const LanguageAdminAdminRouteWithChildren =
-  LanguageAdminAdminRoute._addFileChildren(LanguageAdminAdminRouteChildren)
+const LocaleAdminAdminRouteWithChildren =
+  LocaleAdminAdminRoute._addFileChildren(LocaleAdminAdminRouteChildren)
 
-interface LanguageAdminRouteChildren {
-  LanguageAdminAdminRoute: typeof LanguageAdminAdminRouteWithChildren
-  LanguageAdminLoginRoute: typeof LanguageAdminLoginRoute
-  LanguageAdminOnboardingRoute: typeof LanguageAdminOnboardingRoute
-  LanguageAdminResetPasswordRoute: typeof LanguageAdminResetPasswordRoute
-  LanguageAdminSignupRoute: typeof LanguageAdminSignupRoute
-  LanguageAdminVerifyEmailRoute: typeof LanguageAdminVerifyEmailRoute
+interface LocaleAdminRouteChildren {
+  LocaleAdminAdminRoute: typeof LocaleAdminAdminRouteWithChildren
+  LocaleAdminLoginRoute: typeof LocaleAdminLoginRoute
+  LocaleAdminOnboardingRoute: typeof LocaleAdminOnboardingRoute
+  LocaleAdminResetPasswordRoute: typeof LocaleAdminResetPasswordRoute
+  LocaleAdminSignupRoute: typeof LocaleAdminSignupRoute
+  LocaleAdminVerifyEmailRoute: typeof LocaleAdminVerifyEmailRoute
 }
 
-const LanguageAdminRouteChildren: LanguageAdminRouteChildren = {
-  LanguageAdminAdminRoute: LanguageAdminAdminRouteWithChildren,
-  LanguageAdminLoginRoute: LanguageAdminLoginRoute,
-  LanguageAdminOnboardingRoute: LanguageAdminOnboardingRoute,
-  LanguageAdminResetPasswordRoute: LanguageAdminResetPasswordRoute,
-  LanguageAdminSignupRoute: LanguageAdminSignupRoute,
-  LanguageAdminVerifyEmailRoute: LanguageAdminVerifyEmailRoute,
+const LocaleAdminRouteChildren: LocaleAdminRouteChildren = {
+  LocaleAdminAdminRoute: LocaleAdminAdminRouteWithChildren,
+  LocaleAdminLoginRoute: LocaleAdminLoginRoute,
+  LocaleAdminOnboardingRoute: LocaleAdminOnboardingRoute,
+  LocaleAdminResetPasswordRoute: LocaleAdminResetPasswordRoute,
+  LocaleAdminSignupRoute: LocaleAdminSignupRoute,
+  LocaleAdminVerifyEmailRoute: LocaleAdminVerifyEmailRoute,
 }
 
-const LanguageAdminRouteWithChildren = LanguageAdminRoute._addFileChildren(
-  LanguageAdminRouteChildren,
+const LocaleAdminRouteWithChildren = LocaleAdminRoute._addFileChildren(
+  LocaleAdminRouteChildren,
 )
 
-interface LanguageRouteChildren {
-  LanguageAppRoute: typeof LanguageAppRouteWithChildren
-  LanguageAdminRoute: typeof LanguageAdminRouteWithChildren
+interface LocaleRouteChildren {
+  LocaleAppRoute: typeof LocaleAppRouteWithChildren
+  LocaleAdminRoute: typeof LocaleAdminRouteWithChildren
 }
 
-const LanguageRouteChildren: LanguageRouteChildren = {
-  LanguageAppRoute: LanguageAppRouteWithChildren,
-  LanguageAdminRoute: LanguageAdminRouteWithChildren,
+const LocaleRouteChildren: LocaleRouteChildren = {
+  LocaleAppRoute: LocaleAppRouteWithChildren,
+  LocaleAdminRoute: LocaleAdminRouteWithChildren,
 }
 
-const LanguageRouteWithChildren = LanguageRoute._addFileChildren(
-  LanguageRouteChildren,
-)
+const LocaleRouteWithChildren =
+  LocaleRoute._addFileChildren(LocaleRouteChildren)
 
 export interface FileRoutesByFullPath {
-  '/$language': typeof LanguageAppRouteWithChildren
-  '/$language/admin': typeof LanguageAdminAdminRouteWithChildren
-  '/$language/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
-  '/$language/saved': typeof LanguageAppSavedRoute
-  '/$language/terms': typeof LanguageAppTermsRoute
-  '/$language/admin/login': typeof LanguageAdminLoginRoute
-  '/$language/admin/onboarding': typeof LanguageAdminOnboardingRoute
-  '/$language/admin/reset-password': typeof LanguageAdminResetPasswordRoute
-  '/$language/admin/signup': typeof LanguageAdminSignupRoute
-  '/$language/admin/verify-email': typeof LanguageAdminVerifyEmailRoute
-  '/$language/': typeof LanguageAppIndexRoute
-  '/$language/resources/$id': typeof LanguageAppResourcesIdRoute
-  '/$language/admin/analytics': typeof LanguageAdminAdminAnalyticsRoute
-  '/$language/admin/provider': typeof LanguageAdminAdminProviderRoute
-  '/$language/admin/': typeof LanguageAdminAdminIndexRoute
+  '/$locale': typeof LocaleAppRouteWithChildren
+  '/$locale/admin': typeof LocaleAdminAdminRouteWithChildren
+  '/$locale/privacy-policy': typeof LocaleAppPrivacyPolicyRoute
+  '/$locale/saved': typeof LocaleAppSavedRoute
+  '/$locale/terms': typeof LocaleAppTermsRoute
+  '/$locale/admin/login': typeof LocaleAdminLoginRoute
+  '/$locale/admin/onboarding': typeof LocaleAdminOnboardingRoute
+  '/$locale/admin/reset-password': typeof LocaleAdminResetPasswordRoute
+  '/$locale/admin/signup': typeof LocaleAdminSignupRoute
+  '/$locale/admin/verify-email': typeof LocaleAdminVerifyEmailRoute
+  '/$locale/': typeof LocaleAppIndexRoute
+  '/$locale/resources/$id': typeof LocaleAppResourcesIdRoute
+  '/$locale/admin/analytics': typeof LocaleAdminAdminAnalyticsRoute
+  '/$locale/admin/provider': typeof LocaleAdminAdminProviderRoute
+  '/$locale/admin/': typeof LocaleAdminAdminIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/$language': typeof LanguageAppIndexRoute
-  '/$language/admin': typeof LanguageAdminAdminIndexRoute
-  '/$language/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
-  '/$language/saved': typeof LanguageAppSavedRoute
-  '/$language/terms': typeof LanguageAppTermsRoute
-  '/$language/admin/login': typeof LanguageAdminLoginRoute
-  '/$language/admin/onboarding': typeof LanguageAdminOnboardingRoute
-  '/$language/admin/reset-password': typeof LanguageAdminResetPasswordRoute
-  '/$language/admin/signup': typeof LanguageAdminSignupRoute
-  '/$language/admin/verify-email': typeof LanguageAdminVerifyEmailRoute
-  '/$language/resources/$id': typeof LanguageAppResourcesIdRoute
-  '/$language/admin/analytics': typeof LanguageAdminAdminAnalyticsRoute
-  '/$language/admin/provider': typeof LanguageAdminAdminProviderRoute
+  '/$locale': typeof LocaleAppIndexRoute
+  '/$locale/admin': typeof LocaleAdminAdminIndexRoute
+  '/$locale/privacy-policy': typeof LocaleAppPrivacyPolicyRoute
+  '/$locale/saved': typeof LocaleAppSavedRoute
+  '/$locale/terms': typeof LocaleAppTermsRoute
+  '/$locale/admin/login': typeof LocaleAdminLoginRoute
+  '/$locale/admin/onboarding': typeof LocaleAdminOnboardingRoute
+  '/$locale/admin/reset-password': typeof LocaleAdminResetPasswordRoute
+  '/$locale/admin/signup': typeof LocaleAdminSignupRoute
+  '/$locale/admin/verify-email': typeof LocaleAdminVerifyEmailRoute
+  '/$locale/resources/$id': typeof LocaleAppResourcesIdRoute
+  '/$locale/admin/analytics': typeof LocaleAdminAdminAnalyticsRoute
+  '/$locale/admin/provider': typeof LocaleAdminAdminProviderRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/$language': typeof LanguageRouteWithChildren
-  '/$language/_app': typeof LanguageAppRouteWithChildren
-  '/$language/admin': typeof LanguageAdminRouteWithChildren
-  '/$language/_app/privacy-policy': typeof LanguageAppPrivacyPolicyRoute
-  '/$language/_app/saved': typeof LanguageAppSavedRoute
-  '/$language/_app/terms': typeof LanguageAppTermsRoute
-  '/$language/admin/_admin': typeof LanguageAdminAdminRouteWithChildren
-  '/$language/admin/login': typeof LanguageAdminLoginRoute
-  '/$language/admin/onboarding': typeof LanguageAdminOnboardingRoute
-  '/$language/admin/reset-password': typeof LanguageAdminResetPasswordRoute
-  '/$language/admin/signup': typeof LanguageAdminSignupRoute
-  '/$language/admin/verify-email': typeof LanguageAdminVerifyEmailRoute
-  '/$language/_app/': typeof LanguageAppIndexRoute
-  '/$language/_app/resources/$id': typeof LanguageAppResourcesIdRoute
-  '/$language/admin/_admin/analytics': typeof LanguageAdminAdminAnalyticsRoute
-  '/$language/admin/_admin/provider': typeof LanguageAdminAdminProviderRoute
-  '/$language/admin/_admin/': typeof LanguageAdminAdminIndexRoute
+  '/$locale': typeof LocaleRouteWithChildren
+  '/$locale/_app': typeof LocaleAppRouteWithChildren
+  '/$locale/admin': typeof LocaleAdminRouteWithChildren
+  '/$locale/_app/privacy-policy': typeof LocaleAppPrivacyPolicyRoute
+  '/$locale/_app/saved': typeof LocaleAppSavedRoute
+  '/$locale/_app/terms': typeof LocaleAppTermsRoute
+  '/$locale/admin/_admin': typeof LocaleAdminAdminRouteWithChildren
+  '/$locale/admin/login': typeof LocaleAdminLoginRoute
+  '/$locale/admin/onboarding': typeof LocaleAdminOnboardingRoute
+  '/$locale/admin/reset-password': typeof LocaleAdminResetPasswordRoute
+  '/$locale/admin/signup': typeof LocaleAdminSignupRoute
+  '/$locale/admin/verify-email': typeof LocaleAdminVerifyEmailRoute
+  '/$locale/_app/': typeof LocaleAppIndexRoute
+  '/$locale/_app/resources/$id': typeof LocaleAppResourcesIdRoute
+  '/$locale/admin/_admin/analytics': typeof LocaleAdminAdminAnalyticsRoute
+  '/$locale/admin/_admin/provider': typeof LocaleAdminAdminProviderRoute
+  '/$locale/admin/_admin/': typeof LocaleAdminAdminIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/$language'
-    | '/$language/admin'
-    | '/$language/privacy-policy'
-    | '/$language/saved'
-    | '/$language/terms'
-    | '/$language/admin/login'
-    | '/$language/admin/onboarding'
-    | '/$language/admin/reset-password'
-    | '/$language/admin/signup'
-    | '/$language/admin/verify-email'
-    | '/$language/'
-    | '/$language/resources/$id'
-    | '/$language/admin/analytics'
-    | '/$language/admin/provider'
-    | '/$language/admin/'
+    | '/$locale'
+    | '/$locale/admin'
+    | '/$locale/privacy-policy'
+    | '/$locale/saved'
+    | '/$locale/terms'
+    | '/$locale/admin/login'
+    | '/$locale/admin/onboarding'
+    | '/$locale/admin/reset-password'
+    | '/$locale/admin/signup'
+    | '/$locale/admin/verify-email'
+    | '/$locale/'
+    | '/$locale/resources/$id'
+    | '/$locale/admin/analytics'
+    | '/$locale/admin/provider'
+    | '/$locale/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/$language'
-    | '/$language/admin'
-    | '/$language/privacy-policy'
-    | '/$language/saved'
-    | '/$language/terms'
-    | '/$language/admin/login'
-    | '/$language/admin/onboarding'
-    | '/$language/admin/reset-password'
-    | '/$language/admin/signup'
-    | '/$language/admin/verify-email'
-    | '/$language/resources/$id'
-    | '/$language/admin/analytics'
-    | '/$language/admin/provider'
+    | '/$locale'
+    | '/$locale/admin'
+    | '/$locale/privacy-policy'
+    | '/$locale/saved'
+    | '/$locale/terms'
+    | '/$locale/admin/login'
+    | '/$locale/admin/onboarding'
+    | '/$locale/admin/reset-password'
+    | '/$locale/admin/signup'
+    | '/$locale/admin/verify-email'
+    | '/$locale/resources/$id'
+    | '/$locale/admin/analytics'
+    | '/$locale/admin/provider'
   id:
     | '__root__'
-    | '/$language'
-    | '/$language/_app'
-    | '/$language/admin'
-    | '/$language/_app/privacy-policy'
-    | '/$language/_app/saved'
-    | '/$language/_app/terms'
-    | '/$language/admin/_admin'
-    | '/$language/admin/login'
-    | '/$language/admin/onboarding'
-    | '/$language/admin/reset-password'
-    | '/$language/admin/signup'
-    | '/$language/admin/verify-email'
-    | '/$language/_app/'
-    | '/$language/_app/resources/$id'
-    | '/$language/admin/_admin/analytics'
-    | '/$language/admin/_admin/provider'
-    | '/$language/admin/_admin/'
+    | '/$locale'
+    | '/$locale/_app'
+    | '/$locale/admin'
+    | '/$locale/_app/privacy-policy'
+    | '/$locale/_app/saved'
+    | '/$locale/_app/terms'
+    | '/$locale/admin/_admin'
+    | '/$locale/admin/login'
+    | '/$locale/admin/onboarding'
+    | '/$locale/admin/reset-password'
+    | '/$locale/admin/signup'
+    | '/$locale/admin/verify-email'
+    | '/$locale/_app/'
+    | '/$locale/_app/resources/$id'
+    | '/$locale/admin/_admin/analytics'
+    | '/$locale/admin/_admin/provider'
+    | '/$locale/admin/_admin/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  LanguageRoute: typeof LanguageRouteWithChildren
+  LocaleRoute: typeof LocaleRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  LanguageRoute: LanguageRouteWithChildren,
+  LocaleRoute: LocaleRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -468,99 +462,99 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/$language"
+        "/$locale"
       ]
     },
-    "/$language": {
-      "filePath": "$language",
+    "/$locale": {
+      "filePath": "$locale",
       "children": [
-        "/$language/_app",
-        "/$language/admin"
+        "/$locale/_app",
+        "/$locale/admin"
       ]
     },
-    "/$language/_app": {
-      "filePath": "$language/_app.tsx",
-      "parent": "/$language",
+    "/$locale/_app": {
+      "filePath": "$locale/_app.tsx",
+      "parent": "/$locale",
       "children": [
-        "/$language/_app/privacy-policy",
-        "/$language/_app/saved",
-        "/$language/_app/terms",
-        "/$language/_app/",
-        "/$language/_app/resources/$id"
+        "/$locale/_app/privacy-policy",
+        "/$locale/_app/saved",
+        "/$locale/_app/terms",
+        "/$locale/_app/",
+        "/$locale/_app/resources/$id"
       ]
     },
-    "/$language/admin": {
-      "filePath": "$language/admin.tsx",
-      "parent": "/$language",
+    "/$locale/admin": {
+      "filePath": "$locale/admin.tsx",
+      "parent": "/$locale",
       "children": [
-        "/$language/admin/_admin",
-        "/$language/admin/login",
-        "/$language/admin/onboarding",
-        "/$language/admin/reset-password",
-        "/$language/admin/signup",
-        "/$language/admin/verify-email"
+        "/$locale/admin/_admin",
+        "/$locale/admin/login",
+        "/$locale/admin/onboarding",
+        "/$locale/admin/reset-password",
+        "/$locale/admin/signup",
+        "/$locale/admin/verify-email"
       ]
     },
-    "/$language/_app/privacy-policy": {
-      "filePath": "$language/_app/privacy-policy.tsx",
-      "parent": "/$language/_app"
+    "/$locale/_app/privacy-policy": {
+      "filePath": "$locale/_app/privacy-policy.tsx",
+      "parent": "/$locale/_app"
     },
-    "/$language/_app/saved": {
-      "filePath": "$language/_app/saved.tsx",
-      "parent": "/$language/_app"
+    "/$locale/_app/saved": {
+      "filePath": "$locale/_app/saved.tsx",
+      "parent": "/$locale/_app"
     },
-    "/$language/_app/terms": {
-      "filePath": "$language/_app/terms.tsx",
-      "parent": "/$language/_app"
+    "/$locale/_app/terms": {
+      "filePath": "$locale/_app/terms.tsx",
+      "parent": "/$locale/_app"
     },
-    "/$language/admin/_admin": {
-      "filePath": "$language/admin/_admin.tsx",
-      "parent": "/$language/admin",
+    "/$locale/admin/_admin": {
+      "filePath": "$locale/admin/_admin.tsx",
+      "parent": "/$locale/admin",
       "children": [
-        "/$language/admin/_admin/analytics",
-        "/$language/admin/_admin/provider",
-        "/$language/admin/_admin/"
+        "/$locale/admin/_admin/analytics",
+        "/$locale/admin/_admin/provider",
+        "/$locale/admin/_admin/"
       ]
     },
-    "/$language/admin/login": {
-      "filePath": "$language/admin/login.tsx",
-      "parent": "/$language/admin"
+    "/$locale/admin/login": {
+      "filePath": "$locale/admin/login.tsx",
+      "parent": "/$locale/admin"
     },
-    "/$language/admin/onboarding": {
-      "filePath": "$language/admin/onboarding.tsx",
-      "parent": "/$language/admin"
+    "/$locale/admin/onboarding": {
+      "filePath": "$locale/admin/onboarding.tsx",
+      "parent": "/$locale/admin"
     },
-    "/$language/admin/reset-password": {
-      "filePath": "$language/admin/reset-password.tsx",
-      "parent": "/$language/admin"
+    "/$locale/admin/reset-password": {
+      "filePath": "$locale/admin/reset-password.tsx",
+      "parent": "/$locale/admin"
     },
-    "/$language/admin/signup": {
-      "filePath": "$language/admin/signup.tsx",
-      "parent": "/$language/admin"
+    "/$locale/admin/signup": {
+      "filePath": "$locale/admin/signup.tsx",
+      "parent": "/$locale/admin"
     },
-    "/$language/admin/verify-email": {
-      "filePath": "$language/admin/verify-email.tsx",
-      "parent": "/$language/admin"
+    "/$locale/admin/verify-email": {
+      "filePath": "$locale/admin/verify-email.tsx",
+      "parent": "/$locale/admin"
     },
-    "/$language/_app/": {
-      "filePath": "$language/_app/index.tsx",
-      "parent": "/$language/_app"
+    "/$locale/_app/": {
+      "filePath": "$locale/_app/index.tsx",
+      "parent": "/$locale/_app"
     },
-    "/$language/_app/resources/$id": {
-      "filePath": "$language/_app/resources/$id.tsx",
-      "parent": "/$language/_app"
+    "/$locale/_app/resources/$id": {
+      "filePath": "$locale/_app/resources/$id.tsx",
+      "parent": "/$locale/_app"
     },
-    "/$language/admin/_admin/analytics": {
-      "filePath": "$language/admin/_admin/analytics.tsx",
-      "parent": "/$language/admin/_admin"
+    "/$locale/admin/_admin/analytics": {
+      "filePath": "$locale/admin/_admin/analytics.tsx",
+      "parent": "/$locale/admin/_admin"
     },
-    "/$language/admin/_admin/provider": {
-      "filePath": "$language/admin/_admin/provider.tsx",
-      "parent": "/$language/admin/_admin"
+    "/$locale/admin/_admin/provider": {
+      "filePath": "$locale/admin/_admin/provider.tsx",
+      "parent": "/$locale/admin/_admin"
     },
-    "/$language/admin/_admin/": {
-      "filePath": "$language/admin/_admin/index.tsx",
-      "parent": "/$language/admin/_admin"
+    "/$locale/admin/_admin/": {
+      "filePath": "$locale/admin/_admin/index.tsx",
+      "parent": "/$locale/admin/_admin"
     }
   }
 }

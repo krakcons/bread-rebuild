@@ -1,36 +1,40 @@
+import { FlattenedLocalized, LocaleSchema } from "@/lib/locale";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import {
 	anonymousSessionsToResources,
 	dietaryOptionsTranslations,
-	phoneNumbers,
 	providerPhoneNumbers,
 	providers,
 	providerTranslations,
-	resourceBodyTranslations,
+	resourcePhoneNumbers,
 	resources,
+	resourceTranslations,
 } from "./db/schema";
 export type SelectResourceType = typeof resources.$inferSelect;
 
 export const ResourceSchema = createSelectSchema(resources);
 export type ResourceType = z.infer<typeof ResourceSchema>;
 
-export const ResourceBodySchema = createSelectSchema(resourceBodyTranslations);
-export type ResourceBodyType = z.infer<typeof ResourceBodySchema>;
+export const ResourceTranslationSchema =
+	createSelectSchema(resourceTranslations);
+export type ResourceTranslationType = z.infer<typeof ResourceTranslationSchema>;
 
 export const ProviderSchema = createSelectSchema(providers);
-export type ProviderType = z.infer<typeof ProviderSchema>;
+export type BaseProviderType = z.infer<typeof ProviderSchema>;
 
 export const ProviderTranslationSchema =
 	createSelectSchema(providerTranslations);
 export type ProviderTranslationType = z.infer<typeof ProviderTranslationSchema>;
 
-export type FullProviderType = ProviderType &
-	ProviderTranslationType & {
+export type ProviderType = FlattenedLocalized<
+	BaseProviderType & {
+		translations: ProviderTranslationType[];
 		phoneNumbers: ProviderPhoneNumberType[];
-	};
-
-export const PhoneNumberSchema = createSelectSchema(phoneNumbers);
+	},
+	ProviderTranslationType
+>;
+export const PhoneNumberSchema = createSelectSchema(resourcePhoneNumbers);
 export type PhoneNumberType = z.infer<typeof PhoneNumberSchema>;
 
 export const ProviderPhoneNumberSchema =
@@ -44,7 +48,7 @@ export type DietaryOptionType = z.infer<typeof DietaryOptionSchema>;
 
 export type FullResourceType = ResourceType & {
 	name: string;
-	body: ResourceBodyType;
+	body: ResourceTranslationType;
 	phoneNumbers: PhoneNumberType[];
 	dietaryOptions: DietaryOptionType[];
 };
@@ -55,3 +59,14 @@ export const SavedResourceSchema = createSelectSchema(
 	anonymousSessionId: true,
 });
 export type SavedResourceType = z.infer<typeof SavedResourceSchema>;
+
+export const LocalizedSchema = z
+	.object({
+		locale: LocaleSchema.optional(),
+		fallback: z.boolean().default(true),
+	})
+	.optional();
+export type LocalizedType = z.infer<typeof LocalizedSchema>;
+
+export const LocalizedInputSchema = z.object({ locale: LocaleSchema });
+export type LocalizedInputType = z.infer<typeof LocalizedInputSchema>;

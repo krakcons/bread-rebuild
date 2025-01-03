@@ -11,23 +11,31 @@ import {
 	SelectValue,
 } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/TextArea";
-import { getTranslations } from "@/lib/language";
+import { getTranslations } from "@/lib/locale";
 import { ProviderFormSchema } from "@/server/actions/provider";
-import { FullProviderType, ProviderPhoneNumberType } from "@/server/types";
+import { ProviderPhoneNumberType, ProviderType } from "@/server/types";
 import { useForm, useStore } from "@tanstack/react-form";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
+import { useEffect } from "react";
 import { z } from "zod";
 
 export const ProviderForm = ({
-	language,
+	locale,
 	defaultValues,
 	onSubmit,
 }: {
-	language: string;
-	defaultValues?: FullProviderType;
+	locale: string;
+	defaultValues?: ProviderType;
 	onSubmit: (data: z.infer<typeof ProviderFormSchema>) => void;
 }) => {
-	const t = getTranslations(language);
+	const navigate = useNavigate({
+		from: "/$locale/admin/provider",
+	});
+	const { editing } = useSearch({
+		from: "/$locale/admin/_admin",
+	});
+	const t = getTranslations(locale);
 	const form = useForm({
 		defaultValues: {
 			name: defaultValues?.name ?? "",
@@ -42,6 +50,12 @@ export const ProviderForm = ({
 		onSubmit: async ({ value: data, formApi }) => {
 			try {
 				await onSubmit(data);
+				await navigate({
+					search: (search) => ({
+						...search,
+						editing: false,
+					}),
+				});
 			} catch (error) {
 				formApi.setErrorMap({
 					onServer: "Something went wrong",
@@ -55,12 +69,35 @@ export const ProviderForm = ({
 		(formState) => formState.errorMap.onServer,
 	);
 
+	const isDirty = useStore(form.store, (formState) => formState.isDirty);
+
+	useEffect(() => {
+		navigate({
+			search: (prev) => ({
+				...prev,
+				editing: isDirty,
+			}),
+		});
+	}, [isDirty]);
+
 	return (
 		<form
 			onSubmit={(e) => {
 				e.preventDefault();
 				e.stopPropagation();
 				form.handleSubmit();
+			}}
+			onChange={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				if (!editing) {
+					navigate({
+						search: (search) => ({
+							...search,
+							editing: true,
+						}),
+					});
+				}
 			}}
 		>
 			<div className="flex flex-col gap-4">

@@ -11,7 +11,7 @@ import { generateId } from "../auth";
 import { users } from "./auth/schema";
 
 // Enums
-export const languageEnum = pgEnum("language", ["en", "fr"]);
+export const localeEnum = pgEnum("locale", ["en", "fr"]);
 export const offeringEnum = pgEnum("offering", [
 	"meal",
 	"groceries",
@@ -37,21 +37,22 @@ export const providers = pgTable("providers", {
 	userId: text("user_id").references(() => users.id),
 });
 
-export const providerTranslations = pgTable("provider_translations", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => generateId(16)),
-	providerId: text("provider_id")
-		.notNull()
-		.references(() => providers.id, {
-			onDelete: "cascade",
-		}),
-	language: languageEnum("language").notNull(),
-	name: text("name").notNull(),
-	description: text("description"),
-	website: text("website"),
-	email: text("email"),
-});
+export const providerTranslations = pgTable(
+	"provider_translations",
+	{
+		providerId: text("provider_id")
+			.notNull()
+			.references(() => providers.id, {
+				onDelete: "cascade",
+			}),
+		locale: localeEnum("locale").notNull(),
+		name: text("name").notNull(),
+		description: text("description"),
+		website: text("website"),
+		email: text("email"),
+	},
+	(t) => [primaryKey({ columns: [t.providerId, t.locale] })],
+);
 
 // Provider Phone Numbers
 export const providerPhoneNumbers = pgTable("provider_phone_numbers", {
@@ -76,10 +77,6 @@ export const resources = pgTable("resources", {
 			onDelete: "cascade",
 		}),
 
-	// Contact
-	email: text("email"),
-	website: text("website"),
-
 	// Info
 	parkingAvailable: boolean("parking_available"),
 	transitAvailable: boolean("transit_available"),
@@ -101,7 +98,7 @@ export const resources = pgTable("resources", {
 });
 
 // Phone Numbers
-export const phoneNumbers = pgTable("phone_numbers", {
+export const resourcePhoneNumbers = pgTable("resource_phone_numbers", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => generateId(16)),
@@ -115,34 +112,39 @@ export const phoneNumbers = pgTable("phone_numbers", {
 });
 
 // Extended Resource Info
-export const resourceBodyTranslations = pgTable("resource_body_translations", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => generateId(16)),
-	resourceId: text("resource_id")
-		.notNull()
-		.references(() => resources.id, {
-			onDelete: "cascade",
-		}),
-	language: languageEnum("language").notNull(),
+export const resourceTranslations = pgTable(
+	"resource_translations",
+	{
+		resourceId: text("resource_id")
+			.notNull()
+			.references(() => resources.id, {
+				onDelete: "cascade",
+			}),
+		locale: localeEnum("locale").notNull(),
 
-	// Basic info
-	fees: text("fees"),
-	hours: text("hours"),
+		// Contact
+		email: text("email"),
+		website: text("website"),
 
-	// Additional details
-	eligibility: text("eligibility"),
-	accessibility: text("accessibility"),
-	documentsRequired: text("documents_required"),
-	applicationProcess: text("application_process"),
+		// Basic info
+		fees: text("fees"),
+		hours: text("hours"),
 
-	// Bread Info
-	parking: text("parking"),
-	transit: text("transit"),
-	preparation: text("preparation"),
-	wheelchair: text("wheelchair"),
-	capacity: text("capacity"),
-});
+		// Additional details
+		eligibility: text("eligibility"),
+		accessibility: text("accessibility"),
+		documentsRequired: text("documents_required"),
+		applicationProcess: text("application_process"),
+
+		// Bread Info
+		parking: text("parking"),
+		transit: text("transit"),
+		preparation: text("preparation"),
+		wheelchair: text("wheelchair"),
+		capacity: text("capacity"),
+	},
+	(t) => [primaryKey({ columns: [t.resourceId, t.locale] })],
+);
 
 // Dietary Options
 export const resourceToDietaryOptions = pgTable(
@@ -171,17 +173,15 @@ export const dietaryOptions = pgTable("dietary_options", {
 export const dietaryOptionsTranslations = pgTable(
 	"dietary_options_translations",
 	{
-		id: text("id")
-			.primaryKey()
-			.$defaultFn(() => generateId(16)),
 		dietaryOptionId: text("dietary_option_id")
 			.notNull()
 			.references(() => dietaryOptions.id, {
 				onDelete: "cascade",
 			}),
-		language: languageEnum("language").notNull(),
+		locale: localeEnum("locale").notNull(),
 		name: text("name").notNull(),
 	},
+	(t) => [primaryKey({ columns: [t.dietaryOptionId, t.locale] })],
 );
 
 // Anonymous Users
@@ -245,8 +245,8 @@ export const anonymousSessionsRelations = relations(
 
 export const providerRelations = relations(providers, ({ many }) => ({
 	resources: many(resources),
-	providerTranslations: many(providerTranslations),
-	providerPhoneNumbers: many(providerPhoneNumbers),
+	translations: many(providerTranslations),
+	phoneNumbers: many(providerPhoneNumbers),
 }));
 
 export const providerTranslationsRelations = relations(
@@ -270,8 +270,8 @@ export const providerPhoneNumbersRelations = relations(
 );
 
 export const resourceRelations = relations(resources, ({ many, one }) => ({
-	bodyTranslations: many(resourceBodyTranslations),
-	phoneNumbers: many(phoneNumbers),
+	translations: many(resourceTranslations),
+	phoneNumbers: many(resourcePhoneNumbers),
 	provider: one(providers, {
 		fields: [resources.providerId],
 		references: [providers.id],
@@ -280,22 +280,25 @@ export const resourceRelations = relations(resources, ({ many, one }) => ({
 	anonymousSessionsToResources: many(anonymousSessionsToResources),
 }));
 
-export const resourceBodyTranslationsRelations = relations(
-	resourceBodyTranslations,
+export const resourceTranslationsRelations = relations(
+	resourceTranslations,
 	({ one }) => ({
 		resource: one(resources, {
-			fields: [resourceBodyTranslations.resourceId],
+			fields: [resourceTranslations.resourceId],
 			references: [resources.id],
 		}),
 	}),
 );
 
-export const phoneNumbersRelations = relations(phoneNumbers, ({ one }) => ({
-	resource: one(resources, {
-		fields: [phoneNumbers.resourceId],
-		references: [resources.id],
+export const resourcePhoneNumbersRelations = relations(
+	resourcePhoneNumbers,
+	({ one }) => ({
+		resource: one(resources, {
+			fields: [resourcePhoneNumbers.resourceId],
+			references: [resources.id],
+		}),
 	}),
-}));
+);
 
 export const resourceToDietaryOptionsRelations = relations(
 	resourceToDietaryOptions,

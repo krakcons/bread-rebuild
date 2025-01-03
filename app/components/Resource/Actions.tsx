@@ -8,7 +8,7 @@ import {
 	SelectValue,
 } from "@/components/ui/Select";
 import { days } from "@/lib/hours";
-import { getTranslations } from "@/lib/language";
+import { getTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { queryClient } from "@/router";
 import {
@@ -34,10 +34,10 @@ export const ResourceActions = ({
 		queryFn: () => getSavedFn(),
 	});
 
-	const { language } = useParams({
-		from: "/$language",
+	const { locale } = useParams({
+		from: "/$locale",
 	});
-	const translations = getTranslations(language);
+	const translations = getTranslations(locale);
 	const savedResource = saved.find(
 		(savedResource) => savedResource.resourceId === resource.id,
 	);

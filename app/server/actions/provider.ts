@@ -1,4 +1,4 @@
-import { getLocalizedArray } from "@/lib/language";
+import { flattenLocalizedObject } from "@/lib/locale";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { eq } from "drizzle-orm";
@@ -11,11 +11,11 @@ import {
 	providerTranslations,
 } from "../db/schema";
 import {
-	languageMiddleware,
+	localeMiddleware,
 	protectedMiddleware,
 	providerMiddleware,
 } from "../middleware";
-import { FullProviderType } from "../types";
+import { LocalizedInputSchema, LocalizedSchema, ProviderType } from "../types";
 
 export const ProviderFormSchema = z.object({
 	name: z.string().min(1),
@@ -43,38 +43,27 @@ export type ProviderFormSchema = z.infer<typeof ProviderFormSchema>;
 export const getProviderFn = createServerFn({
 	method: "GET",
 })
-	.middleware([languageMiddleware, protectedMiddleware])
-	.handler(async ({ context }): Promise<FullProviderType> => {
+	.middleware([localeMiddleware, protectedMiddleware])
+	.validator(LocalizedSchema)
+	.handler(async ({ context, data }): Promise<ProviderType | undefined> => {
 		const provider = await db.query.providers.findFirst({
 			where: eq(providers.userId, context.user.id),
 			with: {
-				providerTranslations: true,
-				providerPhoneNumbers: true,
+				translations: !data?.locale
+					? true
+					: {
+							where: eq(providerTranslations.locale, data.locale),
+						},
+				phoneNumbers: true,
 			},
 		});
-
-		if (!provider) {
-			throw redirect({
-				to: "/$language/admin/onboarding",
-				params: { language: context.language },
-			});
-		}
-
-		return {
-			...getLocalizedArray(
-				provider.providerTranslations,
-				context.language,
-			),
-			phoneNumbers: provider.providerPhoneNumbers,
-			id: provider.id,
-			userId: provider.userId,
-		};
+		return flattenLocalizedObject(provider, data);
 	});
 
 export const onboardProviderFn = createServerFn({
 	method: "POST",
 })
-	.middleware([languageMiddleware, protectedMiddleware])
+	.middleware([localeMiddleware, protectedMiddleware])
 	.validator(ProviderFormSchema)
 	.handler(async ({ data, context }) => {
 		const { name, email, website, description } = data;
@@ -85,15 +74,15 @@ export const onboardProviderFn = createServerFn({
 		});
 		await db.insert(providerTranslations).values({
 			providerId,
-			language: context.language,
+			locale: context.locale,
 			name,
 			description,
 			website,
 			email,
 		});
 		throw redirect({
-			to: "/$language/admin",
-			params: { language: context.language },
+			to: "/$locale/admin",
+			params: { locale: context.locale },
 		});
 	});
 
@@ -101,21 +90,35 @@ export const editProviderFn = createServerFn({
 	method: "POST",
 })
 	.middleware([providerMiddleware])
-	.validator(ProviderFormSchema)
+	.validator(ProviderFormSchema.and(LocalizedInputSchema))
 	.handler(async ({ data, context }) => {
-		const { name, email, website, description, phoneNumbers } = data;
+		const { name, email, website, description, phoneNumbers, locale } =
+			data;
 
 		await db
-			.update(providerTranslations)
-			.set({
+			.insert(providerTranslations)
+			.values({
+				providerId: context.provider.id,
+				locale,
 				name,
 				email,
 				website,
 				description,
 			})
-			.where(eq(providerTranslations.providerId, context.provider.id));
+			.onConflictDoUpdate({
+				target: [
+					providerTranslations.providerId,
+					providerTranslations.locale,
+				],
+				set: {
+					name,
+					email,
+					website,
+					description,
+				},
+			});
 
-		if (phoneNumbers) {
+		if (phoneNumbers && phoneNumbers.length > 0) {
 			await db
 				.delete(providerPhoneNumbers)
 				.where(

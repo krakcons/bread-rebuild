@@ -1,4 +1,4 @@
-import { getLanguage } from "@/lib/language/actions";
+import { getLocale } from "@/lib/locale/actions";
 import { redirect } from "@tanstack/react-router";
 import { createMiddleware } from "@tanstack/start";
 import { eq } from "drizzle-orm";
@@ -7,16 +7,14 @@ import { validateSessionToken } from "./auth";
 import { db } from "./db";
 import { providers } from "./db/schema";
 
-export const languageMiddleware = createMiddleware().server(
-	async ({ next }) => {
-		const language = await getLanguage();
-		return next({
-			context: {
-				language,
-			},
-		});
-	},
-);
+export const localeMiddleware = createMiddleware().server(async ({ next }) => {
+	const locale = await getLocale();
+	return next({
+		context: {
+			locale,
+		},
+	});
+});
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
 	const token = getCookie("session") ?? null;
@@ -49,7 +47,7 @@ export const protectedMiddleware = createMiddleware()
 	});
 
 export const providerMiddleware = createMiddleware()
-	.middleware([languageMiddleware, protectedMiddleware])
+	.middleware([localeMiddleware, protectedMiddleware])
 	.server(async ({ next, context }) => {
 		const provider = await db.query.providers.findFirst({
 			where: eq(providers.userId, context.user.id),
@@ -57,8 +55,8 @@ export const providerMiddleware = createMiddleware()
 
 		if (!provider) {
 			throw redirect({
-				to: "/$language/admin/onboarding",
-				params: { language: context.language },
+				to: "/$locale/admin/onboarding",
+				params: { locale: context.locale },
 			});
 		}
 

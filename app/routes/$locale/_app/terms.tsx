@@ -1,15 +1,15 @@
-import { getTranslations } from "@/lib/language";
+import { getTranslations } from "@/lib/locale";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/$language/_app/privacy-policy")({
+export const Route = createFileRoute("/$locale/_app/terms")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
-	head: ({ params: { language } }) => {
-		const translations = getTranslations(language);
+	head: ({ params: { locale } }) => {
+		const translations = getTranslations(locale);
 		return {
 			meta: [
 				{
-					title: translations.privacy,
+					title: translations.terms,
 				},
 			],
 		};
@@ -17,11 +17,11 @@ export const Route = createFileRoute("/$language/_app/privacy-policy")({
 });
 
 function RouteComponent() {
-	const { language } = Route.useParams();
-	const translations = getTranslations(language);
+	const { locale } = Route.useParams();
+	const translations = getTranslations(locale);
 	return (
 		<div className="flex flex-col gap-4">
-			<h1 className="text-3xl font-semibold">{translations.privacy}</h1>
+			<h1 className="text-3xl font-semibold">{translations.terms}</h1>
 			<p>
 				Lorem ipsum dolor sit amet consectetur adipisicing elit.
 				Excepturi perferendis, modi consequuntur aspernatur rerum autem
