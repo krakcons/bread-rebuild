@@ -7,12 +7,12 @@ import {
 	providerTranslations,
 	resources,
 } from "@/server/db/schema";
-import { localeMiddleware } from "@/server/middleware";
 import {
 	LocalizedQuerySchema,
 	LocalizedQueryType,
 	ResourceType,
-} from "@/server/types";
+} from "@/server/db/types";
+import { localeMiddleware } from "@/server/middleware";
 import { createServerFn } from "@tanstack/start";
 import { and, eq, exists, ilike, inArray } from "drizzle-orm";
 import { z } from "zod";
@@ -62,16 +62,12 @@ export const searchFn = createServerFn({
 					: undefined,
 				data.free ? eq(resources.free, true) : undefined,
 				data.preparationRequired
-					? eq(resources.preparationRequired, true)
+					? eq(resources.preparation, true)
 					: undefined,
-				data.parkingAvailable
-					? eq(resources.parkingAvailable, true)
-					: undefined,
-				data.transitAvailable
-					? eq(resources.transitAvailable, true)
-					: undefined,
+				data.parkingAvailable ? eq(resources.parking, true) : undefined,
+				data.transitAvailable ? eq(resources.transit, true) : undefined,
 				data.wheelchairAccessible
-					? eq(resources.wheelchairAccessible, true)
+					? eq(resources.wheelchair, true)
 					: undefined,
 				data.dietaryOptionsIds && data.dietaryOptionsIds.length > 0
 					? exists(

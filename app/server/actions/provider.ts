@@ -11,37 +11,24 @@ import {
 	providerTranslations,
 } from "../db/schema";
 import {
-	localeMiddleware,
-	protectedMiddleware,
-	providerMiddleware,
-} from "../middleware";
-import {
 	LocalizedInputSchema,
 	LocalizedQuerySchema,
 	LocalizedQueryType,
 	ProviderType,
-} from "../types";
+} from "../db/types";
+import {
+	localeMiddleware,
+	protectedMiddleware,
+	providerMiddleware,
+} from "../middleware";
+import { ContactSchema } from "../types";
 
 export const ProviderFormSchema = z.object({
 	name: z.string().min(1),
-	email: z.string().email().optional(),
-	website: z.string().url().optional(),
+	email: ContactSchema.shape.email,
+	website: ContactSchema.shape.website,
+	phoneNumbers: ContactSchema.shape.phoneNumbers,
 	description: z.string().min(1).optional(),
-	phoneNumbers: z
-		.object({
-			phone: z
-				.string()
-				// Remove non-numeric characters
-				.transform((phone) => phone.replace(/\D/g, ""))
-				// Validate Canadian phone number
-				.refine(
-					(phone) => /^1?\d{10}$/.test(phone),
-					"Invalid Canadian phone number. Must be 10 digits, optionally starting with 1",
-				),
-			type: z.enum(["phone", "fax", "toll-free", "tty"]),
-		})
-		.array()
-		.optional(),
 });
 export type ProviderFormSchema = z.infer<typeof ProviderFormSchema>;
 

@@ -4,7 +4,7 @@ import { getCookie, setCookie } from "vinxi/http";
 import { generateId } from "../auth";
 import { db } from "../db";
 import { anonymousSessions, anonymousSessionsToResources } from "../db/schema";
-import { SavedResourceSchema } from "../types";
+import { SavedResourceSchema } from "../db/types";
 
 export const anonymousSessionMiddleware = createMiddleware().server(
 	async ({ next }) => {

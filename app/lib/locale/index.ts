@@ -1,4 +1,4 @@
-import { LocalizedQueryType } from "@/server/types";
+import { LocalizedQueryType } from "@/server/db/types";
 import { z } from "zod";
 import { english, french } from "./messages";
 

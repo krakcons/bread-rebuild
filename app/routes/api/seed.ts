@@ -20,7 +20,7 @@ import {
 	ResourceSchema,
 	ResourceTranslationType,
 	ResourceType,
-} from "@/server/types";
+} from "@/server/db/types";
 import { translate } from "../../lib/locale";
 
 type LocalizedFieldType = {
@@ -181,18 +181,18 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 				id: generateId(16),
 				providerId,
 				...contactInfo,
-				parkingAvailable:
+				parking:
 					drupalData.attributes.field_parking_avail_bool || false,
-				preparationRequired:
+				preparation:
 					drupalData.attributes.field_prep_required_bool || false,
 				free: drupalData.attributes.field_price_description
 					?.toLowerCase()
 					.includes("free"),
-				wheelchairAccessible:
+				wheelchair:
 					drupalData.attributes.field_wheelchair_acc_bool || false,
-				transitAvailable:
+				transit:
 					drupalData.attributes.field__near_transit_bool || false,
-				registrationRequired:
+				registration:
 					drupalData.attributes.field_registration_bool || false,
 				offering,
 				street1:
@@ -205,6 +205,7 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 				province:
 					drupalData.attributes.field_pickup_address
 						.administrative_area,
+				hours,
 				country:
 					drupalData.attributes.field_pickup_address.country_code,
 				lat: drupalData.attributes.field_geofield?.lat ?? null,
@@ -221,22 +222,22 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 					website: contactInfo.website,
 					fees: drupalData.attributes.field_cost_notes,
 					locale: "en",
-					hours,
-					eligibility: null,
-					accessibility: drupalData.attributes.field_wheelchair_notes,
-					documentsRequired: null,
-					applicationProcess:
+					registrationNotes:
 						drupalData.attributes.field_registration_notes,
-					parking: drupalData.attributes.field_parking_notes,
-					preparation:
+					parkingNotes: drupalData.attributes.field_parking_notes,
+					preparationNotes:
 						drupalData.attributes.field_preparation_required_notes,
-					transit: drupalData.attributes.field_transit_nearest_stop,
-					capacity:
+					transitNotes:
+						drupalData.attributes.field_transit_nearest_stop,
+					capacityNotes:
 						drupalData.attributes.field_resource_capacity ===
 						"Not specified"
 							? null
 							: drupalData.attributes.field_resource_capacity,
-					wheelchair: drupalData.attributes.field_wheelchair_notes,
+					wheelchairNotes:
+						drupalData.attributes.field_wheelchair_notes,
+					description: drupalData.attributes.field_description,
+					eligibility: drupalData.attributes.field_eligibility,
 				},
 				fr: {
 					resourceId: resource.id,
@@ -244,22 +245,22 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 					website: contactInfo.website,
 					fees: drupalData.attributes.field_cost_notes,
 					locale: "fr",
-					hours,
-					eligibility: null,
-					accessibility: drupalData.attributes.field_wheelchair_notes,
-					documentsRequired: null,
-					applicationProcess:
+					registrationNotes:
 						drupalData.attributes.field_registration_notes,
-					parking: drupalData.attributes.field_parking_notes,
-					preparation:
+					parkingNotes: drupalData.attributes.field_parking_notes,
+					preparationNotes:
 						drupalData.attributes.field_preparation_required_notes,
-					transit: drupalData.attributes.field_transit_nearest_stop,
-					capacity:
+					transitNotes:
+						drupalData.attributes.field_transit_nearest_stop,
+					capacityNotes:
 						drupalData.attributes.field_resource_capacity ===
 						"Not specified"
 							? null
 							: drupalData.attributes.field_resource_capacity,
-					wheelchair: drupalData.attributes.field_wheelchair_notes,
+					wheelchairNotes:
+						drupalData.attributes.field_wheelchair_notes,
+					description: drupalData.attributes.field_description,
+					eligibility: drupalData.attributes.field_eligibility,
 				},
 			};
 

@@ -123,6 +123,8 @@ function RouteComponent() {
 	const [alertOpen, setAlertOpen] = useState(false);
 	const [editingLocale, setEditingLocale] = useState(search.editingLocale);
 
+	console.log(search);
+
 	return (
 		<SidebarProvider>
 			<Sidebar>
@@ -148,7 +150,7 @@ function RouteComponent() {
 							<SidebarMenuItem>
 								<SidebarMenuButton asChild>
 									<Link
-										to="/$locale/admin"
+										to="/$locale/admin/listings"
 										params={{
 											locale,
 										}}

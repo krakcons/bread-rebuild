@@ -1,8 +1,8 @@
 import { flattenLocalizedObject } from "@/lib/locale";
 import { db } from "@/server/db";
 import { createServerFn } from "@tanstack/start";
+import { LocalizedQuerySchema, LocalizedQueryType } from "../db/types";
 import { localeMiddleware } from "../middleware";
-import { LocalizedQuerySchema, LocalizedQueryType } from "../types";
 
 export const getDietaryOptionsFn = createServerFn({ method: "GET" })
 	.middleware([localeMiddleware])

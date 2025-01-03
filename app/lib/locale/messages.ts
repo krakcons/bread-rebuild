@@ -62,16 +62,6 @@ export const english = {
 			title: "Create Your Provider",
 			description:
 				"Please enter your provider's name and contact information.",
-			form: {
-				name: "Name",
-				description: "Description",
-				email: "Email",
-				website: "Website",
-				number: "Number",
-				type: "Type",
-				phoneNumbers: "Phone Numbers",
-				addPhoneNumber: "Add Phone Number",
-			},
 			contact: {
 				title: "Contact Information",
 				description:
@@ -135,6 +125,35 @@ export const english = {
 					errors: {
 						email: "Email already in use",
 					},
+				},
+			},
+		},
+		listings: {
+			new: {
+				title: "New Listing",
+				description: "Create a new listing.",
+				form: {
+					description: "Description",
+					contact: {
+						title: "Contact Information",
+						description:
+							"This will allow users to contact your provider. It can be overridden by the contact information in a specific listing.",
+						website: "Website",
+						email: "Email",
+						phoneNumbers: "Phone Numbers",
+						addPhoneNumber: "Add Phone Number",
+					},
+					toggles: {
+						title: "Options",
+						description:
+							"Select the options for this listing. Optionally add notes on each to help the user.",
+					},
+					parking: "Parking Available",
+					free: "Free",
+					preperation: "Preparation Required",
+					transit: "Near Transit",
+					wheelchair: "Wheelchair Accessible",
+					notes: "Notes",
 				},
 			},
 		},
@@ -205,16 +224,6 @@ export const french: typeof english = {
 			title: "Créer Votre Fournisseur",
 			description:
 				"Veuillez entrer le nom et les informations de contact de votre fournisseur.",
-			form: {
-				name: "Nom",
-				description: "Description",
-				email: "Courriel de contact",
-				website: "Site Web",
-				number: "Numéro",
-				type: "Type",
-				phoneNumbers: "Téléphones",
-				addPhoneNumber: "Ajouter un téléphone",
-			},
 			contact: {
 				title: "Informations de contact",
 				description:
@@ -279,6 +288,35 @@ export const french: typeof english = {
 					errors: {
 						email: "Courriel déjà utilisé",
 					},
+				},
+			},
+		},
+		listings: {
+			new: {
+				title: "Nouvelle Liste",
+				description: "Créer une nouvelle liste.",
+				form: {
+					description: "Description",
+					contact: {
+						title: "Informations de contact",
+						description:
+							"Cela permet aux utilisateurs de contacter votre fournisseur. Il peut être remplacé par les informations de contact dans une liste spécifique.",
+						website: "Site Web",
+						email: "Courriel",
+						phoneNumbers: "Téléphones",
+						addPhoneNumber: "Ajouter un téléphone",
+					},
+					toggles: {
+						title: "Options",
+						description:
+							"Sélectionnez les options pour cette liste. Optionnellement, ajoutez des notes sur chacune pour aider l'utilisateur.",
+					},
+					parking: "Parking Disponible",
+					free: "Gratuit",
+					preperation: "Préparation Requise",
+					transit: "Proche du Transit",
+					wheelchair: "Accessible au Fauteuil Roulant",
+					notes: "Notes",
 				},
 			},
 		},

@@ -78,13 +78,14 @@ export const resources = pgTable("resources", {
 		}),
 
 	// Info
-	parkingAvailable: boolean("parking_available"),
-	transitAvailable: boolean("transit_available"),
-	preparationRequired: boolean("preparation_required"),
-	registrationRequired: boolean("registration_required"),
+	parking: boolean("parking"),
+	transit: boolean("transit"),
+	preparation: boolean("preparation"),
+	registration: boolean("registration"),
 	free: boolean("free"),
-	wheelchairAccessible: boolean("wheelchair_accessible"),
+	wheelchair: boolean("wheelchair"),
 	offering: offeringEnum("offering"),
+	hours: text("hours"),
 
 	// Address
 	street1: text("street1").notNull(),
@@ -122,26 +123,24 @@ export const resourceTranslations = pgTable(
 			}),
 		locale: localeEnum("locale").notNull(),
 
+		// Description
+		description: text("description"),
+
 		// Contact
 		email: text("email"),
 		website: text("website"),
 
-		// Basic info
-		fees: text("fees"),
-		hours: text("hours"),
+		// Additional details (CORDS)
+		fees: text("fees"), // If free is false
+		eligibility: text("eligibility"),
 
 		// Additional details
-		eligibility: text("eligibility"),
-		accessibility: text("accessibility"),
-		documentsRequired: text("documents_required"),
-		applicationProcess: text("application_process"),
-
-		// Bread Info
-		parking: text("parking"),
-		transit: text("transit"),
-		preparation: text("preparation"),
-		wheelchair: text("wheelchair"),
-		capacity: text("capacity"),
+		parkingNotes: text("parking_notes"), // If parking is true
+		transitNotes: text("transit_notes"), // If transit is true
+		preparationNotes: text("preparation_notes"), // If preparation is true
+		registrationNotes: text("registration_notes"), // If registration is true
+		wheelchairNotes: text("wheelchair_notes"), // If wheelchair is true
+		capacityNotes: text("capacity_notes"),
 	},
 	(t) => [primaryKey({ columns: [t.resourceId, t.locale] })],
 );
