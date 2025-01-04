@@ -41,8 +41,8 @@ export const PasswordStrength = ({
 			</div>
 			<p className="self-end text-sm text-muted-foreground">
 				{!password
-					? t.admin.auth.signup.form.passwordStrength.title
-					: t.admin.auth.signup.form.passwordStrength[strength.score]}
+					? t.form.auth.passwordStrength.title
+					: t.form.auth.passwordStrength[strength.score]}
 			</p>
 		</div>
 	);

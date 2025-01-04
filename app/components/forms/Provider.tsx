@@ -13,7 +13,7 @@ import {
 import { Textarea } from "@/components/ui/TextArea";
 import { getTranslations } from "@/lib/locale";
 import { ProviderFormSchema } from "@/server/actions/provider";
-import { ProviderPhoneNumberType, ProviderType } from "@/server/types";
+import { ProviderPhoneNumberType, ProviderType } from "@/server/db/types";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
@@ -106,7 +106,7 @@ export const ProviderForm = ({
 					name="name"
 					children={(field) => (
 						<Label>
-							{t.admin.onboarding.form.name}
+							{t.form.provider.name}
 							<Input
 								name={field.name}
 								value={field.state.value ?? ""}
@@ -124,7 +124,7 @@ export const ProviderForm = ({
 					children={(field) => (
 						<Label>
 							<span className="flex items-center gap-1">
-								{t.admin.onboarding.form.description}
+								{t.form.common.description}
 								<span className="text-xs text-muted-foreground">
 									({t.common.optional})
 								</span>
@@ -153,7 +153,7 @@ export const ProviderForm = ({
 					children={(field) => (
 						<Label>
 							<span className="flex items-center gap-1">
-								{t.admin.onboarding.form.email}
+								{t.form.common.email}
 								<span className="text-xs text-muted-foreground">
 									({t.common.optional})
 								</span>
@@ -175,7 +175,7 @@ export const ProviderForm = ({
 					children={(field) => (
 						<Label>
 							<span className="flex items-center gap-1">
-								{t.admin.onboarding.form.website}
+								{t.form.contact.website}
 								<span className="text-xs text-muted-foreground">
 									({t.common.optional})
 								</span>
@@ -198,7 +198,7 @@ export const ProviderForm = ({
 					children={(field) => (
 						<Label>
 							<span className="flex items-center gap-1">
-								{t.admin.onboarding.form.phoneNumbers}
+								{t.form.contact.phoneNumbers}
 								<span className="text-xs text-muted-foreground">
 									({t.common.optional})
 								</span>
@@ -291,7 +291,7 @@ export const ProviderForm = ({
 									});
 								}}
 							>
-								{t.admin.onboarding.form.addPhoneNumber}
+								{t.form.contact.addPhoneNumber}
 							</Button>
 						</Label>
 					)}

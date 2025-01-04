@@ -76,7 +76,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<main className="font-[Inter,sans-serif]">{children}</main>
-				<ScrollRestoration />
+				<ScrollRestoration getKey={(location) => location.pathname} />
 				<ReactQueryDevtools initialIsOpen={false} />
 				<Scripts />
 			</body>

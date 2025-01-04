@@ -102,6 +102,12 @@ export const parseSchedule = (
 	return result;
 };
 
+export const formatScheduleToString = (daySchedule: DaySchedule[]): string => {
+	return daySchedule
+		.map(({ day, open, close }) => `${day} ${open} - ${close};`)
+		.join(" ");
+};
+
 export const useHours = (hoursString: string) => {
 	// const { i18n } = useTranslation();
 	return useMemo(() => {

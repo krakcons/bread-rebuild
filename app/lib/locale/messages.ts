@@ -69,10 +69,6 @@ export const english = {
 			},
 		},
 		auth: {
-			form: {
-				email: "Email",
-				password: "Password",
-			},
 			login: {
 				switch: {
 					preface: "Need an account?",
@@ -95,9 +91,6 @@ export const english = {
 					password_reset:
 						"Please enter the code sent to your email. If you didn't receive it, make sure you entered the correct email.",
 				},
-				form: {
-					code: "Code",
-				},
 				resend: {
 					preface: "Need another code?",
 					link: "Resend Code",
@@ -110,52 +103,143 @@ export const english = {
 					preface: "Already have an account?",
 					link: "Login",
 				},
-				form: {
-					email: "Email",
-					password: "Password",
-					passwordConfirmation: "Confirm Password",
-					passwordStrength: {
-						title: "Password Strength",
-						0: "Very Weak",
-						1: "Very Weak",
-						2: "Weak",
-						3: "Good",
-						4: "Strong",
-					},
-					errors: {
-						email: "Email already in use",
-					},
-				},
 			},
 		},
 		listings: {
 			new: {
 				title: "New Listing",
 				description: "Create a new listing.",
-				form: {
-					description: "Description",
-					contact: {
-						title: "Contact Information",
-						description:
-							"This will allow users to contact your provider. It can be overridden by the contact information in a specific listing.",
-						website: "Website",
-						email: "Email",
-						phoneNumbers: "Phone Numbers",
-						addPhoneNumber: "Add Phone Number",
-					},
-					toggles: {
-						title: "Options",
-						description:
-							"Select the options for this listing. Optionally add notes on each to help the user.",
-					},
-					parking: "Parking Available",
-					free: "Free",
-					preperation: "Preparation Required",
-					transit: "Near Transit",
-					wheelchair: "Wheelchair Accessible",
-					notes: "Notes",
+			},
+		},
+		provider: {
+			title: "Provider",
+			description: "Manage your provider information here.",
+		},
+		analytics: {
+			title: "Analytics",
+			description: "View your analytics here.",
+			cards: {
+				savedResources: {
+					title: "Saved resources",
+					description:
+						"The number of resources actively saved by users.",
 				},
 			},
+		},
+	},
+	form: {
+		common: {
+			submit: "Submit",
+			description: "Description",
+			optional: "Optional",
+			email: "Email",
+		},
+		auth: {
+			password: "Password",
+			passwordConfirmation: "Confirm Password",
+			passwordStrength: {
+				title: "Password Strength",
+				0: "Very Weak",
+				1: "Very Weak",
+				2: "Weak",
+				3: "Good",
+				4: "Strong",
+			},
+			errors: {
+				email: "Email already in use",
+			},
+		},
+		resetPassword: {
+			code: "Code",
+		},
+		provider: {
+			name: "Name",
+			contact: {
+				title: "Contact Information",
+				description:
+					"This will allow users to contact your provider. It can be overridden by the contact information in a specific listing.",
+			},
+		},
+		contact: {
+			website: "Website",
+			phoneNumbers: "Phone Numbers",
+			addPhoneNumber: "Add Phone Number",
+		},
+		listing: {
+			offering: {
+				title: "Offering",
+				types: {
+					meal: "Meal",
+					groceries: "Groceries",
+					delivery: "Delivery",
+					hamper: "Hampers",
+					pantry: "Pantry",
+					"drop-in": "Drop-in",
+					market: "Market",
+				},
+			},
+			location: {
+				title: "Location",
+				description: "Enter the location of your listing.",
+				full: "Full Address",
+				placeholder: "Enter an address",
+				street: "Street",
+				city: "City",
+				province: "Province",
+				country: "Country",
+				postalCode: "Postal Code",
+			},
+			hours: {
+				title: "Hours",
+				description: "The hours of operation for your listing.",
+				startTime: "Start Time",
+				endTime: "End Time",
+			},
+			eligibility: {
+				title: "Eligibility",
+				example:
+					"Only people over 50 and/or with a low income are eligible",
+			},
+			contact: {
+				title: "Contact Information",
+				description:
+					"This will allow users to contact your provider. If no contact information is provided, the provider's contact information will be used.",
+			},
+			toggles: {
+				title: "Options",
+				description:
+					"Select the options for this listing. Optionally add notes on each to help the user.",
+				parking: {
+					title: "Parking Available",
+					description: "Does your listing have parking available?",
+					example:
+						"There is a parking lot in the back of the building.",
+				},
+				free: {
+					title: "Free",
+					description: "Is your listing free?",
+					example: "The listing is free",
+				},
+				preparation: {
+					title: "Preparation Required",
+					description:
+						"Does your listing require the user to prepare the food themselves?",
+					example:
+						"The listing requires kitchen facilities (stove, oven, etc.)",
+				},
+				transit: {
+					title: "Near Transit",
+					description: "Is your listing near public transit?",
+					example: "The listing is a 5 minute walk from Jane Station",
+				},
+				wheelchair: {
+					title: "Wheelchair Accessible",
+					description: "Is your listing accessible by wheelchair?",
+					example:
+						"The listing has wheelchair ramps and is on the ground floor",
+				},
+			},
+			notes: "Notes",
 		},
 	},
 };
@@ -231,10 +315,6 @@ export const french: typeof english = {
 			},
 		},
 		auth: {
-			form: {
-				email: "Courriel",
-				password: "Mot de passe",
-			},
 			login: {
 				switch: {
 					preface: "Besoin d'un compte?",
@@ -258,9 +338,6 @@ export const french: typeof english = {
 					password_reset:
 						"Veuillez entrer le code envoyé à votre email. Si vous ne l'avez pas reçu, veuillez vérifier votre adresse email.",
 				},
-				form: {
-					code: "Code",
-				},
 				resend: {
 					preface: "Besoin d'un autre code?",
 					link: "Renvoyer le code",
@@ -273,52 +350,143 @@ export const french: typeof english = {
 					preface: "Vous avez déjà un compte?",
 					link: "Connexion",
 				},
-				form: {
-					email: "Courriel",
-					password: "Mot de passe",
-					passwordConfirmation: "Confirmer le mot de passe",
-					passwordStrength: {
-						title: "Force du mot de passe",
-						0: "Très Faible",
-						1: "Très Faible",
-						2: "Faible",
-						3: "Bon",
-						4: "Très Fort",
-					},
-					errors: {
-						email: "Courriel déjà utilisé",
-					},
-				},
 			},
 		},
 		listings: {
 			new: {
 				title: "Nouvelle Liste",
 				description: "Créer une nouvelle liste.",
-				form: {
-					description: "Description",
-					contact: {
-						title: "Informations de contact",
-						description:
-							"Cela permet aux utilisateurs de contacter votre fournisseur. Il peut être remplacé par les informations de contact dans une liste spécifique.",
-						website: "Site Web",
-						email: "Courriel",
-						phoneNumbers: "Téléphones",
-						addPhoneNumber: "Ajouter un téléphone",
-					},
-					toggles: {
-						title: "Options",
-						description:
-							"Sélectionnez les options pour cette liste. Optionnellement, ajoutez des notes sur chacune pour aider l'utilisateur.",
-					},
-					parking: "Parking Disponible",
-					free: "Gratuit",
-					preperation: "Préparation Requise",
-					transit: "Proche du Transit",
-					wheelchair: "Accessible au Fauteuil Roulant",
-					notes: "Notes",
+			},
+		},
+		provider: {
+			title: "Fournisseur",
+			description: "Gérer vos informations de fournisseur ici.",
+		},
+		analytics: {
+			title: "Statistiques",
+			description: "Voir vos statistiques ici.",
+			cards: {
+				savedResources: {
+					title: "Ressources sauvegardées",
+					description:
+						"Le nombre de ressources sauvegardées par les utilisateurs.",
 				},
 			},
+		},
+	},
+	form: {
+		common: {
+			submit: "Soumettre",
+			description: "Description",
+			optional: "Optionnel",
+			email: "Courriel",
+		},
+		auth: {
+			password: "Mot de passe",
+			passwordConfirmation: "Confirmer le mot de passe",
+			passwordStrength: {
+				title: "Force du mot de passe",
+				0: "Très Faible",
+				1: "Très Faible",
+				2: "Faible",
+				3: "Bon",
+				4: "Très Fort",
+			},
+			errors: {
+				email: "Courriel déjà utilisé",
+			},
+		},
+		resetPassword: {
+			code: "Code",
+		},
+		provider: {
+			name: "Nom",
+			contact: {
+				title: "Informations de contact",
+				description:
+					"Cela permet aux utilisateurs de contacter votre fournisseur. Il peut être remplacé par les informations de contact dans une liste spécifique.",
+			},
+		},
+		contact: {
+			website: "Site Web",
+			phoneNumbers: "Téléphones",
+			addPhoneNumber: "Ajouter un téléphone",
+		},
+		listing: {
+			offering: {
+				title: "Offre",
+				types: {
+					meal: "Repas",
+					groceries: "Légumes",
+					delivery: "Livraison",
+					hamper: "Hampers",
+					pantry: "Pantry",
+					"drop-in": "Drop-in",
+					market: "Marché",
+				},
+			},
+			location: {
+				title: "Localisation",
+				description: "Entrez la localisation de votre listing.",
+				full: "Adresse complète",
+				placeholder: "Entrez une adresse",
+				street: "Rue",
+				city: "Ville",
+				province: "Province",
+				country: "Pays",
+				postalCode: "Code postal",
+			},
+			hours: {
+				title: "Horaires",
+				description: "Les horaires d'ouverture de votre listing.",
+				startTime: "Heure de début",
+				endTime: "Heure de fin",
+			},
+			eligibility: {
+				title: "Eligibilité",
+				example:
+					"Seules les personnes de 18 ans et plus et/ou avec un faible revenu sont éligibles",
+			},
+			contact: {
+				title: "Informations de contact",
+				description:
+					"Cela permet aux utilisateurs de contacter votre fournisseur. Il peut être remplacé par les informations de contact dans une liste spécifique.",
+			},
+			toggles: {
+				title: "Options",
+				description:
+					"Sélectionnez les options pour cette liste. Optionnellement, ajoutez des notes sur chacune pour aider l'utilisateur.",
+				free: {
+					title: "Gratuit",
+					description: "Est-ce que votre listing est gratuit?",
+					example: "Le ressource est gratuit",
+				},
+				preparation: {
+					title: "Préparation Requise",
+					description:
+						"Est-ce que votre listing requiert que l'utilisateur prépare le repas?",
+					example: "Le ressource requiert de chauffer",
+				},
+				transit: {
+					title: "Proche du Transit",
+					description:
+						"Est-ce que votre listing est proche du transit?",
+					example:
+						"Le ressource est à 5 minutes de la station de métro",
+				},
+				wheelchair: {
+					title: "Accessible au Fauteuil Roulant",
+					description:
+						"Est-ce que votre listing est accessible au fauteuil roulant?",
+					example: "Le ressource a des rampes pour fauteuil roulant",
+				},
+				parking: {
+					title: "Parking Disponible",
+					description: "Est-ce que votre listing a du parking?",
+					example: "Le ressource a un parking à l'arrière",
+				},
+			},
+			notes: "Notes",
 		},
 	},
 };

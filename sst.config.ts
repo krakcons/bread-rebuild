@@ -1,4 +1,5 @@
 /// <reference path="./.sst/platform/config.d.ts" />
+
 const tenant = "bread";
 const profile = "krak";
 
@@ -57,8 +58,9 @@ export default $config({
 			sender: domain,
 			dns,
 		});
+		const GOOGLE_MAPS_API_KEY = new sst.Secret("GOOGLE_MAPS_API_KEY");
 		new sst.aws.TanstackStart("Web", {
-			link: [rds, email],
+			link: [rds, email, GOOGLE_MAPS_API_KEY],
 			domain: {
 				name: domain,
 				dns,

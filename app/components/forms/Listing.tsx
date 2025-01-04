@@ -11,23 +11,160 @@ import {
 	SelectValue,
 } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/TextArea";
+import {
+	days,
+	DaySchedule,
+	formatScheduleToString,
+	parseSchedule,
+} from "@/lib/hours";
 import { getTranslations } from "@/lib/locale";
 import { ListingFormSchema } from "@/server/actions/listings";
 import { ProviderPhoneNumberType, ResourceType } from "@/server/db/types";
+import { OfferingEnum } from "@/server/types";
+import { Libraries, useJsApiLoader } from "@react-google-maps/api";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { Checkbox } from "../ui/checkbox";
+
+import { formatAddress } from "@/lib/address";
+import { Checkbox } from "../ui/Checkbox";
 
 const checkboxOptions = [
 	"free",
-	"preperation",
+	"preparation",
 	"transit",
 	"wheelchair",
 	"parking",
 ];
+
+const HourSelect = ({
+	onChange,
+	value,
+}: {
+	onChange: (value: string) => void;
+	value: string | undefined;
+}) => {
+	return (
+		<Select onValueChange={onChange} value={value}>
+			<SelectTrigger className="w-[100px]">
+				<SelectValue placeholder="" />
+			</SelectTrigger>
+			<SelectContent>
+				{Array.from({ length: 48 }, (_, i) => i).map((segment) => {
+					const hour = Math.floor(segment / 2);
+					const minute = (segment * 30) % 60;
+					const value = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+					return (
+						<SelectItem key={value} value={value.replace(":", "")}>
+							{value}
+						</SelectItem>
+					);
+				})}
+			</SelectContent>
+		</Select>
+	);
+};
+
+const HoursInput = ({
+	onChange,
+	value,
+}: {
+	onChange: (value: string) => void;
+	value: string;
+}) => {
+	const { locale } = useParams({
+		from: "/$locale",
+	});
+	const t = getTranslations(locale);
+	const [hours, setHours] = useState<
+		(DaySchedule & {
+			enabled: boolean;
+		})[]
+	>(
+		value
+			? parseSchedule(value, "en").map((h) => ({
+					...h,
+					enabled: true,
+				}))
+			: days.map((day) => ({
+					day,
+					open: "0900",
+					close: "1700",
+					enabled: false,
+				})),
+	);
+
+	const handleChange = (newHours: (DaySchedule & { enabled: boolean })[]) => {
+		setHours(newHours);
+		onChange(formatScheduleToString(newHours.filter((h) => h.enabled)));
+	};
+
+	return (
+		<div className="flex w-full max-w-[500px] flex-col gap-4">
+			{days.map((day) => (
+				<div key={day} className="flex justify-between gap-4">
+					<div className="flex items-center gap-2">
+						<Checkbox
+							checked={
+								hours.find((h) => h.day === day)?.enabled ??
+								false
+							}
+							onCheckedChange={(checked: boolean) => {
+								handleChange(
+									hours.map((h) =>
+										h.day === day
+											? { ...h, enabled: checked }
+											: h,
+									),
+								);
+							}}
+						/>
+						<p className="w-[40px]">{day}</p>
+					</div>
+					<div className="flex items-center gap-2">
+						<p>{t.form.listing.hours.startTime}</p>
+						<HourSelect
+							onChange={(value) =>
+								handleChange(
+									hours.map((h) =>
+										h.day === day
+											? { ...h, open: value }
+											: h,
+									),
+								)
+							}
+							value={
+								hours.find((h) => h.day === day)?.open ?? "0900"
+							}
+						/>
+					</div>
+					<div className="flex items-center gap-2">
+						<p>{t.form.listing.hours.endTime}</p>
+						<HourSelect
+							onChange={(value) =>
+								handleChange(
+									hours.map((h) =>
+										h.day === day
+											? { ...h, close: value }
+											: h,
+									),
+								)
+							}
+							value={
+								hours.find((h) => h.day === day)?.close ??
+								"1700"
+							}
+						/>
+					</div>
+				</div>
+			))}
+		</div>
+	);
+};
+
+const libraries: Libraries = ["places"];
 
 export const ListingForm = ({
 	locale,
@@ -47,10 +184,33 @@ export const ListingForm = ({
 	const t = getTranslations(locale);
 	const form = useForm({
 		defaultValues: {
-			description: defaultValues?.description ?? "",
-			email: defaultValues?.email ?? "",
-			website: defaultValues?.website ?? "",
-			phoneNumbers: defaultValues?.phoneNumbers ?? [],
+			description: defaultValues?.description ?? undefined,
+			email: defaultValues?.email ?? undefined,
+			website: defaultValues?.website ?? undefined,
+			phoneNumbers: defaultValues?.phoneNumbers ?? undefined,
+			offering: defaultValues?.offering ?? "meal",
+			eligibility: defaultValues?.eligibility ?? undefined,
+			free: defaultValues?.free ?? false,
+			preparation: defaultValues?.preparation ?? false,
+			transit: defaultValues?.transit ?? false,
+			wheelchair: defaultValues?.wheelchair ?? false,
+			parking: defaultValues?.parking ?? false,
+			hours: defaultValues?.hours ?? undefined,
+			fees: defaultValues?.fees ?? undefined,
+			parkingNotes: defaultValues?.parkingNotes ?? undefined,
+			transitNotes: defaultValues?.transitNotes ?? undefined,
+			preparationNotes: defaultValues?.preparationNotes ?? undefined,
+			registrationNotes: defaultValues?.registrationNotes ?? undefined,
+			wheelchairNotes: defaultValues?.wheelchairNotes ?? undefined,
+			capacityNotes: defaultValues?.capacityNotes ?? undefined,
+			lat: defaultValues?.lat ?? undefined,
+			lng: defaultValues?.lng ?? undefined,
+			city: defaultValues?.city ?? undefined,
+			street1: defaultValues?.street1 ?? undefined,
+			street2: defaultValues?.street2 ?? undefined,
+			postalCode: defaultValues?.postalCode ?? undefined,
+			province: defaultValues?.province ?? undefined,
+			country: defaultValues?.country ?? undefined,
 			// TODO: Add default values for other fields
 		},
 		validators: {
@@ -72,6 +232,60 @@ export const ListingForm = ({
 			}
 		},
 	});
+
+	// GOOGLE MAPS
+	const [location, setLocation] = useState("");
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	const { isLoaded, loadError } = useJsApiLoader({
+		id: "google-map-script",
+		version: "weekly",
+		language: "en",
+		libraries,
+		googleMapsApiKey: "AIzaSyBd8fQknyAuGoA6lsCj0OEFkd7LxIU45Tc",
+	});
+
+	const handlePlaceChanged = (
+		autocomplete: google.maps.places.Autocomplete,
+	) => {
+		setLocation("");
+		const place = autocomplete.getPlace();
+		const findByType = (type: string) =>
+			place.address_components?.find((c) => c.types.includes(type))
+				?.long_name;
+
+		const street =
+			findByType("street_number") &&
+			findByType("route") &&
+			findByType("street_number") + " " + findByType("route");
+		const city = findByType("locality");
+		const province = findByType("administrative_area_level_1");
+		const country = findByType("country");
+		const postalCode = findByType("postal_code");
+
+		form.setFieldValue("lat", place.geometry?.location?.lat());
+		form.setFieldValue("lng", place.geometry?.location?.lng());
+		form.setFieldValue("street1", street);
+		form.setFieldValue("postalCode", postalCode);
+		form.setFieldValue("city", city);
+		form.setFieldValue("province", province);
+		form.setFieldValue("country", country);
+	};
+
+	useEffect(() => {
+		if (!isLoaded || loadError || !inputRef.current) return;
+
+		const autocomplete = new google.maps.places.Autocomplete(
+			inputRef.current,
+			{
+				componentRestrictions: { country: "ca" },
+				fields: ["address_components", "geometry"],
+			},
+		);
+		autocomplete.addListener("place_changed", () =>
+			handlePlaceChanged(autocomplete),
+		);
+	}, [isLoaded, loadError]);
 
 	const serverError = useStore(
 		form.store,
@@ -112,11 +326,38 @@ export const ListingForm = ({
 			<div className="flex flex-col gap-4">
 				{serverError && <ErrorMessage text={serverError as string} />}
 				<form.Field
+					name="offering"
+					children={(field) => (
+						<Label>
+							{t.form.listing.offering.title}
+							<Select
+								value={field.state.value}
+								onValueChange={(value) =>
+									field.handleChange(value as OfferingEnum)
+								}
+							>
+								<SelectTrigger className="w-[180px]">
+									<SelectValue placeholder="" />
+								</SelectTrigger>
+								<SelectContent>
+									{Object.keys(
+										t.form.listing.offering.types,
+									).map((key) => (
+										<SelectItem value={key} key={key}>
+											{t.form.listing.offering.types[key]}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</Label>
+					)}
+				/>
+				<form.Field
 					name="description"
 					children={(field) => (
 						<Label>
 							<span className="flex items-center gap-1">
-								{t.admin.listings.new.form.description}
+								{t.form.common.description}
 								<span className="text-xs text-muted-foreground">
 									({t.common.optional})
 								</span>
@@ -129,64 +370,231 @@ export const ListingForm = ({
 									field.handleChange(e.target.value)
 								}
 							/>
+							<FieldError state={field.state} />
 						</Label>
+					)}
+				/>
+				<form.Field
+					name="eligibility"
+					children={(field) => (
+						<Label>
+							<span className="flex items-center gap-1">
+								{t.form.listing.eligibility.title}
+								<span className="text-xs text-muted-foreground">
+									({t.common.optional})
+								</span>
+							</span>
+							<Textarea
+								name={field.name}
+								value={field.state.value ?? ""}
+								onBlur={field.handleBlur}
+								onChange={(e) =>
+									field.handleChange(e.target.value)
+								}
+							/>
+							<p className="text-xs text-muted-foreground">
+								{"Ex: " + t.form.listing.eligibility.example}
+							</p>
+							<FieldError state={field.state} />
+						</Label>
+					)}
+				/>
+				<div className="flex flex-col gap-2 border-t border-border pt-4">
+					<p className="font-medium">
+						{t.form.listing.location.title}
+					</p>
+					<p className="text-sm text-muted-foreground">
+						{t.form.listing.location.description}
+					</p>
+				</div>
+				<Input
+					ref={inputRef}
+					onChange={(e) => setLocation(e.target.value)}
+					value={location}
+					placeholder={t.form.listing.location.placeholder}
+				/>
+				<form.Subscribe
+					selector={(formState) => [
+						formState.values.city,
+						formState.values.street1,
+						formState.values.postalCode,
+						formState.values.province,
+					]}
+				>
+					{([city, street1, postalCode, province]) =>
+						city && (
+							<div className="flex flex-col gap-4">
+								<table>
+									<thead>
+										<tr className="text-sm font-medium">
+											{street1 && (
+												<th className="text-left">
+													{
+														t.form.listing.location
+															.street
+													}
+												</th>
+											)}
+											{city && (
+												<th className="text-left">
+													{
+														t.form.listing.location
+															.city
+													}
+												</th>
+											)}
+											{province && (
+												<th className="text-left">
+													{
+														t.form.listing.location
+															.province
+													}
+												</th>
+											)}
+											{postalCode && (
+												<th className="text-left">
+													{
+														t.form.listing.location
+															.postalCode
+													}
+												</th>
+											)}
+										</tr>
+									</thead>
+									<tbody>
+										<tr className="text-sm">
+											{street1 && <td>{street1}</td>}
+											{city && <td>{city}</td>}
+											{province && <td>{province}</td>}
+											{postalCode && (
+												<td>{postalCode}</td>
+											)}
+										</tr>
+									</tbody>
+								</table>
+								<div>
+									<p className="text-sm font-medium">
+										{t.form.listing.location.full}
+									</p>
+									<p className="text-sm">
+										{formatAddress({
+											street1,
+											city,
+											province,
+											postalCode,
+										})}
+									</p>
+								</div>
+							</div>
+						)
+					}
+				</form.Subscribe>
+
+				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+					<p className="font-medium">
+						{t.form.listing.toggles.title}
+					</p>
+					<p className="text-sm text-muted-foreground">
+						{t.form.listing.toggles.description}
+					</p>
+				</div>
+				<div className="flex flex-col gap-8">
+					{checkboxOptions.map((option) => (
+						<div key={option} className="flex flex-col gap-4">
+							<div className="flex flex-col gap-4">
+								<form.Field
+									name={option}
+									children={(field) => (
+										<Label className="flex flex-row items-center gap-2">
+											<Checkbox
+												name={field.name}
+												checked={
+													field.state.value ?? false
+												}
+												onBlur={field.handleBlur}
+												onCheckedChange={(
+													checked: boolean,
+												) =>
+													field.handleChange(checked)
+												}
+											/>
+											<span className="text-sm font-medium">
+												{t.form.listing.toggles[
+													option as keyof typeof t.form.listing.toggles
+												].title + ": "}
+												<span className="text-sm text-muted-foreground">
+													{
+														t.form.listing.toggles[
+															option as keyof typeof t.form.listing.toggles
+														].description
+													}
+												</span>
+											</span>
+											<FieldError state={field.state} />
+										</Label>
+									)}
+								/>
+								<form.Field
+									name={`${option}Notes`}
+									children={(field) => (
+										<Label>
+											<span className="flex items-center gap-1">
+												{t.form.listing.notes}
+												<span className="text-xs text-muted-foreground">
+													({t.common.optional})
+												</span>
+											</span>
+											<Textarea
+												name={field.name}
+												value={field.state.value ?? ""}
+												onBlur={field.handleBlur}
+												onChange={(e) =>
+													field.handleChange(
+														e.target.value,
+													)
+												}
+											/>
+											<p className="text-xs text-muted-foreground">
+												{"Ex: " +
+													t.form.listing.toggles[
+														option as keyof typeof t.form.listing.toggles
+													].example}
+											</p>
+											<FieldError state={field.state} />
+										</Label>
+									)}
+								/>
+							</div>
+						</div>
+					))}
+				</div>
+				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+					<p className="font-medium">{t.form.listing.hours.title}</p>
+					<p className="text-sm text-muted-foreground">
+						{t.form.listing.hours.description}
+					</p>
+				</div>
+				<form.Field
+					name="hours"
+					children={(field) => (
+						<>
+							<HoursInput
+								onChange={(value) => {
+									field.handleChange(value);
+									console.log(value);
+								}}
+								value={field.state.value ?? ""}
+							/>
+							<FieldError state={field.state} />
+						</>
 					)}
 				/>
 				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 					<p className="font-medium">
-						{t.admin.listings.new.form.toggles.title}
+						{t.form.listing.contact.title}
 					</p>
 					<p className="text-sm text-muted-foreground">
-						{t.admin.listings.new.form.toggles.description}
-					</p>
-				</div>
-				{checkboxOptions.map((option) => (
-					<>
-						<form.Field
-							name={option}
-							children={(field) => (
-								<Label className="flex flex-row items-center gap-2">
-									<Checkbox
-										name={field.name}
-										checked={field.state.value ?? false}
-										onBlur={field.handleBlur}
-										onCheckedChange={(checked: boolean) =>
-											field.handleChange(checked)
-										}
-									/>
-									{t.admin.listings.new.form[option]}
-								</Label>
-							)}
-						/>
-						<form.Field
-							name={`${option}Notes`}
-							children={(field) => (
-								<Label>
-									<span className="flex items-center gap-1">
-										{t.admin.listings.new.form.notes}
-										<span className="text-xs text-muted-foreground">
-											({t.common.optional})
-										</span>
-									</span>
-									<Textarea
-										name={field.name}
-										value={field.state.value ?? ""}
-										onBlur={field.handleBlur}
-										onChange={(e) =>
-											field.handleChange(e.target.value)
-										}
-									/>
-								</Label>
-							)}
-						/>
-					</>
-				))}
-				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-					<p className="font-medium">
-						{t.admin.listings.new.form.contact.title}
-					</p>
-					<p className="text-sm text-muted-foreground">
-						{t.admin.listings.new.form.contact.description}
+						{t.form.listing.contact.description}
 					</p>
 				</div>
 				<form.Field
@@ -194,7 +602,7 @@ export const ListingForm = ({
 					children={(field) => (
 						<Label>
 							<span className="flex items-center gap-1">
-								{t.admin.listings.new.form.contact.email}
+								{t.form.common.email}
 								<span className="text-xs text-muted-foreground">
 									({t.common.optional})
 								</span>
@@ -216,7 +624,7 @@ export const ListingForm = ({
 					children={(field) => (
 						<Label>
 							<span className="flex items-center gap-1">
-								{t.admin.listings.new.form.contact.website}
+								{t.form.contact.website}
 								<span className="text-xs text-muted-foreground">
 									({t.common.optional})
 								</span>
@@ -239,7 +647,7 @@ export const ListingForm = ({
 					children={(field) => (
 						<Label>
 							<span className="flex items-center gap-1">
-								{t.admin.listings.new.form.contact.phoneNumbers}
+								{t.form.contact.phoneNumbers}
 								<span className="text-xs text-muted-foreground">
 									({t.common.optional})
 								</span>
@@ -332,10 +740,7 @@ export const ListingForm = ({
 									});
 								}}
 							>
-								{
-									t.admin.listings.new.form.contact
-										.addPhoneNumber
-								}
+								{t.form.contact.addPhoneNumber}
 							</Button>
 						</Label>
 					)}
