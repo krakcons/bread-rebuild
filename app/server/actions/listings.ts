@@ -29,14 +29,14 @@ export const ListingFormSchema = z.object({
 	hours: z.string().optional(),
 
 	// Address
-	street1: z.string().optional(),
+	street1: z.string().min(1, "Street is required"),
 	street2: z.string().optional(),
-	city: z.string().optional(),
-	postalCode: z.string().optional(),
-	province: z.string().optional(),
-	country: z.string().optional(),
-	lat: z.number().optional(),
-	lng: z.number().optional(),
+	city: z.string().min(1, "City is required"),
+	postalCode: z.string().min(1, "Postal code is required"),
+	province: z.string().min(1, "Province is required"),
+	country: z.string().min(1, "Country is required"),
+	lat: z.number(),
+	lng: z.number(),
 
 	// Description
 	description: z.string().optional(),

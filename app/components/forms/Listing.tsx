@@ -203,15 +203,14 @@ export const ListingForm = ({
 			registrationNotes: defaultValues?.registrationNotes ?? undefined,
 			wheelchairNotes: defaultValues?.wheelchairNotes ?? undefined,
 			capacityNotes: defaultValues?.capacityNotes ?? undefined,
-			lat: defaultValues?.lat ?? undefined,
-			lng: defaultValues?.lng ?? undefined,
-			city: defaultValues?.city ?? undefined,
-			street1: defaultValues?.street1 ?? undefined,
-			street2: defaultValues?.street2 ?? undefined,
-			postalCode: defaultValues?.postalCode ?? undefined,
-			province: defaultValues?.province ?? undefined,
-			country: defaultValues?.country ?? undefined,
-			// TODO: Add default values for other fields
+			lat: defaultValues?.lat ?? 0,
+			lng: defaultValues?.lng ?? 0,
+			city: defaultValues?.city ?? "",
+			street1: defaultValues?.street1 ?? "",
+			street2: defaultValues?.street2 ?? "",
+			postalCode: defaultValues?.postalCode ?? "",
+			province: defaultValues?.province ?? "",
+			country: defaultValues?.country ?? "",
 		},
 		validators: {
 			onSubmit: ListingFormSchema,
@@ -263,13 +262,22 @@ export const ListingForm = ({
 		const country = findByType("country");
 		const postalCode = findByType("postal_code");
 
-		form.setFieldValue("lat", place.geometry?.location?.lat());
-		form.setFieldValue("lng", place.geometry?.location?.lng());
-		form.setFieldValue("street1", street);
-		form.setFieldValue("postalCode", postalCode);
-		form.setFieldValue("city", city);
-		form.setFieldValue("province", province);
-		form.setFieldValue("country", country);
+		form.setFieldValue("lat", place.geometry?.location?.lat() ?? 0);
+		form.setFieldValue("lng", place.geometry?.location?.lng() ?? 0);
+		form.setFieldValue("street1", street ?? "");
+		form.setFieldValue("postalCode", postalCode ?? "");
+		form.setFieldValue("city", city ?? "");
+		form.setFieldValue("province", province ?? "");
+		form.setFieldValue("country", country ?? "");
+
+		// Revalidate immediately
+		form.validateField("lat", "submit");
+		form.validateField("lng", "submit");
+		form.validateField("city", "submit");
+		form.validateField("street1", "submit");
+		form.validateField("postalCode", "submit");
+		form.validateField("province", "submit");
+		form.validateField("country", "submit");
 	};
 
 	useEffect(() => {
@@ -489,6 +497,30 @@ export const ListingForm = ({
 						)
 					}
 				</form.Subscribe>
+				<form.Field
+					name="lat"
+					children={(field) => <FieldError state={field.state} />}
+				/>
+				<form.Field
+					name="lng"
+					children={(field) => <FieldError state={field.state} />}
+				/>
+				<form.Field
+					name="city"
+					children={(field) => <FieldError state={field.state} />}
+				/>
+				<form.Field
+					name="street1"
+					children={(field) => <FieldError state={field.state} />}
+				/>
+				<form.Field
+					name="postalCode"
+					children={(field) => <FieldError state={field.state} />}
+				/>
+				<form.Field
+					name="province"
+					children={(field) => <FieldError state={field.state} />}
+				/>
 
 				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 					<p className="font-medium">

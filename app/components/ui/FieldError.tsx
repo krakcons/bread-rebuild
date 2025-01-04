@@ -1,8 +1,15 @@
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { FieldState } from "@tanstack/react-form";
+import { FieldState, ValidationError } from "@tanstack/react-form";
 
-export function FieldError({ state }: { state: FieldState<any> }) {
-	return state.meta.errors ? (
-		<ErrorMessage text={state.meta.errors.join(", ")} />
+export function FieldError({
+	state,
+	errors,
+}: {
+	state?: FieldState<any>;
+	errors?: ValidationError[];
+}) {
+	const errorList = state?.meta.errors ?? errors ?? [];
+	return errorList?.length > 0 ? (
+		<ErrorMessage text={errorList.join(", ")} />
 	) : null;
 }
