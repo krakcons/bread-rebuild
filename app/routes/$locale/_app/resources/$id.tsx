@@ -1,8 +1,9 @@
 import { NotFound } from "@/components/NotFound";
 import { ResourceActions } from "@/components/Resource/Actions";
+import { Badge } from "@/components/ui/Badge";
 import { formatAddress } from "@/lib/address";
 import { useHours } from "@/lib/hours";
-import { getTranslations, translate } from "@/lib/locale";
+import { translate, useTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { cn } from "@/lib/utils";
 import { getResourceFn } from "@/server/actions/resource";
@@ -23,6 +24,7 @@ import {
 	Utensils,
 	UtensilsCrossed,
 } from "lucide-react";
+import { useMemo } from "react";
 import { Map, Marker } from "react-map-gl/maplibre";
 
 export const Route = createFileRoute("/$locale/_app/resources/$id")({
@@ -81,7 +83,7 @@ const Contact = ({
 function ResourceDetail() {
 	const { locale } = Route.useParams();
 	const resource = Route.useLoaderData();
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 
 	const hours = useHours(resource.hours || "");
 
@@ -89,11 +91,40 @@ function ResourceDetail() {
 		weekday: "short",
 	});
 
+	const tags = useMemo(() => {
+		let tags: string[] = [];
+		if (resource.free) {
+			tags.push(t.free);
+		}
+		if (resource.preparation) {
+			tags.push(t.preparation);
+		}
+		if (resource.parking) {
+			tags.push(t.parking);
+		}
+		if (resource.transit) {
+			tags.push(t.transit);
+		}
+		if (resource.wheelchair) {
+			tags.push(t.wheelchair);
+		}
+		return tags;
+	}, [resource, t]);
+
 	return (
 		<div className="mx-auto flex max-w-3xl flex-col gap-4 py-8">
 			{/* Header */}
 			<h1 className="text-3xl font-bold">{resource.provider.name}</h1>
-			<ResourceActions resource={resource} />
+			<div className="flex flex-wrap items-end justify-between gap-2">
+				<ResourceActions resource={resource} />
+				<div className="flex flex-wrap gap-2">
+					{tags.map((tag) => (
+						<Badge key={tag} variant="outline">
+							{tag}
+						</Badge>
+					))}
+				</div>
+			</div>
 			<div className="flex flex-col gap-3">
 				{/* Map */}
 				<div className="overflow-hidden rounded-lg border">
@@ -153,84 +184,105 @@ function ResourceDetail() {
 							/>
 						))}
 				</div>
-				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
-					<h2 className="mb-4 text-xl font-bold">
-						{t.additionalInfo}
-					</h2>{" "}
-					{/* Dietary Options */}
-					{resource.dietaryOptions.length > 0 && (
-						<Contact
-							label={t.dietaryOptions}
-							value={resource.dietaryOptions.join(", ") || ""}
-							icon={
-								<Utensils size={20} className="text-gray-500" />
-							}
-						/>
-					)}
-					{/* Accessibility */}
-					{resource.accessibility && (
-						<Contact
-							label={t.accessibility}
-							value={resource.accessibility}
-							icon={
-								<Accessibility
-									size={20}
-									className="text-gray-500"
-								/>
-							}
-						/>
-					)}
-					{/* Application Process */}
-					{resource.applicationProcess && (
-						<Contact
-							label={t.applicationProcess}
-							value={resource.applicationProcess}
-							icon={<File size={20} className="text-gray-500" />}
-						/>
-					)}
-					{/* Parking */}
-					{resource.parkingAvailable && (
-						<Contact
-							label={t.parking}
-							value={resource.parking}
-							icon={<Car size={20} className="text-gray-500" />}
-						/>
-					)}
-					{/* Preparation Required */}
-					{resource.preparationRequired && (
-						<Contact
-							label={t.preparationRequired}
-							value={resource.preparation}
-							icon={
-								<UtensilsCrossed
-									size={20}
-									className="text-gray-500"
-								/>
-							}
-						/>
-					)}
-					{/* Transit */}
-					{resource.transitAvailable && (
-						<Contact
-							label={t.transit}
-							value={resource.transit}
-							icon={<Bus size={20} className="text-gray-500" />}
-						/>
-					)}
-					{/* Fees */}
-					{resource.fees && (
-						<Contact
-							label={t.fees}
-							value={resource.fees}
-							icon={
-								<DollarSign
-									size={20}
-									className="text-gray-500"
-								/>
-							}
-						/>
-					)}
-				</div>
+				{(resource.fees ||
+					resource.registrationNotes ||
+					resource.parkingNotes ||
+					resource.preparationNotes ||
+					resource.transitNotes ||
+					resource.wheelchairNotes ||
+					resource.dietaryOptions.length > 0) && (
+					<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
+						<h2 className="mb-4 text-xl font-bold">
+							{t.additionalInfo}
+						</h2>
+						{/* Fees */}
+						{resource.fees && (
+							<Contact
+								label={t.fees}
+								value={resource.fees}
+								icon={
+									<DollarSign
+										size={20}
+										className="text-gray-500"
+									/>
+								}
+							/>
+						)}
+						{/* Dietary Options */}
+						{resource.dietaryOptions.length > 0 && (
+							<Contact
+								label={t.dietaryOptions}
+								value={
+									resource.dietaryOptions
+										.map((option) => option.name)
+										.join(", ") || ""
+								}
+								icon={
+									<Utensils
+										size={20}
+										className="text-gray-500"
+									/>
+								}
+							/>
+						)}
+						{/* Wheelchair Accessible */}
+						{resource.wheelchairNotes && (
+							<Contact
+								label={t.wheelchair}
+								value={resource.wheelchairNotes}
+								icon={
+									<Accessibility
+										size={20}
+										className="text-gray-500"
+									/>
+								}
+							/>
+						)}
+						{/* Application Process */}
+						{resource.registrationNotes && (
+							<Contact
+								label={t.applicationProcess}
+								value={resource.registrationNotes}
+								icon={
+									<File size={20} className="text-gray-500" />
+								}
+							/>
+						)}
+						{/* Parking */}
+						{resource.parkingNotes && (
+							<Contact
+								label={t.parking}
+								value={resource.parkingNotes}
+								icon={
+									<Car size={20} className="text-gray-500" />
+								}
+							/>
+						)}
+						{/* Preparation Required */}
+						{resource.preparationNotes && (
+							<Contact
+								label={t.preparation}
+								value={resource.preparationNotes}
+								icon={
+									<UtensilsCrossed
+										size={20}
+										className="text-gray-500"
+									/>
+								}
+							/>
+						)}
+						{/* Transit */}
+						{resource.transitNotes && (
+							<Contact
+								label={t.transit}
+								value={resource.transitNotes}
+								icon={
+									<Bus size={20} className="text-gray-500" />
+								}
+							/>
+						)}
+					</div>
+				)}
 				{hours.length > 0 && (
 					<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 						<h2 className="mb-4 text-xl font-bold">{t.hours}</h2>

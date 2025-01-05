@@ -28,7 +28,7 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/SideBar";
-import { Locale, locales, LocaleSchema } from "@/lib/locale";
+import { Locale, locales, LocaleSchema, useTranslations } from "@/lib/locale";
 import { logoutFn } from "@/server/auth/actions";
 import {
 	createFileRoute,
@@ -41,6 +41,7 @@ import { useServerFn } from "@tanstack/start";
 import {
 	BarChart,
 	Building,
+	ExternalLink,
 	Languages,
 	LayoutDashboard,
 	UserMinus,
@@ -48,46 +49,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
-
-const en = {
-	admin: "Admin",
-	dashboard: "Dashboard",
-	listings: "Listings",
-	provider: "Provider",
-	analytics: "Analytics",
-	settings: "Settings",
-	localeToggle: "Français",
-	account: "Account",
-	logout: "Logout",
-	editing: "Editing:",
-	confirm: {
-		title: "Leave without saving?",
-		description:
-			"Your changes have not been saved. If you leave, you will lose your changes.",
-		confirm: "Confirm",
-		cancel: "Cancel",
-	},
-};
-
-const fr: typeof en = {
-	localeToggle: "English",
-	admin: "Admin",
-	dashboard: "Tableau de bord",
-	listings: "Annonces",
-	provider: "Fournisseurs",
-	analytics: "Analytiques",
-	settings: "Paramètres",
-	account: "Compte",
-	logout: "Déconnexion",
-	editing: "Edition :",
-	confirm: {
-		title: "Quitter sans enregistrer?",
-		description:
-			"Vos modifications n'ont pas été enregistrées. Si vous quittez, vous perdrez vos modifications.",
-		confirm: "Confirmer",
-		cancel: "Annuler",
-	},
-};
 
 export const Route = createFileRoute("/$locale/admin/_admin")({
 	component: RouteComponent,
@@ -107,23 +68,16 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 			});
 		}
 	},
-	loader: async ({ params: { locale } }) => {
-		return {
-			pt: locale === "en" ? en : fr,
-		};
-	},
 });
 
 function RouteComponent() {
 	const logout = useServerFn(logoutFn);
 	const { locale } = Route.useParams();
 	const search = Route.useSearch();
-	const { pt } = Route.useLoaderData();
 	const navigate = Route.useNavigate();
 	const [alertOpen, setAlertOpen] = useState(false);
 	const [editingLocale, setEditingLocale] = useState(search.editingLocale);
-
-	console.log(search);
+	const t = useTranslations(locale);
 
 	return (
 		<SidebarProvider>
@@ -132,7 +86,9 @@ function RouteComponent() {
 				<SidebarContent>
 					<SidebarGroup>
 						<SidebarGroupContent>
-							<SidebarGroupLabel>{pt.admin}</SidebarGroupLabel>
+							<SidebarGroupLabel>
+								{t.admin.nav.admin}
+							</SidebarGroupLabel>
 							<SidebarMenuItem>
 								<SidebarMenuButton asChild>
 									<Link
@@ -143,7 +99,7 @@ function RouteComponent() {
 										search={search}
 									>
 										<LayoutDashboard />
-										{pt.dashboard}
+										{t.admin.nav.dashboard}
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
@@ -157,7 +113,7 @@ function RouteComponent() {
 										search={search}
 									>
 										<Utensils />
-										{pt.listings}
+										{t.admin.nav.listings}
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
@@ -171,7 +127,7 @@ function RouteComponent() {
 										search={search}
 									>
 										<Building />
-										{pt.provider}
+										{t.admin.nav.provider}
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
@@ -185,7 +141,7 @@ function RouteComponent() {
 										search={search}
 									>
 										<BarChart />
-										{pt.analytics}
+										{t.admin.nav.analytics}
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
@@ -193,7 +149,9 @@ function RouteComponent() {
 					</SidebarGroup>
 					<SidebarGroup>
 						<SidebarGroupContent>
-							<SidebarGroupLabel>{pt.settings}</SidebarGroupLabel>
+							<SidebarGroupLabel>
+								{t.admin.nav.settings}
+							</SidebarGroupLabel>
 							<SidebarMenuItem>
 								<SidebarMenuButton asChild>
 									<button
@@ -211,15 +169,30 @@ function RouteComponent() {
 										}}
 									>
 										<Languages />
-										{pt.localeToggle}
+										{t.admin.nav.localeToggle}
 									</button>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+							<SidebarMenuItem>
+								<SidebarMenuButton asChild>
+									<Link
+										to="/$locale"
+										params={{
+											locale,
+										}}
+									>
+										<ExternalLink />
+										{t.admin.nav.exit}
+									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 						</SidebarGroupContent>
 					</SidebarGroup>
 					<SidebarGroup>
 						<SidebarGroupContent>
-							<SidebarGroupLabel>{pt.account}</SidebarGroupLabel>
+							<SidebarGroupLabel>
+								{t.admin.nav.account}
+							</SidebarGroupLabel>
 							<SidebarMenuItem>
 								<SidebarMenuButton asChild>
 									<button
@@ -228,7 +201,7 @@ function RouteComponent() {
 										}}
 									>
 										<UserMinus />
-										{pt.logout}
+										{t.admin.nav.logout}
 									</button>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
@@ -249,15 +222,15 @@ function RouteComponent() {
 								<AlertDialogContent>
 									<AlertDialogHeader>
 										<AlertDialogTitle>
-											{pt.confirm.title}
+											{t.admin.confirm.title}
 										</AlertDialogTitle>
 										<AlertDialogDescription>
-											{pt.confirm.description}
+											{t.admin.confirm.description}
 										</AlertDialogDescription>
 									</AlertDialogHeader>
 									<AlertDialogFooter>
 										<AlertDialogCancel>
-											{pt.confirm.cancel}
+											{t.admin.confirm.cancel}
 										</AlertDialogCancel>
 										<AlertDialogAction
 											onClick={() => {
@@ -271,7 +244,7 @@ function RouteComponent() {
 												});
 											}}
 										>
-											{pt.confirm.confirm}
+											{t.admin.confirm.confirm}
 										</AlertDialogAction>
 									</AlertDialogFooter>
 								</AlertDialogContent>
@@ -296,7 +269,7 @@ function RouteComponent() {
 						>
 							<SelectTrigger className="gap-1">
 								<p className="text-sm text-muted-foreground">
-									{pt.editing}
+									{t.admin.editing}
 								</p>
 								<SelectValue placeholder="Select locale" />
 							</SelectTrigger>

@@ -1,15 +1,37 @@
 import { formatAddress } from "@/lib/address";
-import { getTranslations } from "@/lib/locale";
-import { ResourceType } from "@/server/types";
+import { useTranslations } from "@/lib/locale";
+import { ResourceType } from "@/server/db/types";
 import { Link, useParams } from "@tanstack/react-router";
-import { DollarSign, MapPin, PhoneCall } from "lucide-react";
+import { MapPin, PhoneCall } from "lucide-react";
+import { useMemo } from "react";
+import { Badge } from "../ui/badge";
 import { ResourceActions } from "./Actions";
 
 export const Resource = ({ resource }: { resource: ResourceType }) => {
 	const { locale } = useParams({
 		from: "/$locale",
 	});
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
+
+	const tags = useMemo(() => {
+		let tags: string[] = [];
+		if (resource.free) {
+			tags.push(t.free);
+		}
+		if (resource.preparation) {
+			tags.push(t.preparation);
+		}
+		if (resource.parking) {
+			tags.push(t.parking);
+		}
+		if (resource.transit) {
+			tags.push(t.transit);
+		}
+		if (resource.wheelchair) {
+			tags.push(t.wheelchair);
+		}
+		return tags;
+	}, [resource, t]);
 
 	return (
 		<Link
@@ -21,6 +43,15 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 			className="flex flex-col items-start gap-2 rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
 		>
 			<p className="text-xl font-semibold">{resource.provider.name}</p>
+			{tags.length > 0 && (
+				<div className="flex flex-wrap gap-2">
+					{tags.map((tag) => (
+						<Badge key={tag} variant="outline">
+							{tag}
+						</Badge>
+					))}
+				</div>
+			)}
 			{/* Address section */}
 			{resource.street1 && (
 				<div className="flex items-center gap-2 text-muted-foreground">
@@ -38,13 +69,6 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 					<p>{phone.phone}</p>
 				</div>
 			))}
-			{/* Fees section */}
-			{resource.free && (
-				<div className="mb-2 flex items-center gap-2 text-muted-foreground">
-					<DollarSign size={20} />
-					{t.free}
-				</div>
-			)}
 			<ResourceActions resource={resource} />
 		</Link>
 	);

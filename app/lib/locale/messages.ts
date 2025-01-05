@@ -41,23 +41,45 @@ export const english = {
 	clear: "Clear",
 	unassigned: "Unassigned",
 	parking: "Parking",
-	preparationRequired: "Preparation Required",
+	preparation: "Preparation Required",
 	transit: "Transit",
+	wheelchair: "Wheelchair Accessible",
 	filters: {
 		title: "Filters",
 		description:
 			"Filter resources by the following options and dietary requirements.",
 		free: "Free",
-		preparationRequired: "Preparation Required",
-		parkingAvailable: "Parking",
-		nearTransit: "Near Transit",
-		wheelchairAccessible: "Wheelchair Accessible",
+		preparation: "Preparation Required",
+		parking: "Parking",
+		transit: "Transit",
+		wheelchair: "Wheelchair Accessible",
 	},
 	terms: "Terms of Use",
 	privacy: "Privacy Policy",
 	dietaryOptions: "Dietary Options",
+
 	admin: {
 		title: "Admin",
+		editing: "Editing:",
+		confirm: {
+			title: "Leave without saving?",
+			description:
+				"Your changes have not been saved. If you leave, you will lose your changes.",
+			confirm: "Confirm",
+			cancel: "Cancel",
+		},
+		nav: {
+			admin: "Admin",
+			dashboard: "Dashboard",
+			listings: "Listings",
+			provider: "Provider",
+			analytics: "Analytics",
+			settings: "Settings",
+			localeToggle: "Français",
+			account: "Account",
+			logout: "Logout",
+			exit: "Exit to Bread",
+		},
 		onboarding: {
 			title: "Create Your Provider",
 			description:
@@ -106,6 +128,9 @@ export const english = {
 			},
 		},
 		listings: {
+			title: "Listings",
+			description: "Manage your listings here.",
+			empty: "No listings found.",
 			new: {
 				title: "New Listing",
 				description: "Create a new listing.",
@@ -287,23 +312,44 @@ export const french: typeof english = {
 	clear: "Effacer",
 	unassigned: "Non assigné",
 	parking: "Parking",
-	preparationRequired: "Préparation Requise",
+	preparation: "Préparation Requise",
 	transit: "Transit",
+	wheelchair: "Accessible au Fauteuil Roulant",
 	filters: {
 		title: "Filtres",
 		description:
 			"Filtrer les ressources par les options suivantes et les exigences alimentaires.",
 		free: "Gratuit",
-		preparationRequired: "Préparation Requise",
-		parkingAvailable: "Parking",
-		nearTransit: "Proche du Transit",
-		wheelchairAccessible: "Accessible au Fauteuil Roulant",
+		preparation: "Préparation Requise",
+		parking: "Parking",
+		transit: "Proche du Transit",
+		wheelchair: "Accessible au Fauteuil Roulant",
 	},
 	terms: "Conditions d'utilisation",
 	privacy: "Politique de confidentialité",
 	dietaryOptions: "Options Diététiques",
 	admin: {
 		title: "Admin",
+		editing: "Edition :",
+		confirm: {
+			title: "Quitter sans enregistrer?",
+			description:
+				"Vos modifications n'ont pas été enregistrées. Si vous quittez, vous perdrez vos modifications.",
+			confirm: "Confirmer",
+			cancel: "Annuler",
+		},
+		nav: {
+			admin: "Admin",
+			dashboard: "Tableau de bord",
+			listings: "Annonces",
+			provider: "Fournisseurs",
+			analytics: "Analytiques",
+			settings: "Paramètres",
+			localeToggle: "Anglais",
+			account: "Compte",
+			logout: "Déconnexion",
+			exit: "Quitter Bread",
+		},
 		onboarding: {
 			title: "Créer Votre Fournisseur",
 			description:
@@ -353,6 +399,9 @@ export const french: typeof english = {
 			},
 		},
 		listings: {
+			title: "Listes",
+			description: "Gérez vos listings ici.",
+			empty: "Aucun listing trouvé.",
 			new: {
 				title: "Nouvelle Liste",
 				description: "Créer une nouvelle liste.",

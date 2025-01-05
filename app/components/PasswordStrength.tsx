@@ -1,4 +1,4 @@
-import { getTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import zxcvbn from "zxcvbn";
 
@@ -10,7 +10,7 @@ export const PasswordStrength = ({
 	locale: string;
 }) => {
 	const strength = zxcvbn(password);
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 
 	const strengthColors = [
 		"bg-red-400",

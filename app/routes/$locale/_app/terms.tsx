@@ -1,4 +1,4 @@
-import { getTranslations } from "@/lib/locale";
+import { getTranslations, useTranslations } from "@/lib/locale";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/$locale/_app/terms")({
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/$locale/_app/terms")({
 
 function RouteComponent() {
 	const { locale } = Route.useParams();
-	const translations = getTranslations(locale);
+	const translations = useTranslations(locale);
 	return (
 		<div className="flex flex-col gap-4">
 			<h1 className="text-3xl font-semibold">{translations.terms}</h1>

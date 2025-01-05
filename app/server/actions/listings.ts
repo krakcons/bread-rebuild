@@ -1,9 +1,15 @@
 import { flattenLocalizedObject } from "@/lib/locale";
+import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { generateId } from "../auth";
 import { db } from "../db";
-import { resources } from "../db/schema";
+import {
+	resourcePhoneNumbers,
+	resources,
+	resourceTranslations,
+} from "../db/schema";
 import {
 	LocalizedQuerySchema,
 	LocalizedQueryType,
@@ -97,5 +103,42 @@ export const getListingsFn = createServerFn({
 				},
 				localeOpts,
 			)!;
+		});
+	});
+
+export const createListingFn = createServerFn({
+	method: "POST",
+})
+	.middleware([localeMiddleware, providerMiddleware])
+	.validator(ListingFormSchema)
+	.handler(async ({ context, data }) => {
+		const { phoneNumbers, ...rest } = data;
+		const listingId = generateId(16);
+		await db.insert(resources).values({
+			...rest,
+			id: listingId,
+			providerId: context.provider.id,
+		});
+		await db.insert(resourceTranslations).values({
+			...rest,
+			resourceId: listingId,
+			locale: context.locale,
+		});
+		if (phoneNumbers) {
+			await db.insert(resourcePhoneNumbers).values(
+				phoneNumbers.map((phoneNumber) => ({
+					...phoneNumber,
+					resourceId: listingId,
+				})),
+			);
+		}
+		throw redirect({
+			to: `/$locale/admin/listings`,
+			params: {
+				locale: context.locale,
+			},
+			search: {
+				editing: false,
+			},
 		});
 	});

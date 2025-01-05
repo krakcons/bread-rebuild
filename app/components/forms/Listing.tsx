@@ -17,7 +17,7 @@ import {
 	formatScheduleToString,
 	parseSchedule,
 } from "@/lib/hours";
-import { getTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
 import { ListingFormSchema } from "@/server/actions/listings";
 import { ProviderPhoneNumberType, ResourceType } from "@/server/db/types";
 import { OfferingEnum } from "@/server/types";
@@ -77,7 +77,7 @@ const HoursInput = ({
 	const { locale } = useParams({
 		from: "/$locale",
 	});
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 	const [hours, setHours] = useState<
 		(DaySchedule & {
 			enabled: boolean;
@@ -181,7 +181,7 @@ export const ListingForm = ({
 	const { editing } = useSearch({
 		from: "/$locale/admin/_admin",
 	});
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 	const form = useForm({
 		defaultValues: {
 			description: defaultValues?.description ?? undefined,

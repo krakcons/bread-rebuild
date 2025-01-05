@@ -3,7 +3,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { FieldError } from "@/components/ui/FieldError";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { getTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { login, LoginSchema } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
@@ -20,7 +20,7 @@ function RouteComponent() {
 	const navigate = Route.useNavigate();
 	const loginMutation = useServerFn(login);
 	const { locale } = Route.useParams();
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 	const form = useForm({
 		defaultValues: {
 			email: "",

@@ -1,14 +1,17 @@
 import { ListingForm } from "@/components/forms/Listing";
-import { getTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
+import { createListingFn } from "@/server/actions/listings";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/start";
 
 export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
+	const createListing = useServerFn(createListingFn);
 	const { locale } = Route.useParams();
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -20,7 +23,7 @@ function RouteComponent() {
 				<ListingForm
 					locale={locale}
 					onSubmit={(data) => {
-						console.log(data);
+						createListing({ data });
 					}}
 				/>
 			</div>

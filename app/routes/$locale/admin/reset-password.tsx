@@ -4,7 +4,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { FieldError } from "@/components/ui/FieldError";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { getTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
 import {
 	isPasswordResetVerified,
 	resetPassword,
@@ -33,7 +33,7 @@ const EmailForm = () => {
 	const resetPasswordFromEmailMutation = useServerFn(resetPasswordFromEmail);
 	const navigate = Route.useNavigate();
 	const { locale } = Route.useParams();
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -145,7 +145,7 @@ const EmailForm = () => {
 const PasswordForm = () => {
 	const resetPasswordMutation = useServerFn(resetPassword);
 	const { locale } = Route.useParams();
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 	const form = useForm({
 		defaultValues: {
 			password: "",
@@ -269,7 +269,7 @@ const PasswordForm = () => {
 function RouteComponent() {
 	const { verified } = Route.useLoaderData();
 	const { locale } = Route.useParams();
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 
 	if (verified) return <PasswordForm />;
 	else return <EmailForm />;

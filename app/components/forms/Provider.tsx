@@ -11,7 +11,7 @@ import {
 	SelectValue,
 } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/TextArea";
-import { getTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
 import { ProviderFormSchema } from "@/server/actions/provider";
 import { ProviderPhoneNumberType, ProviderType } from "@/server/db/types";
 import { useForm, useStore } from "@tanstack/react-form";
@@ -35,7 +35,7 @@ export const ProviderForm = ({
 	const { editing } = useSearch({
 		from: "/$locale/admin/_admin",
 	});
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 	const form = useForm({
 		defaultValues: {
 			name: defaultValues?.name ?? "",

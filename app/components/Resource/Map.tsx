@@ -1,6 +1,6 @@
 import { formatAddress } from "@/lib/address";
-import { getTranslations } from "@/lib/locale";
-import { ResourceType } from "@/server/types";
+import { useTranslations } from "@/lib/locale";
+import { ResourceType } from "@/server/db/types";
 import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
 import { useState } from "react";
@@ -11,7 +11,7 @@ import { ResourceActions } from "./Actions";
 export const MapResource = ({ resource }: { resource: ResourceType }) => {
 	const { locale } = useParams({ from: "/$locale" });
 	const [popupOpen, setPopupOpen] = useState<boolean>(false);
-	const translations = getTranslations(locale);
+	const translations = useTranslations(locale);
 
 	return (
 		<>

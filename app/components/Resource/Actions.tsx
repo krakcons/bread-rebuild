@@ -8,7 +8,7 @@ import {
 	SelectValue,
 } from "@/components/ui/Select";
 import { days } from "@/lib/hours";
-import { getTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { queryClient } from "@/router";
 import {
@@ -16,7 +16,7 @@ import {
 	toggleSavedFn,
 	updateSavedFn,
 } from "@/server/actions/saved";
-import { ResourceType, SavedResourceType } from "@/server/types";
+import { ResourceType, SavedResourceType } from "@/server/db/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { Bookmark, CalendarDays } from "lucide-react";
@@ -37,7 +37,7 @@ export const ResourceActions = ({
 	const { locale } = useParams({
 		from: "/$locale",
 	});
-	const translations = getTranslations(locale);
+	const translations = useTranslations(locale);
 	const savedResource = saved.find(
 		(savedResource) => savedResource.resourceId === resource.id,
 	);

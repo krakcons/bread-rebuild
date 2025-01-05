@@ -9,7 +9,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/Dialog";
-import { getTranslations } from "@/lib/locale";
+import { getTranslations, useTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { getDietaryOptionsFn } from "@/server/actions/dietary";
 import { searchFn, SearchParamsSchema } from "@/server/actions/resource";
@@ -77,7 +77,7 @@ function Home() {
 		dietaryOptionsIds = [],
 	} = Route.useSearch();
 	const { resources, dietaryOptions } = Route.useLoaderData();
-	const translations = getTranslations(locale);
+	const translations = useTranslations(locale);
 
 	const filters: Record<string, boolean> = {
 		free,

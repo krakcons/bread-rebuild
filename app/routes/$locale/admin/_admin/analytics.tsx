@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
 import { db } from "@/server/db";
 import { anonymousSessionsToResources, resources } from "@/server/db/schema";
 import { providerMiddleware } from "@/server/middleware";
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/$locale/admin/_admin/analytics")({
 function RouteComponent() {
 	const { locale } = Route.useParams();
 	const { analytics } = Route.useLoaderData();
-	const t = getTranslations(locale);
+	const t = useTranslations(locale);
 
 	return (
 		<div className="flex flex-col gap-4">

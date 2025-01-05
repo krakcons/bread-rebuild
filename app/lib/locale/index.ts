@@ -1,4 +1,5 @@
 import { LocalizedQueryType } from "@/server/db/types";
+import { useMemo } from "react";
 import { z } from "zod";
 import { english, french } from "./messages";
 
@@ -8,6 +9,13 @@ export const locales = [
 ];
 export const LocaleSchema = z.enum(["en", "fr"]);
 export type Locale = z.infer<typeof LocaleSchema>;
+
+export const useTranslations = (locale: string) => {
+	const t = useMemo(() => {
+		return locale === "fr" ? french : english;
+	}, [locale]);
+	return t;
+};
 
 export const getTranslations = (locale: string) => {
 	return locale === "fr" ? french : english;
