@@ -2,8 +2,13 @@ import { ListingForm } from "@/components/forms/Listing";
 import { Locale, useTranslations } from "@/lib/locale";
 import { getDietaryOptionsFn } from "@/server/actions/dietary";
 import { mutateListingFn } from "@/server/actions/listings";
-import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	useRouter,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 	component: RouteComponent,
@@ -22,10 +27,13 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 });
 
 function RouteComponent() {
+	const router = useRouter();
 	const createListing = useServerFn(mutateListingFn);
 	const { locale } = Route.useParams();
 	const t = useTranslations(locale);
 	const { dietaryOptions } = Route.useLoaderData();
+	const { editingLocale } = Route.useSearch();
+
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex flex-col gap-2 border-b border-gray-200 pb-4">
@@ -36,8 +44,16 @@ function RouteComponent() {
 				<ListingForm
 					locale={locale}
 					dietaryOptions={dietaryOptions}
-					onSubmit={(data) => {
-						createListing({ data: { ...data, redirect: true } });
+					onSubmit={async (data) => {
+						await createListing({
+							data: {
+								...data,
+								redirect: true,
+								locale: editingLocale!,
+							},
+						});
+						await toast.success(t.form.listing.success.create);
+						await router.invalidate();
 					}}
 				/>
 			</div>

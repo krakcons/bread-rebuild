@@ -3,6 +3,7 @@ import { useTranslations } from "@/lib/locale";
 import { editProviderFn, getProviderFn } from "@/server/actions/provider";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/$locale/admin/_admin/provider")({
 	component: RouteComponent,
@@ -35,14 +36,15 @@ function RouteComponent() {
 				<p>{t.admin.provider.description}</p>
 			</div>
 			<ProviderForm
-				key={editingLocale}
+				key={`${editingLocale}-${provider?.updatedAt.toString()}`}
 				locale={locale}
 				defaultValues={provider}
 				onSubmit={async (data) => {
 					await editProvider({
 						data: { ...data, locale: editingLocale! },
 					});
-					router.invalidate();
+					await toast.success(t.form.provider.success.update);
+					await router.invalidate();
 				}}
 			/>
 		</div>

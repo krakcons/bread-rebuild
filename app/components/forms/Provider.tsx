@@ -15,10 +15,9 @@ import { useTranslations } from "@/lib/locale";
 import { ProviderFormSchema } from "@/server/actions/provider";
 import { ProviderPhoneNumberType, ProviderType } from "@/server/db/types";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
-import { useEffect } from "react";
 import { z } from "zod";
+import { BlockNavigation } from "./BlockNavigation";
 
 export const ProviderForm = ({
 	locale,
@@ -29,9 +28,6 @@ export const ProviderForm = ({
 	defaultValues?: ProviderType;
 	onSubmit: (data: z.infer<typeof ProviderFormSchema>) => void;
 }) => {
-	const navigate = useNavigate({
-		from: "/$locale/admin/provider",
-	});
 	const t = useTranslations(locale);
 	const form = useForm({
 		defaultValues: {
@@ -44,15 +40,9 @@ export const ProviderForm = ({
 		validators: {
 			onSubmit: ProviderFormSchema,
 		},
-		onSubmit: async ({ value: data, formApi }) => {
+		onSubmit: ({ value: data, formApi }) => {
 			try {
-				await onSubmit(data);
-				await navigate({
-					search: (search) => ({
-						...search,
-						editing: false,
-					}),
-				});
+				onSubmit(data);
 			} catch (error) {
 				formApi.setErrorMap({
 					onServer: "Something went wrong",
@@ -68,235 +58,240 @@ export const ProviderForm = ({
 
 	const isDirty = useStore(form.store, (formState) => formState.isDirty);
 
-	useEffect(() => {
-		navigate({
-			search: (prev) => ({
-				...prev,
-				editing: isDirty,
-			}),
-			replace: true,
-		});
-	}, [isDirty]);
-
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
-		>
-			<div className="flex flex-col gap-4">
-				{serverError && <ErrorMessage text={serverError as string} />}
-				<form.Field
-					name="name"
-					children={(field) => (
-						<Label>
-							{t.form.provider.name}
-							<Input
-								name={field.name}
-								value={field.state.value ?? ""}
-								onBlur={field.handleBlur}
-								onChange={(e) =>
-									field.handleChange(e.target.value)
-								}
-							/>
-							<FieldError state={field.state} />
-						</Label>
+		<>
+			<BlockNavigation shouldBlockFn={() => isDirty} />
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					form.handleSubmit();
+				}}
+			>
+				<div className="flex flex-col gap-4">
+					{serverError && (
+						<ErrorMessage text={serverError as string} />
 					)}
-				/>
-				<form.Field
-					name="description"
-					children={(field) => (
-						<Label>
-							<span className="flex items-center gap-1">
-								{t.form.common.description}
-								<span className="text-xs text-muted-foreground">
-									({t.common.optional})
+					<form.Field
+						name="name"
+						children={(field) => (
+							<Label>
+								{t.form.provider.name}
+								<Input
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+								<FieldError state={field.state} />
+							</Label>
+						)}
+					/>
+					<form.Field
+						name="description"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.common.description}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
 								</span>
-							</span>
-							<Textarea
-								name={field.name}
-								value={field.state.value ?? ""}
-								onBlur={field.handleBlur}
-								onChange={(e) =>
-									field.handleChange(e.target.value)
-								}
-							/>
-						</Label>
-					)}
-				/>
-				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-					<p className="font-medium">
-						{t.admin.onboarding.contact.title}
-					</p>
-					<p className="text-sm text-muted-foreground">
-						{t.admin.onboarding.contact.description}
-					</p>
-				</div>
-				<form.Field
-					name="email"
-					children={(field) => (
-						<Label>
-							<span className="flex items-center gap-1">
-								{t.form.common.email}
-								<span className="text-xs text-muted-foreground">
-									({t.common.optional})
+								<Textarea
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+							</Label>
+						)}
+					/>
+					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+						<p className="font-medium">
+							{t.admin.onboarding.contact.title}
+						</p>
+						<p className="text-sm text-muted-foreground">
+							{t.admin.onboarding.contact.description}
+						</p>
+					</div>
+					<form.Field
+						name="email"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.common.email}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
 								</span>
-							</span>
-							<Input
-								name={field.name}
-								value={field.state.value ?? ""}
-								onBlur={field.handleBlur}
-								onChange={(e) =>
-									field.handleChange(e.target.value)
-								}
-							/>
-							<FieldError state={field.state} />
-						</Label>
-					)}
-				/>
-				<form.Field
-					name="website"
-					children={(field) => (
-						<Label>
-							<span className="flex items-center gap-1">
-								{t.form.contact.website}
-								<span className="text-xs text-muted-foreground">
-									({t.common.optional})
+								<Input
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+								<FieldError state={field.state} />
+							</Label>
+						)}
+					/>
+					<form.Field
+						name="website"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.contact.website}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
 								</span>
-							</span>
-							<Input
-								name={field.name}
-								value={field.state.value ?? ""}
-								onBlur={field.handleBlur}
-								onChange={(e) =>
-									field.handleChange(e.target.value)
-								}
-							/>
-							<FieldError state={field.state} />
-						</Label>
-					)}
-				/>
-				<form.Field
-					name="phoneNumbers"
-					mode="array"
-					children={(field) => (
-						<Label>
-							<span className="flex items-center gap-1">
-								{t.form.contact.phoneNumbers}
-								<span className="text-xs text-muted-foreground">
-									({t.common.optional})
+								<Input
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+								<FieldError state={field.state} />
+							</Label>
+						)}
+					/>
+					<form.Field
+						name="phoneNumbers"
+						mode="array"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.contact.phoneNumbers}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
 								</span>
-							</span>
-							{field.state.value?.map((_, i) => (
-								<div
-									key={`phoneNumbers[${i}]`}
-									className="flex gap-2"
-								>
-									<form.Field
-										name={`phoneNumbers[${i}].phone`}
-										children={(field) => (
-											<div className="flex flex-grow flex-col gap-2">
-												<Input
-													name={`phoneNumbers[${i}].phone`}
-													value={field.state.value}
-													onBlur={field.handleBlur}
-													onChange={(e) =>
-														field.handleChange(
-															e.target.value,
-														)
-													}
-													autoComplete="tel"
-												/>
-												<FieldError
-													state={field.state}
-												/>
-											</div>
-										)}
-									/>
-									<form.Field
-										name={`phoneNumbers[${i}].type`}
-										children={(field) => (
-											<div className="flex flex-col gap-2">
-												<Select
-													value={field.state.value}
-													onValueChange={(value) =>
-														field.handleChange(
-															value as ProviderPhoneNumberType["type"],
-														)
-													}
-												>
-													<SelectTrigger className="w-[180px]">
-														<SelectValue placeholder="" />
-													</SelectTrigger>
-													<SelectContent>
-														{Object.keys(
-															t.phoneTypes,
-														).map((type) => (
-															<SelectItem
-																value={type}
-																key={type}
-															>
-																{
-																	t
-																		.phoneTypes[
-																		type
-																	]
-																}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-												<FieldError
-													state={field.state}
-												/>
-											</div>
-										)}
-									/>
-									<Button
-										onClick={(e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											field.removeValue(i);
-										}}
-										size="icon"
-										className="mb-2"
+								{field.state.value?.map((_, i) => (
+									<div
+										key={`phoneNumbers[${i}]`}
+										className="flex gap-2"
 									>
-										<Trash2 size={16} />
-									</Button>
-								</div>
-							))}
+										<form.Field
+											name={`phoneNumbers[${i}].phone`}
+											children={(field) => (
+												<div className="flex flex-grow flex-col gap-2">
+													<Input
+														name={`phoneNumbers[${i}].phone`}
+														value={
+															field.state.value
+														}
+														onBlur={
+															field.handleBlur
+														}
+														onChange={(e) =>
+															field.handleChange(
+																e.target.value,
+															)
+														}
+														autoComplete="tel"
+													/>
+													<FieldError
+														state={field.state}
+													/>
+												</div>
+											)}
+										/>
+										<form.Field
+											name={`phoneNumbers[${i}].type`}
+											children={(field) => (
+												<div className="flex flex-col gap-2">
+													<Select
+														value={
+															field.state.value
+														}
+														onValueChange={(
+															value,
+														) =>
+															field.handleChange(
+																value as ProviderPhoneNumberType["type"],
+															)
+														}
+													>
+														<SelectTrigger className="w-[180px]">
+															<SelectValue placeholder="" />
+														</SelectTrigger>
+														<SelectContent>
+															{Object.keys(
+																t.phoneTypes,
+															).map((type) => (
+																<SelectItem
+																	value={type}
+																	key={type}
+																>
+																	{
+																		t
+																			.phoneTypes[
+																			type
+																		]
+																	}
+																</SelectItem>
+															))}
+														</SelectContent>
+													</Select>
+													<FieldError
+														state={field.state}
+													/>
+												</div>
+											)}
+										/>
+										<Button
+											onClick={(e) => {
+												e.preventDefault();
+												e.stopPropagation();
+												field.removeValue(i);
+											}}
+											size="icon"
+											className="mb-2"
+										>
+											<Trash2 size={16} />
+										</Button>
+									</div>
+								))}
+								<Button
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										field.pushValue({
+											phone: "",
+											type: "phone",
+										});
+									}}
+								>
+									{t.form.contact.addPhoneNumber}
+								</Button>
+							</Label>
+						)}
+					/>
+					<form.Subscribe
+						selector={(formState) => [formState.isSubmitting]}
+					>
+						{([isSubmitting]) => (
 							<Button
-								onClick={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-									field.pushValue({
-										phone: "",
-										type: "phone",
-									});
-								}}
+								type="submit"
+								disabled={isSubmitting}
+								className="self-start"
 							>
-								{t.form.contact.addPhoneNumber}
-							</Button>
-						</Label>
-					)}
-				/>
-				<form.Subscribe
-					selector={(formState) => [formState.isSubmitting]}
-				>
-					{([isSubmitting]) => (
-						<div className="flex items-start justify-between gap-2">
-							<Button type="submit" disabled={isSubmitting}>
 								{isSubmitting && (
 									<Loader2 className="animate-spin" />
 								)}
 								{t.common.submit}
 							</Button>
-						</div>
-					)}
-				</form.Subscribe>
-			</div>
-		</form>
+						)}
+					</form.Subscribe>
+				</div>
+			</form>
+		</>
 	);
 };

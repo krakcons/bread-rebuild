@@ -26,6 +26,7 @@ export const english = {
 	additionalInfo: "Additional Information",
 	contact: "Contact",
 	email: "Email",
+	website: "Website",
 	hours: "Hours",
 	saved: {
 		title: "My Saved",
@@ -58,7 +59,7 @@ export const english = {
 	terms: "Terms of Use",
 	privacy: "Privacy Policy",
 	dietaryOptions: "Dietary Options",
-
+	preview: "View Listing",
 	admin: {
 		title: "Admin",
 		editing: "Editing:",
@@ -189,6 +190,10 @@ export const english = {
 				description:
 					"This will allow users to contact your provider. It can be overridden by the contact information in a specific listing.",
 			},
+			success: {
+				create: "Provider created",
+				update: "Provider updated",
+			},
 		},
 		contact: {
 			website: "Website",
@@ -196,6 +201,10 @@ export const english = {
 			addPhoneNumber: "Add Phone Number",
 		},
 		listing: {
+			success: {
+				create: "Listing created",
+				update: "Listing updated",
+			},
 			dietaryOptions: {
 				title: "Dietary Options",
 				description: "Select the dietary options for your listing.",
@@ -203,7 +212,7 @@ export const english = {
 			offering: {
 				title: "Offering",
 				types: {
-					meal: "Meal",
+					meal: "Meals",
 					groceries: "Groceries",
 					delivery: "Delivery",
 					hamper: "Hampers",
@@ -307,6 +316,7 @@ export const french: typeof english = {
 	additionalInfo: "Informations supplémentaires",
 	contact: "Contact",
 	email: "Courriel",
+	website: "Site Web",
 	hours: "Horaires",
 	saved: {
 		title: "Ma Sauvegardé",
@@ -325,6 +335,7 @@ export const french: typeof english = {
 	preparation: "Préparation Requise",
 	transit: "Transit",
 	wheelchair: "Accessible au Fauteuil Roulant",
+	preview: "Voir la liste",
 	filters: {
 		title: "Filtres",
 		description:
@@ -469,6 +480,10 @@ export const french: typeof english = {
 				description:
 					"Cela permet aux utilisateurs de contacter votre fournisseur. Il peut être remplacé par les informations de contact dans une liste spécifique.",
 			},
+			success: {
+				create: "Fournisseur créé",
+				update: "Fournisseur mis à jour",
+			},
 		},
 		contact: {
 			website: "Site Web",
@@ -476,6 +491,10 @@ export const french: typeof english = {
 			addPhoneNumber: "Ajouter un téléphone",
 		},
 		listing: {
+			success: {
+				create: "Annonce créée",
+				update: "Annonce mise à jour",
+			},
 			dietaryOptions: {
 				title: "Options Diététiques",
 				description:

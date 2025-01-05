@@ -27,13 +27,14 @@ import {
 import { OfferingEnum } from "@/server/types";
 import { Libraries, useJsApiLoader } from "@react-google-maps/api";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 import { formatAddress } from "@/lib/address";
 import { Checkbox } from "../ui/Checkbox";
+import { BlockNavigation } from "./BlockNavigation";
 
 const checkboxOptions = [
 	"free",
@@ -185,9 +186,6 @@ export const ListingForm = ({
 	onSubmit: (data: z.infer<typeof ListingFormSchema>) => void;
 	dietaryOptions: DietaryOptionType[];
 }) => {
-	const navigate = useNavigate({
-		from: "/$locale/admin/provider",
-	});
 	const t = useTranslations(locale);
 	const form = useForm({
 		defaultValues: {
@@ -228,12 +226,6 @@ export const ListingForm = ({
 		onSubmit: async ({ value: data, formApi }) => {
 			try {
 				await onSubmit(data);
-				await navigate({
-					search: (search) => ({
-						...search,
-						editing: false,
-					}),
-				});
 			} catch (error) {
 				formApi.setErrorMap({
 					onServer: "Something went wrong",
@@ -311,537 +303,565 @@ export const ListingForm = ({
 	);
 
 	const isDirty = useStore(form.store, (formState) => formState.isDirty);
-
-	useEffect(() => {
-		navigate({
-			search: (prev) => ({
-				...prev,
-				editing: isDirty,
-			}),
-			replace: true,
-		});
-	}, [isDirty]);
+	console.log(isDirty);
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
-		>
-			<div className="flex flex-col gap-4">
-				{serverError && <ErrorMessage text={serverError as string} />}
-				<form.Field
-					name="offering"
-					children={(field) => (
-						<Label>
-							{t.form.listing.offering.title}
-							<Select
-								value={field.state.value}
-								onValueChange={(value) =>
-									field.handleChange(value as OfferingEnum)
-								}
-							>
-								<SelectTrigger className="w-[180px]">
-									<SelectValue placeholder="" />
-								</SelectTrigger>
-								<SelectContent>
-									{Object.keys(
-										t.form.listing.offering.types,
-									).map((key) => (
-										<SelectItem value={key} key={key}>
-											{t.form.listing.offering.types[key]}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						</Label>
+		<>
+			<BlockNavigation shouldBlockFn={() => isDirty} />
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					form.handleSubmit();
+				}}
+			>
+				<div className="flex flex-col gap-4">
+					{serverError && (
+						<ErrorMessage text={serverError as string} />
 					)}
-				/>
-				<form.Field
-					name="description"
-					children={(field) => (
-						<Label>
-							<span className="flex items-center gap-1">
-								{t.form.common.description}
-								<span className="text-xs text-muted-foreground">
-									({t.common.optional})
-								</span>
-							</span>
-							<Textarea
-								name={field.name}
-								value={field.state.value ?? ""}
-								onBlur={field.handleBlur}
-								onChange={(e) =>
-									field.handleChange(e.target.value)
-								}
-							/>
-							<FieldError state={field.state} />
-						</Label>
-					)}
-				/>
-				<form.Field
-					name="eligibility"
-					children={(field) => (
-						<Label>
-							<span className="flex items-center gap-1">
-								{t.form.listing.eligibility.title}
-								<span className="text-xs text-muted-foreground">
-									({t.common.optional})
-								</span>
-							</span>
-							<Textarea
-								name={field.name}
-								value={field.state.value ?? ""}
-								onBlur={field.handleBlur}
-								onChange={(e) =>
-									field.handleChange(e.target.value)
-								}
-							/>
-							<p className="text-xs text-muted-foreground">
-								{"Ex: " + t.form.listing.eligibility.example}
-							</p>
-							<FieldError state={field.state} />
-						</Label>
-					)}
-				/>
-				<div className="flex flex-col gap-2 border-t border-border pt-4">
-					<p className="font-medium">
-						{t.form.listing.location.title}
-					</p>
-					<p className="text-sm text-muted-foreground">
-						{t.form.listing.location.description}
-					</p>
-				</div>
-				<Input
-					ref={inputRef}
-					onChange={(e) => setLocation(e.target.value)}
-					value={location}
-					placeholder={t.form.listing.location.placeholder}
-				/>
-				<form.Subscribe
-					selector={(formState) => [
-						formState.values.city,
-						formState.values.street1,
-						formState.values.postalCode,
-						formState.values.province,
-					]}
-				>
-					{([city, street1, postalCode, province]) =>
-						city && (
-							<div className="flex flex-col gap-4">
-								<table>
-									<thead>
-										<tr className="text-sm font-medium">
-											{street1 && (
-												<th className="text-left">
-													{
-														t.form.listing.location
-															.street
-													}
-												</th>
-											)}
-											{city && (
-												<th className="text-left">
-													{
-														t.form.listing.location
-															.city
-													}
-												</th>
-											)}
-											{province && (
-												<th className="text-left">
-													{
-														t.form.listing.location
-															.province
-													}
-												</th>
-											)}
-											{postalCode && (
-												<th className="text-left">
-													{
-														t.form.listing.location
-															.postalCode
-													}
-												</th>
-											)}
-										</tr>
-									</thead>
-									<tbody>
-										<tr className="text-sm">
-											{street1 && <td>{street1}</td>}
-											{city && <td>{city}</td>}
-											{province && <td>{province}</td>}
-											{postalCode && (
-												<td>{postalCode}</td>
-											)}
-										</tr>
-									</tbody>
-								</table>
-								<div>
-									<p className="text-sm font-medium">
-										{t.form.listing.location.full}
-									</p>
-									<p className="text-sm">
-										{formatAddress({
-											street1,
-											city,
-											province,
-											postalCode,
-										})}
-									</p>
-								</div>
-							</div>
-						)
-					}
-				</form.Subscribe>
-				<form.Field
-					name="lat"
-					children={(field) => <FieldError state={field.state} />}
-				/>
-				<form.Field
-					name="lng"
-					children={(field) => <FieldError state={field.state} />}
-				/>
-				<form.Field
-					name="city"
-					children={(field) => <FieldError state={field.state} />}
-				/>
-				<form.Field
-					name="street1"
-					children={(field) => <FieldError state={field.state} />}
-				/>
-				<form.Field
-					name="postalCode"
-					children={(field) => <FieldError state={field.state} />}
-				/>
-				<form.Field
-					name="province"
-					children={(field) => <FieldError state={field.state} />}
-				/>
-				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-					<p className="font-medium">
-						{t.form.listing.toggles.title}
-					</p>
-					<p className="text-sm text-muted-foreground">
-						{t.form.listing.toggles.description}
-					</p>
-				</div>
-				<div className="flex flex-col gap-8">
-					{checkboxOptions.map((option) => (
-						<div key={option} className="flex flex-col gap-4">
-							<div className="flex flex-col gap-4">
-								<form.Field
-									name={option}
-									children={(field) => (
-										<Label className="flex flex-row items-center gap-2">
-											<Checkbox
-												name={field.name}
-												checked={
-													field.state.value ?? false
-												}
-												onBlur={field.handleBlur}
-												onCheckedChange={(
-													checked: boolean,
-												) =>
-													field.handleChange(checked)
-												}
-											/>
-											<span className="text-sm font-medium">
-												{t.form.listing.toggles[
-													option as keyof typeof t.form.listing.toggles
-												].title + ": "}
-												<span className="text-sm text-muted-foreground">
-													{
-														t.form.listing.toggles[
-															option as keyof typeof t.form.listing.toggles
-														].description
-													}
-												</span>
-											</span>
-											<FieldError state={field.state} />
-										</Label>
-									)}
-								/>
-								<form.Field
-									name={`${option}Notes`}
-									children={(field) => (
-										<Label>
-											<span className="flex items-center gap-1">
-												{t.form.listing.notes}
-												<span className="text-xs text-muted-foreground">
-													({t.common.optional})
-												</span>
-											</span>
-											<Textarea
-												name={field.name}
-												value={field.state.value ?? ""}
-												onBlur={field.handleBlur}
-												onChange={(e) =>
-													field.handleChange(
-														e.target.value,
-													)
-												}
-											/>
-											<p className="text-xs text-muted-foreground">
-												{"Ex: " +
-													t.form.listing.toggles[
-														option as keyof typeof t.form.listing.toggles
-													].example}
-											</p>
-											<FieldError state={field.state} />
-										</Label>
-									)}
-								/>
-							</div>
-						</div>
-					))}
-				</div>
-				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-					<p className="font-medium">
-						{t.form.listing.dietaryOptions.title}
-					</p>
-					<p className="text-sm text-muted-foreground">
-						{t.form.listing.dietaryOptions.description}
-					</p>
-				</div>
-				<div className="flex flex-col gap-2">
 					<form.Field
-						name="dietaryOptions"
+						name="offering"
 						children={(field) => (
-							<>
-								{dietaryOptions.map((option) => (
-									<div
-										key={option.id}
-										className="flex items-center gap-2"
-									>
-										<Checkbox
-											name={option.id}
-											checked={field.state.value?.includes(
-												option.id,
-											)}
-											onCheckedChange={(checked) => {
-												if (checked) {
-													field.handleChange([
-														...(field.state.value ??
-															[]),
-														option.id,
-													]);
-												} else {
-													field.handleChange(
-														(
-															field.state.value ??
-															[]
-														).filter(
-															(id) =>
-																id !==
-																option.id,
-														),
-													);
+							<Label>
+								{t.form.listing.offering.title}
+								<Select
+									value={field.state.value}
+									onValueChange={(value) =>
+										field.handleChange(
+											value as OfferingEnum,
+										)
+									}
+								>
+									<SelectTrigger className="w-[180px]">
+										<SelectValue placeholder="" />
+									</SelectTrigger>
+									<SelectContent>
+										{Object.keys(
+											t.form.listing.offering.types,
+										).map((key) => (
+											<SelectItem value={key} key={key}>
+												{
+													t.form.listing.offering
+														.types[key]
 												}
-											}}
-										/>
-										{option.name}
-									</div>
-								))}
-								<FieldError state={field.state} />
-							</>
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</Label>
 						)}
 					/>
-				</div>
-				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-					<p className="font-medium">{t.form.listing.hours.title}</p>
-					<p className="text-sm text-muted-foreground">
-						{t.form.listing.hours.description}
-					</p>
-				</div>
-				<form.Field
-					name="hours"
-					children={(field) => (
-						<>
-							<HoursInput
-								onChange={(value) => {
-									field.handleChange(value);
-									console.log(value);
-								}}
-								value={field.state.value ?? ""}
-							/>
-							<FieldError state={field.state} />
-						</>
-					)}
-				/>
-				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-					<p className="font-medium">
-						{t.form.listing.contact.title}
-					</p>
-					<p className="text-sm text-muted-foreground">
-						{t.form.listing.contact.description}
-					</p>
-				</div>
-				<form.Field
-					name="email"
-					children={(field) => (
-						<Label>
-							<span className="flex items-center gap-1">
-								{t.form.common.email}
-								<span className="text-xs text-muted-foreground">
-									({t.common.optional})
+					<form.Field
+						name="description"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.common.description}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
 								</span>
-							</span>
-							<Input
-								name={field.name}
-								value={field.state.value ?? ""}
-								onBlur={field.handleBlur}
-								onChange={(e) =>
-									field.handleChange(e.target.value)
-								}
-							/>
-							<FieldError state={field.state} />
-						</Label>
-					)}
-				/>
-				<form.Field
-					name="website"
-					children={(field) => (
-						<Label>
-							<span className="flex items-center gap-1">
-								{t.form.contact.website}
-								<span className="text-xs text-muted-foreground">
-									({t.common.optional})
+								<Textarea
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+								<FieldError state={field.state} />
+							</Label>
+						)}
+					/>
+					<form.Field
+						name="eligibility"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.listing.eligibility.title}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
 								</span>
-							</span>
-							<Input
-								name={field.name}
-								value={field.state.value ?? ""}
-								onBlur={field.handleBlur}
-								onChange={(e) =>
-									field.handleChange(e.target.value)
-								}
-							/>
-							<FieldError state={field.state} />
-						</Label>
-					)}
-				/>
-				<form.Field
-					name="phoneNumbers"
-					mode="array"
-					children={(field) => (
-						<Label>
-							<span className="flex items-center gap-1">
-								{t.form.contact.phoneNumbers}
-								<span className="text-xs text-muted-foreground">
-									({t.common.optional})
-								</span>
-							</span>
-							{field.state.value?.map((_, i) => (
-								<div
-									key={`phoneNumbers[${i}]`}
-									className="flex gap-2"
-								>
+								<Textarea
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+								<p className="text-xs text-muted-foreground">
+									{"Ex: " +
+										t.form.listing.eligibility.example}
+								</p>
+								<FieldError state={field.state} />
+							</Label>
+						)}
+					/>
+					<div className="flex flex-col gap-2 border-t border-border pt-4">
+						<p className="font-medium">
+							{t.form.listing.location.title}
+						</p>
+						<p className="text-sm text-muted-foreground">
+							{t.form.listing.location.description}
+						</p>
+					</div>
+					<Input
+						ref={inputRef}
+						onChange={(e) => setLocation(e.target.value)}
+						value={location}
+						placeholder={t.form.listing.location.placeholder}
+					/>
+					<form.Subscribe
+						selector={(formState) => [
+							formState.values.city,
+							formState.values.street1,
+							formState.values.postalCode,
+							formState.values.province,
+						]}
+					>
+						{([city, street1, postalCode, province]) =>
+							city && (
+								<div className="flex flex-col gap-4">
+									<table>
+										<thead>
+											<tr className="text-sm font-medium">
+												{street1 && (
+													<th className="text-left">
+														{
+															t.form.listing
+																.location.street
+														}
+													</th>
+												)}
+												{city && (
+													<th className="text-left">
+														{
+															t.form.listing
+																.location.city
+														}
+													</th>
+												)}
+												{province && (
+													<th className="text-left">
+														{
+															t.form.listing
+																.location
+																.province
+														}
+													</th>
+												)}
+												{postalCode && (
+													<th className="text-left">
+														{
+															t.form.listing
+																.location
+																.postalCode
+														}
+													</th>
+												)}
+											</tr>
+										</thead>
+										<tbody>
+											<tr className="text-sm">
+												{street1 && <td>{street1}</td>}
+												{city && <td>{city}</td>}
+												{province && (
+													<td>{province}</td>
+												)}
+												{postalCode && (
+													<td>{postalCode}</td>
+												)}
+											</tr>
+										</tbody>
+									</table>
+									<div>
+										<p className="text-sm font-medium">
+											{t.form.listing.location.full}
+										</p>
+										<p className="text-sm">
+											{formatAddress({
+												street1,
+												city,
+												province,
+												postalCode,
+											})}
+										</p>
+									</div>
+								</div>
+							)
+						}
+					</form.Subscribe>
+					<form.Field
+						name="lat"
+						children={(field) => <FieldError state={field.state} />}
+					/>
+					<form.Field
+						name="lng"
+						children={(field) => <FieldError state={field.state} />}
+					/>
+					<form.Field
+						name="city"
+						children={(field) => <FieldError state={field.state} />}
+					/>
+					<form.Field
+						name="street1"
+						children={(field) => <FieldError state={field.state} />}
+					/>
+					<form.Field
+						name="postalCode"
+						children={(field) => <FieldError state={field.state} />}
+					/>
+					<form.Field
+						name="province"
+						children={(field) => <FieldError state={field.state} />}
+					/>
+					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+						<p className="font-medium">
+							{t.form.listing.toggles.title}
+						</p>
+						<p className="text-sm text-muted-foreground">
+							{t.form.listing.toggles.description}
+						</p>
+					</div>
+					<div className="flex flex-col gap-8">
+						{checkboxOptions.map((option) => (
+							<div key={option} className="flex flex-col gap-4">
+								<div className="flex flex-col gap-4">
 									<form.Field
-										name={`phoneNumbers[${i}].phone`}
+										name={option}
 										children={(field) => (
-											<div className="flex flex-grow flex-col gap-2">
-												<Input
-													name={`phoneNumbers[${i}].phone`}
-													value={field.state.value}
+											<Label className="flex flex-row items-center gap-2">
+												<Checkbox
+													name={field.name}
+													checked={
+														field.state.value ??
+														false
+													}
+													onBlur={field.handleBlur}
+													onCheckedChange={(
+														checked: boolean,
+													) =>
+														field.handleChange(
+															checked,
+														)
+													}
+												/>
+												<span className="text-sm font-medium">
+													{t.form.listing.toggles[
+														option as keyof typeof t.form.listing.toggles
+													].title + ": "}
+													<span className="text-sm text-muted-foreground">
+														{
+															t.form.listing
+																.toggles[
+																option as keyof typeof t.form.listing.toggles
+															].description
+														}
+													</span>
+												</span>
+												<FieldError
+													state={field.state}
+												/>
+											</Label>
+										)}
+									/>
+									<form.Field
+										name={`${option}Notes`}
+										children={(field) => (
+											<Label>
+												<span className="flex items-center gap-1">
+													{t.form.listing.notes}
+													<span className="text-xs text-muted-foreground">
+														({t.common.optional})
+													</span>
+												</span>
+												<Textarea
+													name={field.name}
+													value={
+														field.state.value ?? ""
+													}
 													onBlur={field.handleBlur}
 													onChange={(e) =>
 														field.handleChange(
 															e.target.value,
 														)
 													}
-													autoComplete="tel"
 												/>
+												<p className="text-xs text-muted-foreground">
+													{"Ex: " +
+														t.form.listing.toggles[
+															option as keyof typeof t.form.listing.toggles
+														].example}
+												</p>
 												<FieldError
 													state={field.state}
 												/>
-											</div>
+											</Label>
 										)}
 									/>
-									<form.Field
-										name={`phoneNumbers[${i}].type`}
-										children={(field) => (
-											<div className="flex flex-col gap-2">
-												<Select
-													value={field.state.value}
-													onValueChange={(value) =>
-														field.handleChange(
-															value as ProviderPhoneNumberType["type"],
-														)
-													}
-												>
-													<SelectTrigger className="w-[180px]">
-														<SelectValue placeholder="" />
-													</SelectTrigger>
-													<SelectContent>
-														{Object.keys(
-															t.phoneTypes,
-														).map((type) => (
-															<SelectItem
-																value={type}
-																key={type}
-															>
-																{
-																	t
-																		.phoneTypes[
-																		type
-																	]
-																}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-												<FieldError
-													state={field.state}
-												/>
-											</div>
-										)}
-									/>
-									<Button
-										onClick={(e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											field.removeValue(i);
-										}}
-										size="icon"
-										className="mb-2"
-									>
-										<Trash2 size={16} />
-									</Button>
 								</div>
-							))}
+							</div>
+						))}
+					</div>
+					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+						<p className="font-medium">
+							{t.form.listing.dietaryOptions.title}
+						</p>
+						<p className="text-sm text-muted-foreground">
+							{t.form.listing.dietaryOptions.description}
+						</p>
+					</div>
+					<div className="flex flex-col gap-2">
+						<form.Field
+							name="dietaryOptions"
+							children={(field) => (
+								<>
+									{dietaryOptions.map((option) => (
+										<div
+											key={option.id}
+											className="flex items-center gap-2"
+										>
+											<Checkbox
+												name={option.id}
+												checked={field.state.value?.includes(
+													option.id,
+												)}
+												onCheckedChange={(checked) => {
+													if (checked) {
+														field.handleChange([
+															...(field.state
+																.value ?? []),
+															option.id,
+														]);
+													} else {
+														field.handleChange(
+															(
+																field.state
+																	.value ?? []
+															).filter(
+																(id) =>
+																	id !==
+																	option.id,
+															),
+														);
+													}
+												}}
+											/>
+											{option.name}
+										</div>
+									))}
+									<FieldError state={field.state} />
+								</>
+							)}
+						/>
+					</div>
+					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+						<p className="font-medium">
+							{t.form.listing.hours.title}
+						</p>
+						<p className="text-sm text-muted-foreground">
+							{t.form.listing.hours.description}
+						</p>
+					</div>
+					<form.Field
+						name="hours"
+						children={(field) => (
+							<>
+								<HoursInput
+									onChange={(value) => {
+										field.handleChange(value);
+										console.log(value);
+									}}
+									value={field.state.value ?? ""}
+								/>
+								<FieldError state={field.state} />
+							</>
+						)}
+					/>
+					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+						<p className="font-medium">
+							{t.form.listing.contact.title}
+						</p>
+						<p className="text-sm text-muted-foreground">
+							{t.form.listing.contact.description}
+						</p>
+					</div>
+					<form.Field
+						name="email"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.common.email}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
+								</span>
+								<Input
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+								<FieldError state={field.state} />
+							</Label>
+						)}
+					/>
+					<form.Field
+						name="website"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.contact.website}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
+								</span>
+								<Input
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+								<FieldError state={field.state} />
+							</Label>
+						)}
+					/>
+					<form.Field
+						name="phoneNumbers"
+						mode="array"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.contact.phoneNumbers}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
+								</span>
+								{field.state.value?.map((_, i) => (
+									<div
+										key={`phoneNumbers[${i}]`}
+										className="flex gap-2"
+									>
+										<form.Field
+											name={`phoneNumbers[${i}].phone`}
+											children={(field) => (
+												<div className="flex flex-grow flex-col gap-2">
+													<Input
+														name={`phoneNumbers[${i}].phone`}
+														value={
+															field.state.value
+														}
+														onBlur={
+															field.handleBlur
+														}
+														onChange={(e) =>
+															field.handleChange(
+																e.target.value,
+															)
+														}
+														autoComplete="tel"
+													/>
+													<FieldError
+														state={field.state}
+													/>
+												</div>
+											)}
+										/>
+										<form.Field
+											name={`phoneNumbers[${i}].type`}
+											children={(field) => (
+												<div className="flex flex-col gap-2">
+													<Select
+														value={
+															field.state.value
+														}
+														onValueChange={(
+															value,
+														) =>
+															field.handleChange(
+																value as ProviderPhoneNumberType["type"],
+															)
+														}
+													>
+														<SelectTrigger className="w-[180px]">
+															<SelectValue placeholder="" />
+														</SelectTrigger>
+														<SelectContent>
+															{Object.keys(
+																t.phoneTypes,
+															).map((type) => (
+																<SelectItem
+																	value={type}
+																	key={type}
+																>
+																	{
+																		t
+																			.phoneTypes[
+																			type
+																		]
+																	}
+																</SelectItem>
+															))}
+														</SelectContent>
+													</Select>
+													<FieldError
+														state={field.state}
+													/>
+												</div>
+											)}
+										/>
+										<Button
+											onClick={(e) => {
+												e.preventDefault();
+												e.stopPropagation();
+												field.removeValue(i);
+											}}
+											size="icon"
+											className="mb-2"
+										>
+											<Trash2 size={16} />
+										</Button>
+									</div>
+								))}
+								<Button
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										field.pushValue({
+											phone: "",
+											type: "phone",
+										});
+									}}
+								>
+									{t.form.contact.addPhoneNumber}
+								</Button>
+							</Label>
+						)}
+					/>
+					<form.Subscribe
+						selector={(formState) => [formState.isSubmitting]}
+					>
+						{([isSubmitting]) => (
 							<Button
-								onClick={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-									field.pushValue({
-										phone: "",
-										type: "phone",
-									});
-								}}
+								type="submit"
+								disabled={isSubmitting}
+								className="self-start"
 							>
-								{t.form.contact.addPhoneNumber}
-							</Button>
-						</Label>
-					)}
-				/>
-				<form.Subscribe
-					selector={(formState) => [formState.isSubmitting]}
-				>
-					{([isSubmitting]) => (
-						<div className="flex items-start justify-between gap-2">
-							<Button type="submit" disabled={isSubmitting}>
 								{isSubmitting && (
 									<Loader2 className="animate-spin" />
 								)}
 								{t.common.submit}
 							</Button>
-						</div>
-					)}
-				</form.Subscribe>
-			</div>
-		</form>
+						)}
+					</form.Subscribe>
+				</div>
+			</form>
+		</>
 	);
 };

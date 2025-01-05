@@ -13,6 +13,7 @@ import {
 } from "../db/schema";
 import {
 	BaseResourceType,
+	LocalizedInputSchema,
 	LocalizedQuerySchema,
 	LocalizedQueryType,
 	ResourceTranslationType,
@@ -120,13 +121,13 @@ export const mutateListingFn = createServerFn({
 		ListingFormSchema.extend({
 			id: z.string().optional(),
 			redirect: z.boolean(),
-		}),
+		}).and(LocalizedInputSchema),
 	)
 	.handler(async ({ context, data }) => {
 		const { dietaryOptions, phoneNumbers, ...rest } = data;
 		const listingId = data.id ?? generateId(16);
 
-		const resource: BaseResourceType = {
+		const resource: Omit<BaseResourceType, "createdAt"> = {
 			id: listingId,
 			providerId: context.provider.id,
 			city: rest.city,
@@ -145,11 +146,12 @@ export const mutateListingFn = createServerFn({
 			transit: rest.transit ?? null,
 			preparation: rest.preparation ?? null,
 			registration: rest.registration ?? null,
+			updatedAt: new Date(),
 		};
 
 		const translation: ResourceTranslationType = {
 			resourceId: listingId,
-			locale: context.locale,
+			locale: rest.locale ?? context.locale,
 			description: rest.description ?? null,
 			email: rest.email ?? null,
 			website: rest.website ?? null,
@@ -210,9 +212,6 @@ export const mutateListingFn = createServerFn({
 				to: `/$locale/admin/listings`,
 				params: {
 					locale: context.locale,
-				},
-				search: {
-					editing: false,
 				},
 			});
 		}

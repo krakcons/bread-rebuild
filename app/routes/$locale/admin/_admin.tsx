@@ -1,13 +1,3 @@
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "@/components/ui/AlertDialog";
 import { buttonVariants } from "@/components/ui/Button";
 import {
 	Select,
@@ -29,6 +19,7 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/SideBar";
+import { Toaster } from "@/components/ui/Sonner";
 import { Locale, locales, LocaleSchema, useTranslations } from "@/lib/locale";
 import { logoutFn } from "@/server/auth/actions";
 import {
@@ -48,7 +39,6 @@ import {
 	UserMinus,
 	Utensils,
 } from "lucide-react";
-import { useState } from "react";
 import { z } from "zod";
 
 export const Route = createFileRoute("/$locale/admin/_admin")({
@@ -56,7 +46,6 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 	errorComponent: ErrorComponent,
 	validateSearch: z.object({
 		editingLocale: LocaleSchema.optional(),
-		editing: z.boolean().optional(),
 	}),
 	beforeLoad: async ({ search, params, location }) => {
 		if (!search.editingLocale) {
@@ -77,8 +66,6 @@ function RouteComponent() {
 	const { locale } = Route.useParams();
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
-	const [alertOpen, setAlertOpen] = useState(false);
-	const [editingLocale, setEditingLocale] = useState(search.editingLocale);
 	const t = useTranslations(locale);
 
 	return (
@@ -215,57 +202,16 @@ function RouteComponent() {
 				<div className="flex flex-row items-center justify-between">
 					<SidebarTrigger />
 					<div className="flex flex-row items-center gap-2">
-						{search.editing && (
-							<AlertDialog
-								open={alertOpen}
-								onOpenChange={setAlertOpen}
-							>
-								<AlertDialogContent>
-									<AlertDialogHeader>
-										<AlertDialogTitle>
-											{t.admin.confirm.title}
-										</AlertDialogTitle>
-										<AlertDialogDescription>
-											{t.admin.confirm.description}
-										</AlertDialogDescription>
-									</AlertDialogHeader>
-									<AlertDialogFooter>
-										<AlertDialogCancel>
-											{t.admin.confirm.cancel}
-										</AlertDialogCancel>
-										<AlertDialogAction
-											onClick={() => {
-												navigate({
-													replace: true,
-													search: (search) => ({
-														...search,
-														editingLocale,
-														editing: false,
-													}),
-												});
-											}}
-										>
-											{t.admin.confirm.confirm}
-										</AlertDialogAction>
-									</AlertDialogFooter>
-								</AlertDialogContent>
-							</AlertDialog>
-						)}
 						<Select
 							value={search.editingLocale}
 							onValueChange={(value) => {
-								setEditingLocale(value as Locale);
-								if (search.editing) {
-									setAlertOpen(true);
-								} else {
-									navigate({
-										replace: true,
-										search: (search) => ({
-											...search,
-											editingLocale: value as Locale,
-										}),
-									});
-								}
+								navigate({
+									replace: true,
+									search: (search) => ({
+										...search,
+										editingLocale: value as Locale,
+									}),
+								});
 							}}
 						>
 							<SelectTrigger className="gap-1">
@@ -286,6 +232,7 @@ function RouteComponent() {
 				</div>
 				<div className="py-4">
 					<Outlet />
+					<Toaster />
 				</div>
 			</main>
 		</SidebarProvider>

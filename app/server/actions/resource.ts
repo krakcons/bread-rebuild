@@ -140,6 +140,7 @@ export const getResourceFn = createServerFn({
 				provider: {
 					with: {
 						translations: true,
+						phoneNumbers: true,
 					},
 				},
 				translations: true,

@@ -131,7 +131,6 @@ export const ResourceActions = ({
 					}}
 					search={(prev) => ({
 						editingLocale: prev.editingLocale,
-						editing: false,
 					})}
 					className={buttonVariants()}
 				>

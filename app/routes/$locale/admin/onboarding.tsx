@@ -5,6 +5,7 @@ import { onboardProviderFn } from "@/server/actions/provider";
 import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/$locale/admin/onboarding")({
 	component: RouteComponent,
@@ -38,6 +39,7 @@ function RouteComponent() {
 				locale={locale}
 				onSubmit={async (data) => {
 					await onboardProviderMutation({ data });
+					await toast.success(t.form.provider.success.create);
 				}}
 			/>
 		</div>

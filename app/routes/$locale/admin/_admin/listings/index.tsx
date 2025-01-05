@@ -36,7 +36,7 @@ function RouteComponent() {
 					className={buttonVariants()}
 				>
 					<Plus />
-					Add Listing
+					{t.admin.listings.new.title}
 				</Link>
 			</div>
 			<div className="flex flex-col gap-2">

@@ -55,8 +55,6 @@ export const flattenLocalizedObject = <
 		obj.translations.find((item) => item.locale === locale) ??
 		(fallback ? obj.translations[0] : undefined);
 
-	if (!translation) return undefined;
-
 	// Create new object without translations array
 	const { translations, ...rest } = obj;
 

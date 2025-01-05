@@ -95,41 +95,51 @@ export const editProviderFn = createServerFn({
 		const { name, email, website, description, phoneNumbers, locale } =
 			data;
 
-		await db
-			.insert(providerTranslations)
-			.values({
-				providerId: context.provider.id,
-				locale,
-				name,
-				email,
-				website,
-				description,
-			})
-			.onConflictDoUpdate({
-				target: [
-					providerTranslations.providerId,
-					providerTranslations.locale,
-				],
-				set: {
+		await db.transaction(async (tx) => {
+			await tx
+				.update(providers)
+				.set({
+					updatedAt: new Date(),
+				})
+				.where(eq(providers.id, context.provider.id));
+			await tx
+				.insert(providerTranslations)
+				.values({
+					providerId: context.provider.id,
+					locale,
 					name,
 					email,
 					website,
 					description,
-				},
-			});
-
-		if (phoneNumbers && phoneNumbers.length > 0) {
-			await db
-				.delete(providerPhoneNumbers)
-				.where(
-					eq(providerPhoneNumbers.providerId, context.provider.id),
+				})
+				.onConflictDoUpdate({
+					target: [
+						providerTranslations.providerId,
+						providerTranslations.locale,
+					],
+					set: {
+						name,
+						email,
+						website,
+						description,
+					},
+				});
+			if (phoneNumbers && phoneNumbers.length > 0) {
+				await tx
+					.delete(providerPhoneNumbers)
+					.where(
+						eq(
+							providerPhoneNumbers.providerId,
+							context.provider.id,
+						),
+					);
+				await tx.insert(providerPhoneNumbers).values(
+					phoneNumbers.map((phoneNumber) => ({
+						providerId: context.provider.id,
+						phone: phoneNumber.phone,
+						type: phoneNumber.type,
+					})) ?? [],
 				);
-			await db.insert(providerPhoneNumbers).values(
-				phoneNumbers.map((phoneNumber) => ({
-					providerId: context.provider.id,
-					phone: phoneNumber.phone,
-					type: phoneNumber.type,
-				})) ?? [],
-			);
-		}
+			}
+		});
 	});

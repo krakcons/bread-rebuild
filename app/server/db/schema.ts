@@ -6,6 +6,7 @@ import {
 	primaryKey,
 	real,
 	text,
+	timestamp,
 } from "drizzle-orm/pg-core";
 import { generateId } from "../auth";
 import { users } from "./auth/schema";
@@ -35,6 +36,10 @@ export const providers = pgTable("providers", {
 		.primaryKey()
 		.$defaultFn(() => generateId(16)),
 	userId: text("user_id").references(() => users.id),
+
+	// Timestamps
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+	updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const providerTranslations = pgTable(
@@ -96,6 +101,10 @@ export const resources = pgTable("resources", {
 	country: text("country").notNull(),
 	lat: real("lat"),
 	lng: real("lng"),
+
+	// Timestamps
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+	updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // Phone Numbers

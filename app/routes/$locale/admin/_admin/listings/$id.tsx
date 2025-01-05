@@ -1,11 +1,18 @@
 import { ListingForm } from "@/components/forms/Listing";
 import { NotFound } from "@/components/NotFound";
+import { Button } from "@/components/ui/Button";
 import { Locale, useTranslations } from "@/lib/locale";
 import { getDietaryOptionsFn } from "@/server/actions/dietary";
 import { mutateListingFn } from "@/server/actions/listings";
 import { getResourceFn } from "@/server/actions/resource";
-import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	Link,
+	useRouter,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/$locale/admin/_admin/listings/$id")({
 	component: RouteComponent,
@@ -30,6 +37,7 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/$id")({
 });
 
 function RouteComponent() {
+	const router = useRouter();
 	const { id } = Route.useParams();
 	const { listing } = Route.useLoaderData();
 	const updateListing = useServerFn(mutateListingFn);
@@ -40,20 +48,38 @@ function RouteComponent() {
 
 	return (
 		<div className="flex flex-col gap-4">
-			<div className="flex flex-col gap-2 border-b border-gray-200 pb-4">
-				<h1>{t.admin.listings.edit.title}</h1>
-				<p>{t.admin.listings.edit.description}</p>
+			<div className="flex items-end justify-between gap-4 border-b border-gray-200 pb-4">
+				<div className="flex flex-col gap-2">
+					<h1>{t.admin.listings.edit.title}</h1>
+					<p>{t.admin.listings.edit.description}</p>
+				</div>
+				{listing && (
+					<Link
+						to="/$locale/resources/$id"
+						params={{ id: listing.id!, locale }}
+						className="flex items-center gap-2"
+					>
+						<Button>{t.preview}</Button>
+					</Link>
+				)}
 			</div>
 			<div className="flex flex-col gap-2">
 				<ListingForm
-					key={editingLocale}
+					key={`${editingLocale}-${listing?.updatedAt.toString()}`}
 					locale={locale}
 					defaultValues={listing}
 					dietaryOptions={dietaryOptions}
-					onSubmit={(data) => {
-						updateListing({
-							data: { ...data, id, redirect: false },
+					onSubmit={async (data) => {
+						await updateListing({
+							data: {
+								...data,
+								id,
+								redirect: false,
+								locale: editingLocale!,
+							},
 						});
+						await toast.success(t.form.listing.success.update);
+						await router.invalidate();
 					}}
 				/>
 			</div>

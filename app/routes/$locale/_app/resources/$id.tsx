@@ -18,6 +18,7 @@ import {
 	Car,
 	DollarSign,
 	File,
+	Globe,
 	Mail,
 	MapPin,
 	PhoneCall,
@@ -111,6 +112,18 @@ function ResourceDetail() {
 		return tags;
 	}, [resource, t]);
 
+	const contactInfo = useMemo(() => {
+		console.log(resource);
+		return {
+			email: resource.email ?? resource.provider.email,
+			phoneNumbers:
+				resource.phoneNumbers.length > 0
+					? resource.phoneNumbers
+					: resource.provider.phoneNumbers,
+			website: resource.website ?? resource.provider.website,
+		};
+	}, [resource]);
+
 	return (
 		<div className="mx-auto flex max-w-3xl flex-col gap-4 py-8">
 			{/* Header */}
@@ -148,6 +161,14 @@ function ResourceDetail() {
 						</Marker>
 					</Map>
 				</div>
+				{resource.description && (
+					<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
+						<h2 className="mb-4 text-xl font-bold">
+							{t.form.common.description}
+						</h2>
+						<p className="text-gray-600">{resource.description}</p>
+					</div>
+				)}
 				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 					<h2 className="mb-4 text-xl font-bold">{t.contact}</h2>
 					{/* Address */}
@@ -158,23 +179,36 @@ function ResourceDetail() {
 					/>
 
 					{/* Email */}
-					{resource.email && (
+					{contactInfo.email && (
 						<Contact
 							label={t.email}
-							value={resource.email}
+							value={contactInfo.email}
 							icon={<Mail size={20} className="text-gray-500" />}
 						/>
 					)}
 
+					{/* Website */}
+					{contactInfo.website && (
+						<Contact
+							label={t.website}
+							value={contactInfo.website}
+							icon={<Globe size={20} className="text-gray-500" />}
+						/>
+					)}
+
 					{/* Phone Numbers */}
-					{resource.phoneNumbers.length > 0 &&
-						resource.phoneNumbers.map((phone) => (
+					{contactInfo.phoneNumbers.length > 0 &&
+						contactInfo.phoneNumbers.map((phone) => (
 							<Contact
 								key={phone.phone}
-								label={phone.type ?? t.phoneTypes.phone}
-								value={resource.phoneNumbers
-									.map((phone) => phone.phone)
-									.join(", ")}
+								label={t.phoneTypes[phone.type]}
+								value={
+									phone.phone.slice(0, 3) +
+									"-" +
+									phone.phone.slice(3, 6) +
+									"-" +
+									phone.phone.slice(6, 10)
+								}
 								icon={
 									<PhoneCall
 										size={20}
