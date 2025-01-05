@@ -8,6 +8,7 @@ import { db } from "../db";
 import {
 	resourcePhoneNumbers,
 	resources,
+	resourceToDietaryOptions,
 	resourceTranslations,
 } from "../db/schema";
 import {
@@ -25,6 +26,9 @@ export const ListingFormSchema = z.object({
 	email: ContactSchema.shape.email,
 	website: ContactSchema.shape.website,
 	phoneNumbers: ContactSchema.shape.phoneNumbers,
+
+	// Dietary options
+	dietaryOptions: z.array(z.string()).optional(),
 
 	// Resource
 	parking: z.boolean().optional(),
@@ -119,7 +123,7 @@ export const mutateListingFn = createServerFn({
 		}),
 	)
 	.handler(async ({ context, data }) => {
-		const { phoneNumbers, ...rest } = data;
+		const { dietaryOptions, phoneNumbers, ...rest } = data;
 		const listingId = data.id ?? generateId(16);
 
 		const resource: BaseResourceType = {
@@ -176,6 +180,18 @@ export const mutateListingFn = createServerFn({
 				],
 				set: translation,
 			});
+
+		if (dietaryOptions && dietaryOptions.length > 0) {
+			await db
+				.delete(resourceToDietaryOptions)
+				.where(eq(resourceToDietaryOptions.resourceId, listingId));
+			await db.insert(resourceToDietaryOptions).values(
+				dietaryOptions.map((option) => ({
+					dietaryOptionId: option,
+					resourceId: listingId,
+				})),
+			);
+		}
 
 		if (phoneNumbers && phoneNumbers.length > 0) {
 			await db

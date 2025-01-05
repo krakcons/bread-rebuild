@@ -1,6 +1,7 @@
 import { ListingForm } from "@/components/forms/Listing";
 import { NotFound } from "@/components/NotFound";
-import { useTranslations } from "@/lib/locale";
+import { Locale, useTranslations } from "@/lib/locale";
+import { getDietaryOptionsFn } from "@/server/actions/dietary";
 import { mutateListingFn } from "@/server/actions/listings";
 import { getResourceFn } from "@/server/actions/resource";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
@@ -19,7 +20,12 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/$id")({
 				fallback: false,
 			},
 		});
-		return { listing };
+		const dietaryOptions = await getDietaryOptionsFn({
+			data: {
+				locale: params.locale as Locale,
+			},
+		});
+		return { listing, dietaryOptions };
 	},
 });
 
@@ -29,6 +35,7 @@ function RouteComponent() {
 	const updateListing = useServerFn(mutateListingFn);
 	const { locale } = Route.useParams();
 	const { editingLocale } = Route.useSearch();
+	const { dietaryOptions } = Route.useLoaderData();
 	const t = useTranslations(locale);
 
 	return (
@@ -42,6 +49,7 @@ function RouteComponent() {
 					key={editingLocale}
 					locale={locale}
 					defaultValues={listing}
+					dietaryOptions={dietaryOptions}
 					onSubmit={(data) => {
 						updateListing({
 							data: { ...data, id, redirect: false },

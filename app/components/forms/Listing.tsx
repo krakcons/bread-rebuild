@@ -19,7 +19,11 @@ import {
 } from "@/lib/hours";
 import { useTranslations } from "@/lib/locale";
 import { ListingFormSchema } from "@/server/actions/listings";
-import { ProviderPhoneNumberType, ResourceType } from "@/server/db/types";
+import {
+	DietaryOptionType,
+	ProviderPhoneNumberType,
+	ResourceType,
+} from "@/server/db/types";
 import { OfferingEnum } from "@/server/types";
 import { Libraries, useJsApiLoader } from "@react-google-maps/api";
 import { useForm, useStore } from "@tanstack/react-form";
@@ -174,10 +178,12 @@ export const ListingForm = ({
 	locale,
 	defaultValues,
 	onSubmit,
+	dietaryOptions,
 }: {
 	locale: string;
 	defaultValues?: ResourceType;
 	onSubmit: (data: z.infer<typeof ListingFormSchema>) => void;
+	dietaryOptions: DietaryOptionType[];
 }) => {
 	const navigate = useNavigate({
 		from: "/$locale/admin/provider",
@@ -212,6 +218,9 @@ export const ListingForm = ({
 			postalCode: defaultValues?.postalCode ?? "",
 			province: defaultValues?.province ?? "",
 			country: defaultValues?.country ?? "",
+			dietaryOptions:
+				defaultValues?.dietaryOptions?.map((option) => option.id) ??
+				undefined,
 		},
 		validators: {
 			onSubmit: ListingFormSchema,
@@ -511,7 +520,6 @@ export const ListingForm = ({
 					name="province"
 					children={(field) => <FieldError state={field.state} />}
 				/>
-
 				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 					<p className="font-medium">
 						{t.form.listing.toggles.title}
@@ -589,6 +597,58 @@ export const ListingForm = ({
 							</div>
 						</div>
 					))}
+				</div>
+				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+					<p className="font-medium">
+						{t.form.listing.dietaryOptions.title}
+					</p>
+					<p className="text-sm text-muted-foreground">
+						{t.form.listing.dietaryOptions.description}
+					</p>
+				</div>
+				<div className="flex flex-col gap-2">
+					<form.Field
+						name="dietaryOptions"
+						children={(field) => (
+							<>
+								{dietaryOptions.map((option) => (
+									<div
+										key={option.id}
+										className="flex items-center gap-2"
+									>
+										<Checkbox
+											name={option.id}
+											checked={field.state.value?.includes(
+												option.id,
+											)}
+											onCheckedChange={(checked) => {
+												if (checked) {
+													field.handleChange([
+														...(field.state.value ??
+															[]),
+														option.id,
+													]);
+												} else {
+													field.handleChange(
+														(
+															field.state.value ??
+															[]
+														).filter(
+															(id) =>
+																id !==
+																option.id,
+														),
+													);
+												}
+											}}
+										/>
+										{option.name}
+									</div>
+								))}
+								<FieldError state={field.state} />
+							</>
+						)}
+					/>
 				</div>
 				<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 					<p className="font-medium">{t.form.listing.hours.title}</p>

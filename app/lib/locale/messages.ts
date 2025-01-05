@@ -196,6 +196,10 @@ export const english = {
 			addPhoneNumber: "Add Phone Number",
 		},
 		listing: {
+			dietaryOptions: {
+				title: "Dietary Options",
+				description: "Select the dietary options for your listing.",
+			},
 			offering: {
 				title: "Offering",
 				types: {
@@ -472,6 +476,11 @@ export const french: typeof english = {
 			addPhoneNumber: "Ajouter un téléphone",
 		},
 		listing: {
+			dietaryOptions: {
+				title: "Options Diététiques",
+				description:
+					"Sélectionnez les options diététiques pour votre listing.",
+			},
 			offering: {
 				title: "Offre",
 				types: {
