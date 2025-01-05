@@ -59,6 +59,26 @@ export const english = {
 	terms: "Terms of Use",
 	privacy: "Privacy Policy",
 	dietaryOptions: "Dietary Options",
+	daysOfWeek: {
+		short: {
+			mon: "Mon",
+			tue: "Tue",
+			wed: "Wed",
+			thu: "Thu",
+			fri: "Fri",
+			sat: "Sat",
+			sun: "Sun",
+		},
+		long: {
+			mon: "Monday",
+			tue: "Tuesday",
+			wed: "Wednesday",
+			thu: "Thursday",
+			fri: "Friday",
+			sat: "Saturday",
+			sun: "Sunday",
+		},
+	},
 	preview: "View Listing",
 	admin: {
 		title: "Admin",
@@ -361,7 +381,32 @@ export const french: typeof english = {
 	terms: "Conditions d'utilisation",
 	privacy: "Politique de confidentialité",
 	dietaryOptions: "Options Diététiques",
+	daysOfWeek: {
+		short: {
+			mon: "Lun",
+			tue: "Mar",
+			wed: "Mer",
+			thu: "Jeu",
+			fri: "Ven",
+			sat: "Sam",
+			sun: "Dim",
+		},
+		long: {
+			mon: "Lundi",
+			tue: "Mardi",
+			wed: "Mercredi",
+			thu: "Jeudi",
+			fri: "Vendredi",
+			sat: "Samedi",
+			sun: "Dimanche",
+		},
+	},
 	admin: {
+		dashboard: {
+			title: "Tableau de bord",
+			explanation:
+				"Ce site vous permet de gérer vos fournisseurs et annonces. Les fournisseurs sont des organisations qui offrent des ressources alimentaires et les annonces sont les ressources spécifiques qu'ils offrent.",
+		},
 		title: "Admin",
 		editing: "Edition :",
 		confirm: {

@@ -21,11 +21,11 @@ export const SearchParamsSchema = z.object({
 	query: z.string().optional(),
 	tab: z.enum(["map", "list"]).optional(),
 	free: z.boolean().optional(),
-	preparationRequired: z.boolean().optional(),
-	parkingAvailable: z.boolean().optional(),
-	transitAvailable: z.boolean().optional(),
-	wheelchairAccessible: z.boolean().optional(),
-	dietaryOptionsIds: z.string().array().optional(),
+	preparation: z.boolean().optional(),
+	parking: z.boolean().optional(),
+	transit: z.boolean().optional(),
+	wheelchair: z.boolean().optional(),
+	dietaryOptionIds: z.string().array().optional(),
 });
 
 export const searchFn = createServerFn({
@@ -53,23 +53,22 @@ export const searchFn = createServerFn({
 									),
 								)
 								.where(
-									ilike(
-										providerTranslations.name,
-										`%${data.query}%`,
+									and(
+										eq(providers.id, resources.providerId),
+										ilike(
+											providerTranslations.name,
+											`%${data.query}%`,
+										),
 									),
 								),
 						)
 					: undefined,
 				data.free ? eq(resources.free, true) : undefined,
-				data.preparationRequired
-					? eq(resources.preparation, true)
-					: undefined,
-				data.parkingAvailable ? eq(resources.parking, true) : undefined,
-				data.transitAvailable ? eq(resources.transit, true) : undefined,
-				data.wheelchairAccessible
-					? eq(resources.wheelchair, true)
-					: undefined,
-				data.dietaryOptionsIds && data.dietaryOptionsIds.length > 0
+				data.preparation ? eq(resources.preparation, true) : undefined,
+				data.parking ? eq(resources.parking, true) : undefined,
+				data.transit ? eq(resources.transit, true) : undefined,
+				data.wheelchair ? eq(resources.wheelchair, true) : undefined,
+				data.dietaryOptionIds && data.dietaryOptionIds.length > 0
 					? exists(
 							db
 								.select()
@@ -84,7 +83,7 @@ export const searchFn = createServerFn({
 								.where(
 									inArray(
 										dietaryOptionsTranslations.dietaryOptionId,
-										data.dietaryOptionsIds,
+										data.dietaryOptionIds,
 									),
 								),
 						)

@@ -3,8 +3,6 @@ import { useMemo } from "react";
 
 export const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-export const frenchDays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-
 export type DaySchedule = {
 	day: string;
 	open: string;
@@ -65,10 +63,7 @@ export const formatTime = (time: string, locale: string): string => {
 	}
 };
 
-export const parseSchedule = (
-	hoursString: string,
-	locale: string,
-): DaySchedule[] => {
+export const parseSchedule = (hoursString: string): DaySchedule[] => {
 	const scheduleArray = hoursString
 		.split(";")
 		.map((s) => s.trim())
@@ -85,12 +80,6 @@ export const parseSchedule = (
 
 		if (!days.includes(day)) {
 			throw new Error(`Invalid day: ${day}`);
-		}
-
-		if (locale === "fr") {
-			const frenchDay = frenchDays[days.indexOf(day)];
-			if (!frenchDay) throw new Error(`Invalid day: ${day}`);
-			day = frenchDay;
 		}
 
 		result.push({
@@ -112,10 +101,10 @@ export const formatScheduleToString = (daySchedule: DaySchedule[]): string => {
 export const useHours = (hoursString: string, locale: string) => {
 	return useMemo(() => {
 		try {
-			return parseSchedule(hoursString, locale);
+			return parseSchedule(hoursString);
 		} catch (e) {
 			console.error(e);
 			return [];
 		}
-	}, [hoursString, locale]);
+	}, [hoursString]);
 };

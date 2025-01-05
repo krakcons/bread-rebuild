@@ -64,27 +64,3 @@ export const flattenLocalizedObject = <
 		...translation,
 	} as TResult;
 };
-
-const commonTranslations = new Map<string, string>([
-	["Free", "Gratuit"],
-	["Mon", "Lun"],
-	["Tue", "Mar"],
-	["Wed", "Mer"],
-	["Thu", "Jeu"],
-	["Fri", "Ven"],
-	["Sat", "Sam"],
-	["Sun", "Dim"],
-	["Vegetarian", "Végétarien"],
-	["Halal", "Halal"],
-	["Celiac", "Céliaque"],
-	["Renal Disease", "Maladie Rénale"],
-	["Baby", "Bébé"],
-	["Kosher", "Kosher"],
-	["Gluten Free", "Sans Gluten"],
-	["Pet Food", "Alimentation pour animaux"],
-]);
-
-export const translate = (enValue: string, locale: "en" | "fr") => {
-	if (locale === "en") return enValue;
-	return commonTranslations.get(enValue) || enValue;
-};

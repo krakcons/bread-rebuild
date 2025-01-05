@@ -111,8 +111,12 @@ export const ResourceActions = ({
 						<SelectSeparator />
 						<SelectGroup>
 							{days.map((day) => (
-								<SelectItem key={day} value={day}>
-									{day}
+								<SelectItem key={day} value={day.toLowerCase()}>
+									{
+										translations.daysOfWeek.short[
+											day.toLowerCase()
+										]
+									}
 								</SelectItem>
 							))}
 						</SelectGroup>

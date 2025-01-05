@@ -72,10 +72,9 @@ const HourSelect = ({
 	);
 };
 
-const defaultHours = (locale: string) =>
+const defaultHours = () =>
 	parseSchedule(
 		"Mon 0900-1700; Tue 0900-1700; Wed 0900-1700; Thu 0900-1700; Fri 0900-1700; Sat 0900-1700; Sun 0900-1700",
-		locale,
 	);
 
 const HoursInput = ({
@@ -91,8 +90,8 @@ const HoursInput = ({
 	const t = useTranslations(locale);
 
 	const hours = useMemo(() => {
-		const baseHours = defaultHours(locale);
-		const customHours = parseSchedule(value, locale).map((h) => ({
+		const baseHours = defaultHours();
+		const customHours = parseSchedule(value).map((h) => ({
 			...h,
 			enabled: true,
 		}));
@@ -685,7 +684,6 @@ export const ListingForm = ({
 								<HoursInput
 									onChange={(value) => {
 										field.handleChange(value);
-										console.log(value);
 									}}
 									value={field.state.value ?? ""}
 								/>

@@ -3,7 +3,7 @@ import { ResourceActions } from "@/components/Resource/Actions";
 import { Badge } from "@/components/ui/Badge";
 import { formatAddress } from "@/lib/address";
 import { formatTime, useHours } from "@/lib/hours";
-import { translate, useTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { cn } from "@/lib/utils";
 import { getResourceFn } from "@/server/actions/resource";
@@ -336,10 +336,11 @@ function ResourceDetail() {
 												"font-bold",
 										)}
 									>
-										{translate(
-											hour.day,
-											locale as "en" | "fr",
-										)}
+										{
+											t.daysOfWeek.long[
+												hour.day.toLowerCase()
+											]
+										}
 									</p>
 									<p
 										className={cn(

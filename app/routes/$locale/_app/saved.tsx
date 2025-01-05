@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/Accordion";
 import { Button } from "@/components/ui/Button";
 import { days } from "@/lib/hours";
-import { getTranslations, translate, useTranslations } from "@/lib/locale";
+import { getTranslations, useTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { queryClient } from "@/router";
 import { getResourcesFn } from "@/server/actions/resource";
@@ -20,7 +20,7 @@ import {
 	useNavigate,
 } from "@tanstack/react-router";
 import { CalendarDays, List, MapIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
 
@@ -49,10 +49,6 @@ export const Route = createFileRoute("/$locale/_app/saved")({
 		};
 	},
 	loader: async () => {
-		await resetSavedFn();
-		await queryClient.invalidateQueries({
-			queryKey: ["saved"],
-		});
 		const saved = await queryClient.ensureQueryData({
 			queryKey: ["saved"],
 			queryFn: () => getSavedFn(),
@@ -89,6 +85,14 @@ function SavedPage() {
 			),
 		[saved],
 	);
+
+	useEffect(() => {
+		resetSavedFn().then(() => {
+			queryClient.invalidateQueries({
+				queryKey: ["saved"],
+			});
+		});
+	}, []);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -151,7 +155,10 @@ function SavedPage() {
 					{day ? (
 						<Accordion
 							type="multiple"
-							defaultValue={[...days, "unassigned"]}
+							defaultValue={[
+								...days.map((day) => day.toLowerCase()),
+								"unassigned",
+							]}
 						>
 							{Array.from(activeDays)
 								.sort((dayA, dayB) => {
@@ -168,10 +175,9 @@ function SavedPage() {
 										<AccordionTrigger className="text-xl font-semibold">
 											{day === "unassigned"
 												? translations.unassigned
-												: translate(
-														day,
-														locale as "fr" | "en",
-													)}
+												: translations.daysOfWeek.long[
+														day
+													]}
 										</AccordionTrigger>
 										<AccordionContent className="flex flex-col gap-3">
 											{resources
@@ -181,7 +187,7 @@ function SavedPage() {
 															(savedResource) =>
 																savedResource.resourceId ===
 																resource.id,
-														)?.day ?? "unassigned";
+														)?.day;
 													return (
 														savedResource === day
 													);

@@ -4,7 +4,7 @@ import { ResourceType } from "@/server/db/types";
 import { Link, useParams } from "@tanstack/react-router";
 import { MapPin, PhoneCall } from "lucide-react";
 import { useMemo } from "react";
-import { Badge } from "../ui/badge";
+import { Badge } from "../ui/Badge";
 import { ResourceActions } from "./Actions";
 
 export const Resource = ({ resource }: { resource: ResourceType }) => {

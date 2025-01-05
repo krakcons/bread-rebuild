@@ -30,11 +30,11 @@ import { Map } from "react-map-gl/maplibre";
 
 const filterIcons = {
 	free: <DollarSign size={18} />,
-	preparationRequired: <UtensilsCrossed size={18} />,
-	parkingAvailable: <Car size={18} />,
-	nearTransit: <Bus size={18} />,
-	wheelchairAccessible: <Accessibility size={18} />,
-	dietaryOptionsIds: <Utensils size={18} />,
+	preparation: <UtensilsCrossed size={18} />,
+	parking: <Car size={18} />,
+	transit: <Bus size={18} />,
+	wheelchair: <Accessibility size={18} />,
+	dietaryOptionIds: <Utensils size={18} />,
 };
 
 export const Route = createFileRoute("/$locale/_app/")({
@@ -70,21 +70,21 @@ function Home() {
 		tab = "list",
 		query = "",
 		free = false,
-		preparationRequired = false,
-		parkingAvailable = false,
-		transitAvailable = false,
-		wheelchairAccessible = false,
-		dietaryOptionsIds = [],
+		preparation = false,
+		parking = false,
+		transit = false,
+		wheelchair = false,
+		dietaryOptionIds = [],
 	} = Route.useSearch();
 	const { resources, dietaryOptions } = Route.useLoaderData();
 	const translations = useTranslations(locale);
 
 	const filters: Record<string, boolean> = {
 		free,
-		preparationRequired,
-		parkingAvailable,
-		transitAvailable,
-		wheelchairAccessible,
+		preparation,
+		parking,
+		transit,
+		wheelchair,
 	};
 
 	return (
@@ -147,7 +147,7 @@ function Home() {
 								active={
 									Object.values(filters).some(
 										(filter) => filter,
-									) || dietaryOptionsIds.length > 0
+									) || dietaryOptionIds.length > 0
 								}
 							>
 								<Filter size={18} />
@@ -184,11 +184,7 @@ function Home() {
 											name as keyof typeof filterIcons
 										]
 									}
-									{
-										translations.filters[
-											name as keyof typeof translations.filters
-										]
-									}
+									{translations.filters[name]}
 								</Button>
 							))}
 							<p className="mt-2 text-lg font-semibold leading-none tracking-tight">
@@ -202,23 +198,23 @@ function Home() {
 											navigate({
 												search: (prev) => ({
 													...prev,
-													dietaryOptionsIds:
-														dietaryOptionsIds.includes(
+													dietaryOptionIds:
+														dietaryOptionIds.includes(
 															option.id,
 														)
-															? dietaryOptionsIds.filter(
+															? dietaryOptionIds.filter(
 																	(o) =>
 																		o !==
 																		option.id,
 																)
 															: [
-																	...dietaryOptionsIds,
+																	...dietaryOptionIds,
 																	option.id,
 																],
 												}),
 											})
 										}
-										active={dietaryOptionsIds.includes(
+										active={dietaryOptionIds.includes(
 											option.id,
 										)}
 										className="flex-grow justify-start"
