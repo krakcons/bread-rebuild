@@ -8,11 +8,10 @@ export const queryClient = new QueryClient();
 export function createRouter() {
 	const router = createTanStackRouter({
 		routeTree,
-		defaultPreload: "intent",
-		defaultPreloadDelay: 100,
 		context: {
 			session: null,
 			user: null,
+			providerId: null,
 		},
 		Wrap: ({ children }) => (
 			<QueryClientProvider client={queryClient}>
