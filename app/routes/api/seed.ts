@@ -21,7 +21,6 @@ import {
 	ResourceTranslationType,
 	ResourceType,
 } from "@/server/db/types";
-import { translate } from "../../lib/locale";
 
 type LocalizedFieldType = {
 	en: string;
@@ -32,7 +31,7 @@ type LocalizedFieldType = {
 export const createLocalizedField = (enValue: string): LocalizedFieldType => {
 	return {
 		en: enValue,
-		fr: translate(enValue, "fr") || "",
+		fr: enValue,
 	};
 };
 
@@ -147,7 +146,7 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			drupalData: any,
 			providerId: string,
 		): {
-			resource: BaseResourceType;
+			resource: Omit<BaseResourceType, "createdAt" | "updatedAt">;
 			body: {
 				en: Omit<ResourceTranslationType, "id">;
 				fr: Omit<ResourceTranslationType, "id">;
@@ -177,40 +176,44 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 				offering = "meal";
 			}
 
-			const resource: BaseResourceType = {
-				id: generateId(16),
-				providerId,
-				...contactInfo,
-				parking:
-					drupalData.attributes.field_parking_avail_bool || false,
-				preparation:
-					drupalData.attributes.field_prep_required_bool || false,
-				free: drupalData.attributes.field_price_description
-					?.toLowerCase()
-					.includes("free"),
-				wheelchair:
-					drupalData.attributes.field_wheelchair_acc_bool || false,
-				transit:
-					drupalData.attributes.field__near_transit_bool || false,
-				registration:
-					drupalData.attributes.field_registration_bool || false,
-				offering,
-				street1:
-					drupalData.attributes.field_pickup_address.address_line1,
-				street2:
-					drupalData.attributes.field_pickup_address.address_line2,
-				city: drupalData.attributes.field_pickup_address.locality,
-				postalCode:
-					drupalData.attributes.field_pickup_address.postal_code,
-				province:
-					drupalData.attributes.field_pickup_address
-						.administrative_area,
-				hours,
-				country:
-					drupalData.attributes.field_pickup_address.country_code,
-				lat: drupalData.attributes.field_geofield?.lat ?? null,
-				lng: drupalData.attributes.field_geofield?.lon ?? null,
-			};
+			const resource: Omit<BaseResourceType, "createdAt" | "updatedAt"> =
+				{
+					id: generateId(16),
+					providerId,
+					...contactInfo,
+					parking:
+						drupalData.attributes.field_parking_avail_bool || false,
+					preparation:
+						drupalData.attributes.field_prep_required_bool || false,
+					free: drupalData.attributes.field_price_description
+						?.toLowerCase()
+						.includes("free"),
+					wheelchair:
+						drupalData.attributes.field_wheelchair_acc_bool ||
+						false,
+					transit:
+						drupalData.attributes.field__near_transit_bool || false,
+					registration:
+						drupalData.attributes.field_registration_bool || false,
+					offering,
+					street1:
+						drupalData.attributes.field_pickup_address
+							.address_line1,
+					street2:
+						drupalData.attributes.field_pickup_address
+							.address_line2,
+					city: drupalData.attributes.field_pickup_address.locality,
+					postalCode:
+						drupalData.attributes.field_pickup_address.postal_code,
+					province:
+						drupalData.attributes.field_pickup_address
+							.administrative_area,
+					hours,
+					country:
+						drupalData.attributes.field_pickup_address.country_code,
+					lat: drupalData.attributes.field_geofield?.lat ?? null,
+					lng: drupalData.attributes.field_geofield?.lon ?? null,
+				};
 
 			const body: {
 				en: Omit<ResourceTranslationType, "id">;

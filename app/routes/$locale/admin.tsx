@@ -1,17 +1,17 @@
-import { sendVerificationEmail } from "@/server/auth/actions";
+import { getAuth, sendVerificationEmail } from "@/server/auth/actions";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 const unauthenticatedPages = [
 	"/login",
-	"/verify-email",
 	"/signup",
 	"/reset-password",
+	"/verify-email",
 ];
 
 export const Route = createFileRoute("/$locale/admin")({
 	component: RouteComponent,
-	beforeLoad: async ({ params, location, context }) => {
-		const { user, session, providerId } = context;
+	beforeLoad: async ({ params, location }) => {
+		const { user, session, providerId } = await getAuth();
 
 		if (
 			user === null &&
@@ -26,7 +26,10 @@ export const Route = createFileRoute("/$locale/admin")({
 			});
 		}
 
-		if (user?.emailVerified === null) {
+		if (
+			!location.pathname.includes("/verify-email") &&
+			user?.emailVerified === null
+		) {
 			await sendVerificationEmail();
 			throw redirect({
 				to: "/$locale/admin/verify-email",
@@ -37,6 +40,7 @@ export const Route = createFileRoute("/$locale/admin")({
 		if (
 			!location.pathname.includes("/onboarding") &&
 			user &&
+			user.emailVerified &&
 			session &&
 			providerId === null
 		) {
