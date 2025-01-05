@@ -63,6 +63,11 @@ export const english = {
 	admin: {
 		title: "Admin",
 		editing: "Editing:",
+		dashboard: {
+			title: "Dashboard",
+			explanation:
+				"This site allows you to manage your provider and listings. Providers are organizations that offer food resources and listings are the specific resources they offer.",
+		},
 		confirm: {
 			title: "Leave without saving?",
 			description:

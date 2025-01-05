@@ -50,7 +50,7 @@ function RouteComponent() {
 		<div className="flex flex-col gap-4">
 			<div className="mb-4 flex flex-col gap-2 border-b border-gray-200 pb-4">
 				<h1>{t.admin.analytics.title}</h1>
-				<p>{t.description}</p>
+				<p>{t.admin.analytics.description}</p>
 			</div>
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between pb-2">
