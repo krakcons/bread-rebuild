@@ -11,6 +11,10 @@ declare module "sst" {
       "sender": string
       "type": "sst.aws.Email"
     }
+    "GOOGLE_MAPS_API_KEY": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
     "RDS": {
       "database": string
       "host": string

@@ -1,5 +1,6 @@
-import { getLocalizedField, getTranslations } from "@/lib/language";
-import { formatServiceAddress, ResourceType } from "@cords/sdk";
+import { formatAddress } from "@/lib/address";
+import { useTranslations } from "@/lib/locale";
+import { ResourceType } from "@/server/db/types";
 import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
 import { useState } from "react";
@@ -8,15 +9,15 @@ import { Button, buttonVariants } from "../ui/Button";
 import { ResourceActions } from "./Actions";
 
 export const MapResource = ({ resource }: { resource: ResourceType }) => {
-	const { language } = useParams({ from: "/$language" });
+	const { locale } = useParams({ from: "/$locale" });
 	const [popupOpen, setPopupOpen] = useState<boolean>(false);
-	const translations = getTranslations(language);
+	const translations = useTranslations(locale);
 
 	return (
 		<>
 			<Marker
-				latitude={resource.address.lat!}
-				longitude={resource.address.lng!}
+				latitude={resource.lat!}
+				longitude={resource.lng!}
 				anchor="bottom"
 				onClick={() => setPopupOpen(true)}
 			>
@@ -26,8 +27,8 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 			</Marker>
 			{popupOpen && (
 				<Popup
-					latitude={resource.address.lat!}
-					longitude={resource.address.lng!}
+					latitude={resource.lat!}
+					longitude={resource.lng!}
 					onClose={() => setPopupOpen(!popupOpen)}
 					anchor="bottom"
 					offset={36}
@@ -49,16 +50,20 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 					</Button>
 					<div className="mt-4 flex flex-col gap-2">
 						<Link
-							to={`/${language}/resources/${resource.id}`}
+							to="/$locale/resources/$id"
+							params={{
+								locale,
+								id: resource.id,
+							}}
 							className="text-lg font-semibold hover:underline"
 						>
-							{getLocalizedField(resource.name, language)}
+							{resource.provider.name}
 						</Link>
 						{/* Address section */}
-						{resource.address && (
+						{resource.street1 && (
 							<div className="flex items-center gap-2 text-muted-foreground">
 								<MapPin size={20} />
-								{formatServiceAddress(resource.address)}
+								{formatAddress(resource)}
 							</div>
 						)}
 						{/* Call section */}
@@ -72,18 +77,19 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 							</div>
 						))}
 						{/* Fees section */}
-						{getLocalizedField(resource.body, language)?.fees && (
+						{resource.fees && (
 							<div className="mb-2 flex items-center gap-2 text-muted-foreground">
 								<DollarSign size={20} />
-								{
-									getLocalizedField(resource.body, language)
-										?.fees
-								}
+								{resource.fees}
 							</div>
 						)}
 						<ResourceActions resource={resource}>
 							<Link
-								to={`/${language}/resources/${resource.id}`}
+								to="/$locale/resources/$id"
+								params={{
+									locale,
+									id: resource.id,
+								}}
 								className={buttonVariants()}
 							>
 								{translations.viewMore}

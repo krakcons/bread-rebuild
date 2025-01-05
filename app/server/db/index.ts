@@ -1,7 +1,8 @@
+import * as auth from "@/server/db/auth/schema";
+import * as schema from "@/server/db/schema";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import { Resource } from "sst";
-import * as schema from "./schema";
 
 if (!process.env.TENANT_STAGE_NAME) {
 	throw new Error("TENANT_STAGE_NAME is not set");
@@ -20,4 +21,4 @@ export const config = {
 
 const pool = new pg.Pool(config);
 
-export const db = drizzle(pool, { schema });
+export const db = drizzle(pool, { schema: { ...schema, ...auth } });

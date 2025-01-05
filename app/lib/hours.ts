@@ -3,8 +3,6 @@ import { useMemo } from "react";
 
 export const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-export const frenchDays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-
 export type DaySchedule = {
 	day: string;
 	open: string;
@@ -40,16 +38,20 @@ const convertTime = (time: string): string => {
 			hour += 12;
 		}
 
-		return hour.toString().padStart(2, "0") + minute.toString().padStart(2, "0");
+		return (
+			hour.toString().padStart(2, "0") +
+			minute.toString().padStart(2, "0")
+		);
 	}
 
 	throw new Error(`Invalid time: ${time}`);
 };
-const formatTime = (time: string, language: string): string => {
+
+export const formatTime = (time: string, locale: string): string => {
 	const hour = parseInt(time.slice(0, 2), 10);
 	const minute = time.slice(2);
 
-	if (language === "fr") {
+	if (locale === "fr") {
 		return `${hour}h${minute.padStart(2, "0")}`;
 	} else {
 		const period = hour < 12 ? "am" : "pm";
@@ -61,7 +63,7 @@ const formatTime = (time: string, language: string): string => {
 	}
 };
 
-export const parseSchedule = (hoursString: string, language: string): DaySchedule[] => {
+export const parseSchedule = (hoursString: string): DaySchedule[] => {
 	const scheduleArray = hoursString
 		.split(";")
 		.map((s) => s.trim())
@@ -80,27 +82,26 @@ export const parseSchedule = (hoursString: string, language: string): DaySchedul
 			throw new Error(`Invalid day: ${day}`);
 		}
 
-		if (language === "fr") {
-			const frenchDay = frenchDays[days.indexOf(day)];
-			if (!frenchDay) throw new Error(`Invalid day: ${day}`);
-			day = frenchDay;
-		}
-
 		result.push({
 			day,
-			open: formatTime(convertTime(open), language),
-			close: formatTime(convertTime(close), language),
+			open: convertTime(open),
+			close: convertTime(close),
 		});
 	}
 
 	return result;
 };
 
-export const useHours = (hoursString: string) => {
-	// const { i18n } = useTranslation();
+export const formatScheduleToString = (daySchedule: DaySchedule[]): string => {
+	return daySchedule
+		.map(({ day, open, close }) => `${day} ${open} - ${close};`)
+		.join(" ");
+};
+
+export const useHours = (hoursString: string, locale: string) => {
 	return useMemo(() => {
 		try {
-			return parseSchedule(hoursString, "en");
+			return parseSchedule(hoursString);
 		} catch (e) {
 			console.error(e);
 			return [];

@@ -1,6 +1,9 @@
 import globalStyles from "@/index.css?url";
-import { getLanguage, languages, setLanguage } from "@/lib/language";
+import { Locale, locales } from "@/lib/locale";
+import { getLocale, setLocale } from "@/lib/locale/actions";
 import { SessionValidationResult } from "@/server/auth";
+import { getAuth } from "@/server/auth/actions";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
 	createRootRouteWithContext,
 	ErrorComponent,
@@ -46,15 +49,18 @@ export const Route = createRootRouteWithContext<SessionValidationResult>()({
 	component: RootComponent,
 	errorComponent: ErrorComponent,
 	beforeLoad: async ({ location }) => {
-		let language = location.pathname.split("/")[1];
-		if (!languages.includes(language)) {
-			language = await getLanguage();
+		// Handle locale
+		let locale = location.pathname.split("/")[1];
+		if (!locales.some(({ value }) => value === locale)) {
+			locale = await getLocale();
 			throw redirect({
-				href: `/${language}${location.pathname}`,
+				href: `/${locale}${location.pathname}`,
 			});
 		} else {
-			await setLanguage({ data: language as "fr" | "en" });
+			await setLocale({ data: locale as Locale });
 		}
+		// Handle auth
+		return await getAuth();
 	},
 });
 
@@ -74,7 +80,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<main className="font-[Inter,sans-serif]">{children}</main>
-				<ScrollRestoration />
+				<ScrollRestoration getKey={(location) => location.pathname} />
+				<ReactQueryDevtools initialIsOpen={false} />
 				<Scripts />
 			</body>
 		</html>

@@ -1,16 +1,16 @@
-import { getTranslations } from "@/lib/language";
+import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import zxcvbn from "zxcvbn";
 
 export const PasswordStrength = ({
 	password,
-	language,
+	locale,
 }: {
 	password: string;
-	language: string;
+	locale: string;
 }) => {
 	const strength = zxcvbn(password);
-	const t = getTranslations(language);
+	const t = useTranslations(locale);
 
 	const strengthColors = [
 		"bg-red-400",
@@ -41,8 +41,8 @@ export const PasswordStrength = ({
 			</div>
 			<p className="self-end text-sm text-muted-foreground">
 				{!password
-					? t.admin.auth.signup.form.passwordStrength.title
-					: t.admin.auth.signup.form.passwordStrength[strength.score]}
+					? t.form.auth.passwordStrength.title
+					: t.form.auth.passwordStrength[strength.score]}
 			</p>
 		</div>
 	);

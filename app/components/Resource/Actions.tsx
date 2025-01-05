@@ -8,13 +8,19 @@ import {
 	SelectValue,
 } from "@/components/ui/Select";
 import { days } from "@/lib/hours";
-import { getTranslations } from "@/lib/language";
-import { toggleSaved, updateDay, useSavedResource } from "@/lib/saved";
+import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
-import { ResourceType } from "@cords/sdk";
-import { useParams } from "@tanstack/react-router";
-import { Bookmark, CalendarDays } from "lucide-react";
-import { Button } from "../ui/Button";
+import { queryClient } from "@/router";
+import {
+	getSavedFn,
+	toggleSavedFn,
+	updateSavedFn,
+} from "@/server/actions/saved";
+import { ResourceType, SavedResourceType } from "@/server/db/types";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link, useParams, useRouteContext } from "@tanstack/react-router";
+import { Bookmark, CalendarDays, Edit } from "lucide-react";
+import { Button, buttonVariants } from "../ui/Button";
 
 export const ResourceActions = ({
 	resource,
@@ -23,11 +29,22 @@ export const ResourceActions = ({
 	resource: ResourceType;
 	children?: React.ReactNode;
 }) => {
-	const saved = useSavedResource(resource.id);
-	const { language } = useParams({
-		from: "/$language",
+	const { providerId } = useRouteContext({
+		from: "/$locale",
 	});
-	const translations = getTranslations(language);
+	const { data: saved } = useSuspenseQuery({
+		queryKey: ["saved"],
+		queryFn: () => getSavedFn(),
+	});
+
+	const { locale } = useParams({
+		from: "/$locale",
+	});
+	const translations = useTranslations(locale);
+	const savedResource = saved.find(
+		(savedResource) => savedResource.resourceId === resource.id,
+	);
+
 	return (
 		<div
 			className="-m-4 flex flex-wrap items-center justify-start gap-2 p-4"
@@ -38,30 +55,49 @@ export const ResourceActions = ({
 		>
 			{children}
 			<Button
-				onClick={() => {
-					toggleSaved(resource.id);
+				onClick={async () => {
+					await toggleSavedFn({ data: { resourceId: resource.id } });
+					await queryClient.invalidateQueries({
+						queryKey: ["saved"],
+					});
 				}}
 				className="no-print"
 			>
 				<Bookmark
 					size={18}
 					className={
-						saved ? "fill-primary text-primary" : "fill-none"
+						savedResource
+							? "fill-primary text-primary"
+							: "fill-none"
 					}
 				/>
-				{saved ? translations.saved.saved : translations.saved.save}
+				{savedResource
+					? translations.saved.saved
+					: translations.saved.save}
 			</Button>
-			{saved && (
+			{savedResource && (
 				<Select
-					value={saved.day ?? undefined}
-					onValueChange={(value) => {
-						updateDay(resource.id, value);
+					value={
+						savedResource.day !== "unassigned"
+							? savedResource.day
+							: undefined
+					}
+					onValueChange={async (value) => {
+						await updateSavedFn({
+							data: {
+								resourceId: resource.id,
+								day: value as SavedResourceType["day"],
+							},
+						});
+						await queryClient.invalidateQueries({
+							queryKey: ["saved"],
+						});
 					}}
 				>
 					<SelectTrigger
 						className={cn(
 							"w-auto shrink gap-2",
-							saved.day ? "" : "no-print",
+							savedResource?.day ? "" : "no-print",
 						)}
 					>
 						<CalendarDays size={18} />
@@ -75,13 +111,36 @@ export const ResourceActions = ({
 						<SelectSeparator />
 						<SelectGroup>
 							{days.map((day) => (
-								<SelectItem key={day} value={day}>
-									{day}
+								<SelectItem key={day} value={day.toLowerCase()}>
+									{
+										translations.daysOfWeek.short[
+											day.toLowerCase()
+										]
+									}
 								</SelectItem>
 							))}
 						</SelectGroup>
 					</SelectContent>
 				</Select>
+			)}
+			{providerId === resource.provider.id && (
+				<Link
+					to="/$locale/admin/listings/$id"
+					onClick={(e) => {
+						e.stopPropagation();
+					}}
+					params={{
+						id: resource.id,
+						locale,
+					}}
+					search={(prev) => ({
+						editingLocale: prev.editingLocale,
+					})}
+					className={buttonVariants()}
+				>
+					<Edit />
+					{translations.edit}
+				</Link>
 			)}
 		</div>
 	);
