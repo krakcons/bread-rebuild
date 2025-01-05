@@ -23,6 +23,7 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 			context: {
 				session: null,
 				user: null,
+				providerId: null,
 			},
 		});
 	}

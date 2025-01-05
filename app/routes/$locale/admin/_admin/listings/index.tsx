@@ -10,7 +10,6 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/")({
 	loaderDeps: ({ search }) => search,
 	loader: async () => {
 		const listings = await getListingsFn();
-		console.log(listings);
 		return {
 			listings,
 		};

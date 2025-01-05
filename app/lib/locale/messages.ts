@@ -43,6 +43,7 @@ export const english = {
 	parking: "Parking",
 	preparation: "Preparation Required",
 	transit: "Transit",
+	edit: "Edit",
 	wheelchair: "Wheelchair Accessible",
 	filters: {
 		title: "Filters",
@@ -134,6 +135,10 @@ export const english = {
 			new: {
 				title: "New Listing",
 				description: "Create a new listing.",
+			},
+			edit: {
+				title: "Edit Listing",
+				description: "Edit an existing listing.",
 			},
 		},
 		provider: {
@@ -286,6 +291,7 @@ export const french: typeof english = {
 	map: "Carte",
 	address: "Adresse",
 	fees: "Frais",
+	edit: "Modifier",
 	phoneTypes: {
 		phone: "Téléphone",
 		fax: "Fax",
@@ -405,6 +411,10 @@ export const french: typeof english = {
 			new: {
 				title: "Nouvelle Liste",
 				description: "Créer une nouvelle liste.",
+			},
+			edit: {
+				title: "Modifier une Liste",
+				description: "Modifier une liste existante.",
 			},
 		},
 		provider: {

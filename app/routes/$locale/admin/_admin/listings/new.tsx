@@ -1,6 +1,6 @@
 import { ListingForm } from "@/components/forms/Listing";
 import { useTranslations } from "@/lib/locale";
-import { createListingFn } from "@/server/actions/listings";
+import { mutateListingFn } from "@/server/actions/listings";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 });
 
 function RouteComponent() {
-	const createListing = useServerFn(createListingFn);
+	const createListing = useServerFn(mutateListingFn);
 	const { locale } = Route.useParams();
 	const t = useTranslations(locale);
 
@@ -23,7 +23,7 @@ function RouteComponent() {
 				<ListingForm
 					locale={locale}
 					onSubmit={(data) => {
-						createListing({ data });
+						createListing({ data: { ...data, redirect: true } });
 					}}
 				/>
 			</div>

@@ -48,7 +48,8 @@ const convertTime = (time: string): string => {
 
 	throw new Error(`Invalid time: ${time}`);
 };
-const formatTime = (time: string, locale: string): string => {
+
+export const formatTime = (time: string, locale: string): string => {
 	const hour = parseInt(time.slice(0, 2), 10);
 	const minute = time.slice(2);
 
@@ -94,8 +95,8 @@ export const parseSchedule = (
 
 		result.push({
 			day,
-			open: formatTime(convertTime(open), locale),
-			close: formatTime(convertTime(close), locale),
+			open: convertTime(open),
+			close: convertTime(close),
 		});
 	}
 
@@ -108,14 +109,13 @@ export const formatScheduleToString = (daySchedule: DaySchedule[]): string => {
 		.join(" ");
 };
 
-export const useHours = (hoursString: string) => {
-	// const { i18n } = useTranslation();
+export const useHours = (hoursString: string, locale: string) => {
 	return useMemo(() => {
 		try {
-			return parseSchedule(hoursString, "en");
+			return parseSchedule(hoursString, locale);
 		} catch (e) {
 			console.error(e);
 			return [];
 		}
-	}, [hoursString]);
+	}, [hoursString, locale]);
 };

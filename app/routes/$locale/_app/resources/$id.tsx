@@ -2,7 +2,7 @@ import { NotFound } from "@/components/NotFound";
 import { ResourceActions } from "@/components/Resource/Actions";
 import { Badge } from "@/components/ui/Badge";
 import { formatAddress } from "@/lib/address";
-import { useHours } from "@/lib/hours";
+import { formatTime, useHours } from "@/lib/hours";
 import { translate, useTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { cn } from "@/lib/utils";
@@ -85,7 +85,7 @@ function ResourceDetail() {
 	const resource = Route.useLoaderData();
 	const t = useTranslations(locale);
 
-	const hours = useHours(resource.hours || "");
+	const hours = useHours(resource.hours || "", locale);
 
 	const todaysDayOfWeek = new Date().toLocaleDateString("en-US", {
 		weekday: "short",
@@ -314,7 +314,8 @@ function ResourceDetail() {
 												"font-semibold",
 										)}
 									>
-										{hour.open} - {hour.close}
+										{formatTime(hour.open, locale)} -{" "}
+										{formatTime(hour.close, locale)}
 									</p>
 								</div>
 							))}

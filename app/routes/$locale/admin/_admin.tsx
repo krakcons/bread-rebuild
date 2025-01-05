@@ -8,6 +8,7 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/AlertDialog";
+import { buttonVariants } from "@/components/ui/Button";
 import {
 	Select,
 	SelectContent,
@@ -57,13 +58,14 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 		editingLocale: LocaleSchema.optional(),
 		editing: z.boolean().optional(),
 	}),
-	beforeLoad: async ({ search, params }) => {
+	beforeLoad: async ({ search, params, location }) => {
 		if (!search.editingLocale) {
 			throw redirect({
-				to: "/$locale/admin",
-				search: {
+				to: location.pathname,
+				search: (search) => ({
+					...search,
 					editingLocale: params.locale as Locale,
-				},
+				}),
 				params,
 			});
 		}
@@ -82,7 +84,18 @@ function RouteComponent() {
 	return (
 		<SidebarProvider>
 			<Sidebar>
-				<SidebarHeader />
+				<SidebarHeader>
+					<Link
+						to="/$locale"
+						params={{
+							locale,
+						}}
+						className={buttonVariants()}
+					>
+						<ExternalLink />
+						{t.admin.nav.exit}
+					</Link>
+				</SidebarHeader>
 				<SidebarContent>
 					<SidebarGroup>
 						<SidebarGroupContent>
@@ -111,6 +124,7 @@ function RouteComponent() {
 											locale,
 										}}
 										search={search}
+										replace
 									>
 										<Utensils />
 										{t.admin.nav.listings}
@@ -171,19 +185,6 @@ function RouteComponent() {
 										<Languages />
 										{t.admin.nav.localeToggle}
 									</button>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
-									<Link
-										to="/$locale"
-										params={{
-											locale,
-										}}
-									>
-										<ExternalLink />
-										{t.admin.nav.exit}
-									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 						</SidebarGroupContent>

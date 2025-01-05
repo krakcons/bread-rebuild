@@ -23,9 +23,9 @@ import { ProviderPhoneNumberType, ResourceType } from "@/server/db/types";
 import { OfferingEnum } from "@/server/types";
 import { Libraries, useJsApiLoader } from "@react-google-maps/api";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 import { formatAddress } from "@/lib/address";
@@ -67,6 +67,12 @@ const HourSelect = ({
 	);
 };
 
+const defaultHours = (locale: string) =>
+	parseSchedule(
+		"Mon 0900-1700; Tue 0900-1700; Wed 0900-1700; Thu 0900-1700; Fri 0900-1700; Sat 0900-1700; Sun 0900-1700",
+		locale,
+	);
+
 const HoursInput = ({
 	onChange,
 	value,
@@ -78,26 +84,23 @@ const HoursInput = ({
 		from: "/$locale",
 	});
 	const t = useTranslations(locale);
-	const [hours, setHours] = useState<
-		(DaySchedule & {
-			enabled: boolean;
-		})[]
-	>(
-		value
-			? parseSchedule(value, "en").map((h) => ({
+
+	const hours = useMemo(() => {
+		const baseHours = defaultHours(locale);
+		const customHours = parseSchedule(value, locale).map((h) => ({
+			...h,
+			enabled: true,
+		}));
+		return baseHours.map(
+			(h) =>
+				customHours.find((c) => c.day === h.day) ?? {
 					...h,
-					enabled: true,
-				}))
-			: days.map((day) => ({
-					day,
-					open: "0900",
-					close: "1700",
 					enabled: false,
-				})),
-	);
+				},
+		);
+	}, [value, locale]);
 
 	const handleChange = (newHours: (DaySchedule & { enabled: boolean })[]) => {
-		setHours(newHours);
 		onChange(formatScheduleToString(newHours.filter((h) => h.enabled)));
 	};
 
@@ -112,6 +115,7 @@ const HoursInput = ({
 								false
 							}
 							onCheckedChange={(checked: boolean) => {
+								console.log("checked", hours);
 								handleChange(
 									hours.map((h) =>
 										h.day === day
@@ -177,9 +181,6 @@ export const ListingForm = ({
 }) => {
 	const navigate = useNavigate({
 		from: "/$locale/admin/provider",
-	});
-	const { editing } = useSearch({
-		from: "/$locale/admin/_admin",
 	});
 	const t = useTranslations(locale);
 	const form = useForm({
@@ -308,6 +309,7 @@ export const ListingForm = ({
 				...prev,
 				editing: isDirty,
 			}),
+			replace: true,
 		});
 	}, [isDirty]);
 
@@ -317,18 +319,6 @@ export const ListingForm = ({
 				e.preventDefault();
 				e.stopPropagation();
 				form.handleSubmit();
-			}}
-			onChange={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				if (!editing) {
-					navigate({
-						search: (search) => ({
-							...search,
-							editing: true,
-						}),
-					});
-				}
 			}}
 		>
 			<div className="flex flex-col gap-4">

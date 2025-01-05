@@ -18,9 +18,9 @@ import {
 } from "@/server/actions/saved";
 import { ResourceType, SavedResourceType } from "@/server/db/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useParams } from "@tanstack/react-router";
-import { Bookmark, CalendarDays } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Link, useParams, useRouteContext } from "@tanstack/react-router";
+import { Bookmark, CalendarDays, Edit } from "lucide-react";
+import { Button, buttonVariants } from "../ui/Button";
 
 export const ResourceActions = ({
 	resource,
@@ -29,6 +29,9 @@ export const ResourceActions = ({
 	resource: ResourceType;
 	children?: React.ReactNode;
 }) => {
+	const { providerId } = useRouteContext({
+		from: "/$locale",
+	});
 	const { data: saved } = useSuspenseQuery({
 		queryKey: ["saved"],
 		queryFn: () => getSavedFn(),
@@ -115,6 +118,26 @@ export const ResourceActions = ({
 						</SelectGroup>
 					</SelectContent>
 				</Select>
+			)}
+			{providerId === resource.provider.id && (
+				<Link
+					to="/$locale/admin/listings/$id"
+					onClick={(e) => {
+						e.stopPropagation();
+					}}
+					params={{
+						id: resource.id,
+						locale,
+					}}
+					search={(prev) => ({
+						editingLocale: prev.editingLocale,
+						editing: false,
+					})}
+					className={buttonVariants()}
+				>
+					<Edit />
+					{translations.edit}
+				</Link>
 			)}
 		</div>
 	);

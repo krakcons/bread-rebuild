@@ -15,7 +15,7 @@ import { useTranslations } from "@/lib/locale";
 import { ProviderFormSchema } from "@/server/actions/provider";
 import { ProviderPhoneNumberType, ProviderType } from "@/server/db/types";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { z } from "zod";
@@ -31,9 +31,6 @@ export const ProviderForm = ({
 }) => {
 	const navigate = useNavigate({
 		from: "/$locale/admin/provider",
-	});
-	const { editing } = useSearch({
-		from: "/$locale/admin/_admin",
 	});
 	const t = useTranslations(locale);
 	const form = useForm({
@@ -77,6 +74,7 @@ export const ProviderForm = ({
 				...prev,
 				editing: isDirty,
 			}),
+			replace: true,
 		});
 	}, [isDirty]);
 
@@ -86,18 +84,6 @@ export const ProviderForm = ({
 				e.preventDefault();
 				e.stopPropagation();
 				form.handleSubmit();
-			}}
-			onChange={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				if (!editing) {
-					navigate({
-						search: (search) => ({
-							...search,
-							editing: true,
-						}),
-					});
-				}
 			}}
 		>
 			<div className="flex flex-col gap-4">

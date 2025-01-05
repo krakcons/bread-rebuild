@@ -7,6 +7,7 @@ import {
 import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { sessions, users, type Session, type User } from "../db/auth/schema";
+import { providers } from "../db/schema";
 
 const random: RandomReader = {
 	read(bytes) {
@@ -44,17 +45,18 @@ export async function validateSessionToken(
 		sha256(new TextEncoder().encode(token)),
 	);
 	const result = await db
-		.select({ user: users, session: sessions })
+		.select({ user: users, session: sessions, provider: providers })
 		.from(sessions)
 		.innerJoin(users, eq(sessions.userId, users.id))
+		.innerJoin(providers, eq(providers.userId, users.id))
 		.where(eq(sessions.id, sessionId));
 	if (result.length < 1) {
-		return { session: null, user: null };
+		return { session: null, user: null, providerId: null };
 	}
-	const { user, session } = result[0];
+	const { user, session, provider } = result[0];
 	if (Date.now() >= session.expiresAt.getTime()) {
 		await db.delete(sessions).where(eq(sessions.id, session.id));
-		return { session: null, user: null };
+		return { session: null, user: null, providerId: null };
 	}
 	if (Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
 		session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
@@ -66,7 +68,7 @@ export async function validateSessionToken(
 			.where(eq(sessions.id, session.id));
 	}
 	const { passwordHash, ...safeUser } = user;
-	return { session, user: safeUser };
+	return { session, user: safeUser, providerId: provider.id };
 }
 
 export async function invalidateSession(sessionId: string): Promise<void> {
@@ -74,8 +76,12 @@ export async function invalidateSession(sessionId: string): Promise<void> {
 }
 
 export type SessionValidationResult =
-	| { session: Session; user: Omit<User, "passwordHash"> }
-	| { session: null; user: null };
+	| {
+			session: Session;
+			user: Omit<User, "passwordHash">;
+			providerId: string;
+	  }
+	| { session: null; user: null; providerId: null };
 
 export function generateId(length: number, alphabet?: string): string {
 	return generateRandomString(

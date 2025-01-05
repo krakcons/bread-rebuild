@@ -2,6 +2,7 @@ import globalStyles from "@/index.css?url";
 import { Locale, locales } from "@/lib/locale";
 import { getLocale, setLocale } from "@/lib/locale/actions";
 import { SessionValidationResult } from "@/server/auth";
+import { getAuth } from "@/server/auth/actions";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
 	createRootRouteWithContext,
@@ -48,6 +49,7 @@ export const Route = createRootRouteWithContext<SessionValidationResult>()({
 	component: RootComponent,
 	errorComponent: ErrorComponent,
 	beforeLoad: async ({ location }) => {
+		// Handle locale
 		let locale = location.pathname.split("/")[1];
 		if (!locales.some(({ value }) => value === locale)) {
 			locale = await getLocale();
@@ -57,6 +59,8 @@ export const Route = createRootRouteWithContext<SessionValidationResult>()({
 		} else {
 			await setLocale({ data: locale as Locale });
 		}
+		// Handle auth
+		return await getAuth();
 	},
 });
 

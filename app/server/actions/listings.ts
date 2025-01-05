@@ -11,8 +11,10 @@ import {
 	resourceTranslations,
 } from "../db/schema";
 import {
+	BaseResourceType,
 	LocalizedQuerySchema,
 	LocalizedQueryType,
+	ResourceTranslationType,
 	ResourceType,
 } from "../db/types";
 import { localeMiddleware, providerMiddleware } from "../middleware";
@@ -106,25 +108,79 @@ export const getListingsFn = createServerFn({
 		});
 	});
 
-export const createListingFn = createServerFn({
+export const mutateListingFn = createServerFn({
 	method: "POST",
 })
 	.middleware([localeMiddleware, providerMiddleware])
-	.validator(ListingFormSchema)
+	.validator(
+		ListingFormSchema.extend({
+			id: z.string().optional(),
+			redirect: z.boolean(),
+		}),
+	)
 	.handler(async ({ context, data }) => {
 		const { phoneNumbers, ...rest } = data;
-		const listingId = generateId(16);
-		await db.insert(resources).values({
-			...rest,
+		const listingId = data.id ?? generateId(16);
+
+		const resource: BaseResourceType = {
 			id: listingId,
 			providerId: context.provider.id,
-		});
-		await db.insert(resourceTranslations).values({
-			...rest,
+			city: rest.city,
+			postalCode: rest.postalCode,
+			province: rest.province,
+			country: rest.country,
+			lat: rest.lat,
+			lng: rest.lng,
+			street1: rest.street1,
+			street2: rest.street2 ?? null,
+			offering: rest.offering ?? null,
+			hours: rest.hours ?? null,
+			free: rest.free ?? null,
+			wheelchair: rest.wheelchair ?? null,
+			parking: rest.parking ?? null,
+			transit: rest.transit ?? null,
+			preparation: rest.preparation ?? null,
+			registration: rest.registration ?? null,
+		};
+
+		const translation: ResourceTranslationType = {
 			resourceId: listingId,
 			locale: context.locale,
-		});
-		if (phoneNumbers) {
+			description: rest.description ?? null,
+			email: rest.email ?? null,
+			website: rest.website ?? null,
+			fees: rest.fees ?? null,
+			eligibility: rest.eligibility ?? null,
+			parkingNotes: rest.parkingNotes ?? null,
+			transitNotes: rest.transitNotes ?? null,
+			preparationNotes: rest.preparationNotes ?? null,
+			registrationNotes: rest.registrationNotes ?? null,
+			wheelchairNotes: rest.wheelchairNotes ?? null,
+			capacityNotes: rest.capacityNotes ?? null,
+		};
+
+		await db
+			.insert(resources)
+			.values(resource)
+			.onConflictDoUpdate({
+				target: [resources.id],
+				set: resource,
+			});
+		await db
+			.insert(resourceTranslations)
+			.values(translation)
+			.onConflictDoUpdate({
+				target: [
+					resourceTranslations.resourceId,
+					resourceTranslations.locale,
+				],
+				set: translation,
+			});
+
+		if (phoneNumbers && phoneNumbers.length > 0) {
+			await db
+				.delete(resourcePhoneNumbers)
+				.where(eq(resourcePhoneNumbers.resourceId, listingId));
 			await db.insert(resourcePhoneNumbers).values(
 				phoneNumbers.map((phoneNumber) => ({
 					...phoneNumber,
@@ -132,13 +188,16 @@ export const createListingFn = createServerFn({
 				})),
 			);
 		}
-		throw redirect({
-			to: `/$locale/admin/listings`,
-			params: {
-				locale: context.locale,
-			},
-			search: {
-				editing: false,
-			},
-		});
+
+		if (data.redirect) {
+			throw redirect({
+				to: `/$locale/admin/listings`,
+				params: {
+					locale: context.locale,
+				},
+				search: {
+					editing: false,
+				},
+			});
+		}
 	});
