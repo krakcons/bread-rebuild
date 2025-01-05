@@ -180,11 +180,13 @@ export const ListingForm = ({
 	defaultValues,
 	onSubmit,
 	dietaryOptions,
+	blockNavigation = true,
 }: {
 	locale: string;
 	defaultValues?: ResourceType;
 	onSubmit: (data: z.infer<typeof ListingFormSchema>) => void;
 	dietaryOptions: DietaryOptionType[];
+	blockNavigation?: boolean;
 }) => {
 	const t = useTranslations(locale);
 	const form = useForm({
@@ -315,7 +317,9 @@ export const ListingForm = ({
 	return (
 		<>
 			<BlockNavigation
-				shouldBlockFn={() => isDirty && !(isSubmitting || isSubmitted)}
+				shouldBlockFn={() =>
+					blockNavigation && isDirty && !(isSubmitting || isSubmitted)
+				}
 			/>
 			<form
 				onSubmit={(e) => {

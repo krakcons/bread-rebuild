@@ -29,10 +29,6 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 		});
 	}
 	const result = await validateSessionToken(token);
-	if (result.session === null) {
-		console.log("deleting session token cookie");
-		// await deleteSessionTokenCookie();
-	}
 	return next({
 		context: result,
 	});

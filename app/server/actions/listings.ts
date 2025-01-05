@@ -1,7 +1,7 @@
 import { flattenLocalizedObject } from "@/lib/locale";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { generateId } from "../auth";
 import { db } from "../db";
@@ -231,4 +231,27 @@ export const mutateListingFn = createServerFn({
 				},
 			});
 		}
+	});
+
+export const deleteListingFn = createServerFn({
+	method: "POST",
+})
+	.middleware([localeMiddleware, providerMiddleware])
+	.validator(z.object({ id: z.string() }))
+	.handler(async ({ context, data }) => {
+		await db
+			.delete(resources)
+			.where(
+				and(
+					eq(resources.id, data.id),
+					eq(resources.providerId, context.provider.id),
+				),
+			);
+		throw redirect({
+			to: `/$locale/admin/listings`,
+			params: (prev) => ({
+				...prev,
+				locale: context.locale,
+			}),
+		});
 	});

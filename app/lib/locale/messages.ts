@@ -205,6 +205,13 @@ export const english = {
 				create: "Listing created",
 				update: "Listing updated",
 			},
+			delete: {
+				title: "Delete Listing",
+				description:
+					"Are you sure you want to delete this listing? This action cannot be undone and will remove it from search and each users saved listings.",
+				confirm: "Delete",
+				cancel: "Cancel",
+			},
 			dietaryOptions: {
 				title: "Dietary Options",
 				description: "Select the dietary options for your listing.",
@@ -494,6 +501,13 @@ export const french: typeof english = {
 			success: {
 				create: "Annonce créée",
 				update: "Annonce mise à jour",
+			},
+			delete: {
+				title: "Supprimer l'annonce",
+				description:
+					"Êtes-vous sûr de vouloir supprimer cette annonce?",
+				confirm: "Supprimer",
+				cancel: "Annuler",
 			},
 			dietaryOptions: {
 				title: "Options Diététiques",

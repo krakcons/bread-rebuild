@@ -31,6 +31,7 @@ function RouteComponent() {
 				<Link
 					to="/$locale/admin/listings/new"
 					from={Route.fullPath}
+					resetScroll={false}
 					params={(prev) => prev}
 					search={(prev) => prev}
 					className={buttonVariants()}
