@@ -44,11 +44,12 @@ export async function validateSessionToken(
 	const sessionId = encodeHexLowerCase(
 		sha256(new TextEncoder().encode(token)),
 	);
+	console.log("sessionId", sessionId);
 	const result = await db
 		.select({ user: users, session: sessions, provider: providers })
 		.from(sessions)
 		.innerJoin(users, eq(sessions.userId, users.id))
-		.innerJoin(providers, eq(providers.userId, users.id))
+		.leftJoin(providers, eq(providers.userId, users.id))
 		.where(eq(sessions.id, sessionId));
 	if (result.length < 1) {
 		return { session: null, user: null, providerId: null };
@@ -68,7 +69,7 @@ export async function validateSessionToken(
 			.where(eq(sessions.id, session.id));
 	}
 	const { passwordHash, ...safeUser } = user;
-	return { session, user: safeUser, providerId: provider.id };
+	return { session, user: safeUser, providerId: provider?.id ?? null };
 }
 
 export async function invalidateSession(sessionId: string): Promise<void> {
@@ -79,7 +80,7 @@ export type SessionValidationResult =
 	| {
 			session: Session;
 			user: Omit<User, "passwordHash">;
-			providerId: string;
+			providerId: string | null;
 	  }
 	| { session: null; user: null; providerId: null };
 

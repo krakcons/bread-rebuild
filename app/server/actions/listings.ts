@@ -165,47 +165,63 @@ export const mutateListingFn = createServerFn({
 			capacityNotes: rest.capacityNotes ?? null,
 		};
 
-		await db
-			.insert(resources)
-			.values(resource)
-			.onConflictDoUpdate({
-				target: [resources.id],
-				set: resource,
-			});
-		await db
-			.insert(resourceTranslations)
-			.values(translation)
-			.onConflictDoUpdate({
-				target: [
-					resourceTranslations.resourceId,
-					resourceTranslations.locale,
-				],
-				set: translation,
-			});
+		await db.transaction(async (tx) => {
+			const promises: Promise<unknown>[] = [
+				tx
+					.insert(resources)
+					.values(resource)
+					.onConflictDoUpdate({
+						target: [resources.id],
+						set: resource,
+					}),
+				tx
+					.insert(resourceTranslations)
+					.values(translation)
+					.onConflictDoUpdate({
+						target: [
+							resourceTranslations.resourceId,
+							resourceTranslations.locale,
+						],
+						set: translation,
+					}),
+			];
 
-		if (dietaryOptions && dietaryOptions.length > 0) {
-			await db
-				.delete(resourceToDietaryOptions)
-				.where(eq(resourceToDietaryOptions.resourceId, listingId));
-			await db.insert(resourceToDietaryOptions).values(
-				dietaryOptions.map((option) => ({
-					dietaryOptionId: option,
-					resourceId: listingId,
-				})),
-			);
-		}
+			if (dietaryOptions && dietaryOptions.length > 0) {
+				promises.push(
+					tx
+						.delete(resourceToDietaryOptions)
+						.where(
+							eq(resourceToDietaryOptions.resourceId, listingId),
+						),
+				);
+				promises.push(
+					tx.insert(resourceToDietaryOptions).values(
+						dietaryOptions.map((option) => ({
+							dietaryOptionId: option,
+							resourceId: listingId,
+						})),
+					),
+				);
+			}
 
-		if (phoneNumbers && phoneNumbers.length > 0) {
-			await db
-				.delete(resourcePhoneNumbers)
-				.where(eq(resourcePhoneNumbers.resourceId, listingId));
-			await db.insert(resourcePhoneNumbers).values(
-				phoneNumbers.map((phoneNumber) => ({
-					...phoneNumber,
-					resourceId: listingId,
-				})),
-			);
-		}
+			if (phoneNumbers && phoneNumbers.length > 0) {
+				promises.push(
+					tx
+						.delete(resourcePhoneNumbers)
+						.where(eq(resourcePhoneNumbers.resourceId, listingId)),
+				);
+				promises.push(
+					tx.insert(resourcePhoneNumbers).values(
+						phoneNumbers.map((phoneNumber) => ({
+							...phoneNumber,
+							resourceId: listingId,
+						})),
+					),
+				);
+			}
+
+			await Promise.all(promises);
+		});
 
 		if (data.redirect) {
 			throw redirect({

@@ -1,7 +1,4 @@
-import {
-	getUserNeedsOnboarding,
-	sendVerificationEmail,
-} from "@/server/auth/actions";
+import { sendVerificationEmail } from "@/server/auth/actions";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 const unauthenticatedPages = [
@@ -14,7 +11,7 @@ const unauthenticatedPages = [
 export const Route = createFileRoute("/$locale/admin")({
 	component: RouteComponent,
 	beforeLoad: async ({ params, location, context }) => {
-		const { user, session } = context;
+		const { user, session, providerId } = context;
 
 		if (
 			user === null &&
@@ -37,14 +34,16 @@ export const Route = createFileRoute("/$locale/admin")({
 			});
 		}
 
-		if (!location.pathname.includes("/onboarding")) {
-			const needsOnboarding = await getUserNeedsOnboarding();
-			if (needsOnboarding) {
-				throw redirect({
-					to: "/$locale/admin/onboarding",
-					params,
-				});
-			}
+		if (
+			!location.pathname.includes("/onboarding") &&
+			user &&
+			session &&
+			providerId === null
+		) {
+			throw redirect({
+				to: "/$locale/admin/onboarding",
+				params,
+			});
 		}
 
 		return { user, session };

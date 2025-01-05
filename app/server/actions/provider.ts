@@ -16,11 +16,7 @@ import {
 	LocalizedQueryType,
 	ProviderType,
 } from "../db/types";
-import {
-	localeMiddleware,
-	protectedMiddleware,
-	providerMiddleware,
-} from "../middleware";
+import { localeMiddleware, protectedMiddleware } from "../middleware";
 import { ContactSchema } from "../types";
 
 export const ProviderFormSchema = z.object({
@@ -60,86 +56,79 @@ export const getProviderFn = createServerFn({
 		return flattenLocalizedObject(provider, localeOpts);
 	});
 
-export const onboardProviderFn = createServerFn({
+export const mutateProviderFn = createServerFn({
 	method: "POST",
 })
 	.middleware([localeMiddleware, protectedMiddleware])
-	.validator(ProviderFormSchema)
+	.validator(
+		ProviderFormSchema.extend({
+			id: z.string().optional(),
+			redirect: z.boolean().optional(),
+		}).and(LocalizedInputSchema),
+	)
 	.handler(async ({ data, context }) => {
-		const { name, email, website, description } = data;
-		const providerId = generateId(16);
-		await db.insert(providers).values({
-			id: providerId,
-			userId: context.user.id,
-		});
-		await db.insert(providerTranslations).values({
-			providerId,
-			locale: context.locale,
-			name,
-			description,
-			website,
-			email,
-		});
-		throw redirect({
-			to: "/$locale/admin",
-			params: { locale: context.locale },
-		});
-	});
+		const { name, email, website, description, phoneNumbers } = data;
 
-export const editProviderFn = createServerFn({
-	method: "POST",
-})
-	.middleware([providerMiddleware])
-	.validator(ProviderFormSchema.and(LocalizedInputSchema))
-	.handler(async ({ data, context }) => {
-		const { name, email, website, description, phoneNumbers, locale } =
-			data;
-
+		const providerId = data.id ?? generateId(16);
 		await db.transaction(async (tx) => {
-			await tx
-				.update(providers)
-				.set({
-					updatedAt: new Date(),
-				})
-				.where(eq(providers.id, context.provider.id));
-			await tx
-				.insert(providerTranslations)
-				.values({
-					providerId: context.provider.id,
-					locale,
-					name,
-					email,
-					website,
-					description,
-				})
-				.onConflictDoUpdate({
-					target: [
-						providerTranslations.providerId,
-						providerTranslations.locale,
-					],
-					set: {
+			const promises: Promise<unknown>[] = [
+				tx
+					.insert(providers)
+					.values({
+						id: providerId,
+						userId: context.user.id,
+					})
+					.onConflictDoUpdate({
+						target: providers.id,
+						set: {
+							updatedAt: new Date(),
+						},
+					}),
+				tx
+					.insert(providerTranslations)
+					.values({
+						providerId,
+						locale: data.locale,
 						name,
 						email,
 						website,
 						description,
-					},
-				});
+					})
+					.onConflictDoUpdate({
+						target: [
+							providerTranslations.providerId,
+							providerTranslations.locale,
+						],
+						set: {
+							name,
+							email,
+							website,
+							description,
+						},
+					}),
+			];
 			if (phoneNumbers && phoneNumbers.length > 0) {
-				await tx
-					.delete(providerPhoneNumbers)
-					.where(
-						eq(
-							providerPhoneNumbers.providerId,
-							context.provider.id,
-						),
-					);
-				await tx.insert(providerPhoneNumbers).values(
-					phoneNumbers.map((phoneNumber) => ({
-						providerId: context.provider.id,
-						phone: phoneNumber.phone,
-						type: phoneNumber.type,
-					})) ?? [],
+				promises.push(
+					tx
+						.delete(providerPhoneNumbers)
+						.where(eq(providerPhoneNumbers.providerId, providerId)),
+				);
+				promises.push(
+					tx.insert(providerPhoneNumbers).values(
+						phoneNumbers.map((phoneNumber) => ({
+							providerId,
+							phone: phoneNumber.phone,
+							type: phoneNumber.type,
+						})) ?? [],
+					),
 				);
 			}
+			await Promise.all(promises);
 		});
+		if (data.redirect) {
+			throw redirect({
+				to: "/$locale/admin",
+				params: { locale: context.locale },
+			});
+		}
 	});

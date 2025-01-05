@@ -303,11 +303,20 @@ export const ListingForm = ({
 	);
 
 	const isDirty = useStore(form.store, (formState) => formState.isDirty);
-	console.log(isDirty);
+	const isSubmitting = useStore(
+		form.store,
+		(formState) => formState.isSubmitting,
+	);
+	const isSubmitted = useStore(
+		form.store,
+		(formState) => formState.isSubmitted,
+	);
 
 	return (
 		<>
-			<BlockNavigation shouldBlockFn={() => isDirty} />
+			<BlockNavigation
+				shouldBlockFn={() => isDirty && !(isSubmitting || isSubmitted)}
+			/>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();

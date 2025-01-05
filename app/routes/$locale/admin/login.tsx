@@ -32,6 +32,7 @@ function RouteComponent() {
 		onSubmit: async ({ value: data, formApi }) => {
 			try {
 				const result = await loginMutation({ data });
+				console.log("login result", result);
 				if (result.error) {
 					formApi.setErrorMap({
 						onServer: result.error,

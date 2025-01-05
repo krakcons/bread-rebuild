@@ -18,6 +18,7 @@ export const localeMiddleware = createMiddleware().server(async ({ next }) => {
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
 	const token = getCookie("session") ?? null;
+	console.log(token);
 	if (token === null) {
 		return next({
 			context: {
@@ -28,6 +29,10 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 		});
 	}
 	const result = await validateSessionToken(token);
+	if (result.session === null) {
+		console.log("deleting session token cookie");
+		// await deleteSessionTokenCookie();
+	}
 	return next({
 		context: result,
 	});

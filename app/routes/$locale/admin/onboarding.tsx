@@ -1,7 +1,7 @@
 import { ProviderForm } from "@/components/forms/Provider";
 import { buttonVariants } from "@/components/ui/Button";
-import { useTranslations } from "@/lib/locale";
-import { onboardProviderFn } from "@/server/actions/provider";
+import { Locale, useTranslations } from "@/lib/locale";
+import { mutateProviderFn } from "@/server/actions/provider";
 import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft } from "lucide-react";
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/$locale/admin/onboarding")({
 });
 
 function RouteComponent() {
-	const onboardProviderMutation = useServerFn(onboardProviderFn);
+	const createProvider = useServerFn(mutateProviderFn);
 	const { locale } = Route.useParams();
 	const t = useTranslations(locale);
 
@@ -38,7 +38,13 @@ function RouteComponent() {
 			<ProviderForm
 				locale={locale}
 				onSubmit={async (data) => {
-					await onboardProviderMutation({ data });
+					await createProvider({
+						data: {
+							...data,
+							locale: locale as Locale,
+							redirect: true,
+						},
+					});
 					await toast.success(t.form.provider.success.create);
 				}}
 			/>
