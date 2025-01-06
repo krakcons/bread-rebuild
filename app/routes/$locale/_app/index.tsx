@@ -1,3 +1,4 @@
+import { PendingComponent } from "@/components/PendingComponent";
 import { Resource } from "@/components/Resource";
 import { MapResource } from "@/components/Resource/Map";
 import { Button } from "@/components/ui/Button";
@@ -10,11 +11,13 @@ import {
 	DialogTrigger,
 } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
+import { useDebounce } from "@/lib/debounce";
 import { getTranslations, useTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { getDietaryOptionsFn } from "@/server/actions/dietary";
 import { searchFn, SearchParamsSchema } from "@/server/actions/resource";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import {
 	Accessibility,
@@ -42,11 +45,9 @@ export const Route = createFileRoute("/$locale/_app/")({
 	component: Home,
 	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
-	loaderDeps: ({ search }) => search,
-	loader: async ({ deps }) => {
-		const resources = await searchFn({ data: deps });
+	loader: async () => {
 		const dietaryOptions = await getDietaryOptionsFn();
-		return { resources, dietaryOptions };
+		return { dietaryOptions };
 	},
 	head: ({ params: { locale } }) => {
 		const translations = getTranslations(locale);
@@ -67,64 +68,31 @@ export const Route = createFileRoute("/$locale/_app/")({
 function Home() {
 	const navigate = Route.useNavigate();
 	const { locale } = Route.useParams();
+	const searchParams = Route.useSearch();
 	const {
 		tab = "list",
-		query = "",
 		free = false,
 		preparation = false,
 		parking = false,
 		transit = false,
 		wheelchair = false,
 		dietaryOptionIds = [],
-	} = Route.useSearch();
-	const { resources, dietaryOptions } = Route.useLoaderData();
+	} = searchParams;
+	const { dietaryOptions } = Route.useLoaderData();
 	const translations = useTranslations(locale);
 
 	const queryForm = useForm({
 		defaultValues: {
-			query,
-		},
-		asyncDebounceMs: 300,
-		validators: {
-			onChangeAsync: ({ value: { query } }) => {
-				navigate({
-					search: (prev) => ({
-						...prev,
-						query: query === "" ? undefined : query,
-					}),
-				});
-				if (query === "") {
-					return "Query cannot be empty";
-				}
-			},
+			query: searchParams.query,
 		},
 	});
+	const query = useStore(queryForm.store, (state) => state.values.query);
+	const debouncedQuery = useDebounce(query, 300);
 
-	const filtersForm = useForm({
-		defaultValues: {
-			free,
-			preparation,
-			parking,
-			transit,
-			wheelchair,
-			dietaryOptionIds,
-		},
-		onSubmit: ({ value }) => {
-			navigate({
-				search: (prev) => ({
-					...prev,
-					free: value.free || undefined,
-					preparation: value.preparation || undefined,
-					parking: value.parking || undefined,
-					transit: value.transit || undefined,
-					wheelchair: value.wheelchair || undefined,
-					dietaryOptionIds:
-						value.dietaryOptionIds.length > 0
-							? value.dietaryOptionIds
-							: undefined,
-				}),
-			});
-		},
+	const { data: resources, isLoading } = useQuery({
+		queryKey: ["search", { ...searchParams, query: debouncedQuery }],
+		queryFn: () =>
+			searchFn({ data: { ...searchParams, query: debouncedQuery } }),
 	});
 
 	return (
@@ -214,132 +182,110 @@ function Home() {
 									{translations.filters.description}
 								</DialogDescription>
 							</DialogHeader>
-							<form
-								onSubmit={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-								}}
-								className="flex flex-col gap-2"
-							>
-								{Object.keys(filterIcons).map((name) => (
-									<filtersForm.Field
-										key={name}
-										name={name as keyof typeof filterIcons}
-										listeners={{
-											onChange: () => {
-												filtersForm.handleSubmit();
-											},
-										}}
-										children={(field) => (
-											<Button
-												onClick={(e) => {
-													e.preventDefault();
-													e.stopPropagation();
-													field.handleChange(
-														!field.state.value,
-													);
-												}}
-												active={field.state.value}
-												className="justify-start"
-											>
-												{
-													filterIcons[
-														name as keyof typeof filterIcons
-													]
-												}
-												{translations.filters[name]}
-											</Button>
-										)}
-									/>
-								))}
-								<p className="mt-2 text-lg font-semibold leading-none tracking-tight">
-									{translations.dietaryOptions}
-								</p>
-								<div className="flex flex-wrap gap-2">
-									<filtersForm.Field
-										name={"dietaryOptionIds"}
-										listeners={{
-											onChange: () => {
-												filtersForm.handleSubmit();
-											},
-										}}
-										children={(field) => (
-											<>
-												{dietaryOptions.map(
-													(option) => (
-														<Button
-															key={option.id}
-															onClick={(e) => {
-																e.preventDefault();
-																e.stopPropagation();
-																field.handleChange(
-																	field.state.value.includes(
+							{Object.keys(filterIcons).map((name) => (
+								<Button
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										navigate({
+											search: (prev) => ({
+												...prev,
+												[name]: !prev[name],
+											}),
+										});
+									}}
+									active={searchParams[name]}
+									className="justify-start"
+								>
+									{
+										filterIcons[
+											name as keyof typeof filterIcons
+										]
+									}
+									{translations.filters[name]}
+								</Button>
+							))}
+							<p className="mt-2 text-lg font-semibold leading-none tracking-tight">
+								{translations.dietaryOptions}
+							</p>
+							<div className="flex flex-wrap gap-2">
+								{dietaryOptions.map((option) => (
+									<Button
+										key={option.id}
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											navigate({
+												search: (prev) => ({
+													...prev,
+													dietaryOptionIds:
+														prev.dietaryOptionIds?.includes(
+															option.id,
+														)
+															? prev.dietaryOptionIds?.filter(
+																	(id) =>
+																		id !==
 																		option.id,
-																	)
-																		? field.state.value.filter(
-																				(
-																					id,
-																				) =>
-																					id !==
-																					option.id,
-																			)
-																		: [
-																				...field
-																					.state
-																					.value,
-																				option.id,
-																			],
-																);
-															}}
-															active={field.state.value.includes(
-																option.id,
-															)}
-															className="flex-grow justify-start"
-														>
-															<Utensils
-																size={18}
-															/>
-															{option.name}
-														</Button>
-													),
-												)}
-											</>
+																)
+															: [
+																	...(prev.dietaryOptionIds ??
+																		[]),
+																	option.id,
+																],
+												}),
+											});
+										}}
+										active={searchParams.dietaryOptionIds?.includes(
+											option.id,
 										)}
-									/>
-								</div>
-							</form>
+										className="flex-grow justify-start"
+									>
+										<Utensils size={18} />
+										{option.name}
+									</Button>
+								))}
+							</div>
 						</DialogContent>
 					</Dialog>
 				</div>
 			</div>
-			{tab === "list" && (
+			{isLoading || query !== debouncedQuery ? (
+				<PendingComponent />
+			) : (
 				<>
-					<div className="flex flex-col gap-3">
-						{resources.map((resource) => (
-							<Resource key={resource.id} resource={resource} />
-						))}
-					</div>
+					{tab === "list" && (
+						<>
+							<div className="flex flex-col gap-3">
+								{resources?.map((resource) => (
+									<Resource
+										key={resource.id}
+										resource={resource}
+									/>
+								))}
+							</div>
+						</>
+					)}
+					{tab === "map" && (
+						<div className="flex-1 overflow-hidden rounded-lg border">
+							<Map
+								initialViewState={{
+									longitude: -114.0719,
+									latitude: 51.0447,
+									zoom: 9,
+								}}
+								style={{ width: "100%", height: "80vh" }}
+								mapStyle={STYLE}
+							>
+								{resources?.map((resource) => (
+									<MapResource
+										key={resource.id}
+										resource={resource}
+									/>
+								))}
+							</Map>
+						</div>
+					)}
 				</>
-			)}
-			{tab === "map" && (
-				<div className="flex-1 overflow-hidden rounded-lg border">
-					<Map
-						initialViewState={{
-							longitude: -114.0719,
-							latitude: 51.0447,
-							zoom: 9,
-						}}
-						style={{ width: "100%", height: "80vh" }}
-						mapStyle={STYLE}
-					>
-						{resources.map((resource) => (
-							<MapResource
-								key={resource.id}
-								resource={resource}
-							/>
-						))}
-					</Map>
-				</div>
 			)}
 		</div>
 	);
