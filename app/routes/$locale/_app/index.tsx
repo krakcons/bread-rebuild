@@ -112,18 +112,21 @@ function Home() {
 		},
 		onSubmit: ({ value }) => {
 			navigate({
-				search: (prev) => ({ ...prev, ...value }),
+				search: (prev) => ({
+					...prev,
+					free: value.free || undefined,
+					preparation: value.preparation || undefined,
+					parking: value.parking || undefined,
+					transit: value.transit || undefined,
+					wheelchair: value.wheelchair || undefined,
+					dietaryOptionIds:
+						value.dietaryOptionIds.length > 0
+							? value.dietaryOptionIds
+							: undefined,
+				}),
 			});
 		},
 	});
-
-	const filters: Record<string, boolean> = {
-		free,
-		preparation,
-		parking,
-		transit,
-		wheelchair,
-	};
 
 	return (
 		<div className="flex flex-col gap-3">
@@ -185,9 +188,12 @@ function Home() {
 							<Button
 								size="lg"
 								active={
-									Object.values(filters).some(
-										(filter) => filter,
-									) || dietaryOptionIds.length > 0
+									free ||
+									preparation ||
+									parking ||
+									transit ||
+									wheelchair ||
+									dietaryOptionIds.length > 0
 								}
 							>
 								<Filter size={18} />
@@ -206,7 +212,13 @@ function Home() {
 								</DialogDescription>
 							</DialogHeader>
 							<form className="flex flex-col gap-2">
-								{Object.entries(filters).map(([name]) => (
+								{[
+									"free",
+									"preparation",
+									"parking",
+									"transit",
+									"wheelchair",
+								].map((name) => (
 									<filtersForm.Field
 										key={name}
 										name={name}

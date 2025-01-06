@@ -166,35 +166,37 @@ export const mutateListingFn = createServerFn({
 		};
 
 		await db.transaction(async (tx) => {
-			const promises: Promise<unknown>[] = [
-				tx
-					.insert(resources)
-					.values(resource)
-					.onConflictDoUpdate({
-						target: [resources.id],
-						set: resource,
-					}),
-				tx
-					.insert(resourceTranslations)
-					.values(translation)
-					.onConflictDoUpdate({
-						target: [
-							resourceTranslations.resourceId,
-							resourceTranslations.locale,
-						],
-						set: translation,
-					}),
+			const promises: Promise<unknown>[][] = [
+				[
+					tx
+						.insert(resources)
+						.values(resource)
+						.onConflictDoUpdate({
+							target: [resources.id],
+							set: resource,
+						}),
+					tx
+						.insert(resourceTranslations)
+						.values(translation)
+						.onConflictDoUpdate({
+							target: [
+								resourceTranslations.resourceId,
+								resourceTranslations.locale,
+							],
+							set: translation,
+						}),
+				],
 			];
 
 			if (dietaryOptions && dietaryOptions.length > 0) {
-				promises.push(
+				promises[0].push(
 					tx
 						.delete(resourceToDietaryOptions)
 						.where(
 							eq(resourceToDietaryOptions.resourceId, listingId),
 						),
 				);
-				promises.push(
+				promises[1].push(
 					tx.insert(resourceToDietaryOptions).values(
 						dietaryOptions.map((option) => ({
 							dietaryOptionId: option,
@@ -205,12 +207,12 @@ export const mutateListingFn = createServerFn({
 			}
 
 			if (phoneNumbers && phoneNumbers.length > 0) {
-				promises.push(
+				promises[0].push(
 					tx
 						.delete(resourcePhoneNumbers)
 						.where(eq(resourcePhoneNumbers.resourceId, listingId)),
 				);
-				promises.push(
+				promises[1].push(
 					tx.insert(resourcePhoneNumbers).values(
 						phoneNumbers.map((phoneNumber) => ({
 							...phoneNumber,
@@ -220,7 +222,8 @@ export const mutateListingFn = createServerFn({
 				);
 			}
 
-			await Promise.all(promises);
+			await Promise.all(promises[0]);
+			await Promise.all(promises[1]);
 		});
 
 		if (data.redirect) {

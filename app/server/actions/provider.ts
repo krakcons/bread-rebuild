@@ -71,49 +71,51 @@ export const mutateProviderFn = createServerFn({
 
 		const providerId = data.id ?? generateId(16);
 		await db.transaction(async (tx) => {
-			const promises: Promise<unknown>[] = [
-				tx
-					.insert(providers)
-					.values({
-						id: providerId,
-						userId: context.user.id,
-					})
-					.onConflictDoUpdate({
-						target: providers.id,
-						set: {
-							updatedAt: new Date(),
-						},
-					}),
-				tx
-					.insert(providerTranslations)
-					.values({
-						providerId,
-						locale: data.locale,
-						name,
-						email,
-						website,
-						description,
-					})
-					.onConflictDoUpdate({
-						target: [
-							providerTranslations.providerId,
-							providerTranslations.locale,
-						],
-						set: {
+			const promises: Promise<unknown>[][] = [
+				[
+					tx
+						.insert(providers)
+						.values({
+							id: providerId,
+							userId: context.user.id,
+						})
+						.onConflictDoUpdate({
+							target: providers.id,
+							set: {
+								updatedAt: new Date(),
+							},
+						}),
+					tx
+						.insert(providerTranslations)
+						.values({
+							providerId,
+							locale: data.locale,
 							name,
 							email,
 							website,
 							description,
-						},
-					}),
+						})
+						.onConflictDoUpdate({
+							target: [
+								providerTranslations.providerId,
+								providerTranslations.locale,
+							],
+							set: {
+								name,
+								email,
+								website,
+								description,
+							},
+						}),
+				],
 			];
 			if (phoneNumbers && phoneNumbers.length > 0) {
-				promises.push(
+				promises[0].push(
 					tx
 						.delete(providerPhoneNumbers)
 						.where(eq(providerPhoneNumbers.providerId, providerId)),
 				);
-				promises.push(
+				promises[1].push(
 					tx.insert(providerPhoneNumbers).values(
 						phoneNumbers.map((phoneNumber) => ({
 							providerId,
@@ -123,7 +125,9 @@ export const mutateProviderFn = createServerFn({
 					),
 				);
 			}
-			await Promise.all(promises);
+
+			await Promise.all(promises[0]);
+			await Promise.all(promises[1]);
 		});
 		if (data.redirect) {
 			throw redirect({

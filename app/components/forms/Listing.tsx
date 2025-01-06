@@ -109,7 +109,7 @@ const HoursInput = ({
 	};
 
 	return (
-		<div className="flex w-full max-w-[500px] flex-col gap-4">
+		<div className="flex w-full max-w-[600px] flex-col gap-4">
 			{days.map((day) => (
 				<div key={day} className="flex justify-between gap-4">
 					<div className="flex items-center gap-2">
