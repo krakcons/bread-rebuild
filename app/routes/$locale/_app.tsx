@@ -89,7 +89,7 @@ function LayoutComponent() {
 							}}
 							size="icon"
 						>
-							{locale === "en" ? "FR" : "EN"}
+							{locale.toUpperCase()}
 						</Button>
 						<Popover>
 							<PopoverTrigger

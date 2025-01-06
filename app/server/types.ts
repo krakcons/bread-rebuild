@@ -2,7 +2,11 @@ import { z } from "zod";
 
 export const ContactSchema = z.object({
 	email: z.string().email().optional(),
-	website: z.string().url().optional(),
+	website: z
+		.string()
+		.url()
+		.startsWith("https://", { message: "Must start with https://" })
+		.optional(),
 	phoneNumbers: z
 		.object({
 			phone: z

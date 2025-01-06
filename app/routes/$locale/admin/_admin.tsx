@@ -1,4 +1,4 @@
-import { buttonVariants } from "@/components/ui/Button";
+import { Button, buttonVariants } from "@/components/ui/Button";
 import {
 	Select,
 	SelectContent,
@@ -34,7 +34,6 @@ import {
 	BarChart,
 	Building,
 	ExternalLink,
-	Languages,
 	LayoutDashboard,
 	UserMinus,
 	Utensils,
@@ -151,34 +150,6 @@ function RouteComponent() {
 					<SidebarGroup>
 						<SidebarGroupContent>
 							<SidebarGroupLabel>
-								{t.admin.nav.settings}
-							</SidebarGroupLabel>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
-									<button
-										onClick={() => {
-											navigate({
-												replace: true,
-												params: {
-													locale:
-														locale === "en"
-															? "fr"
-															: "en",
-												},
-												search: (prev) => ({ ...prev }),
-											});
-										}}
-									>
-										<Languages />
-										{t.admin.nav.localeToggle}
-									</button>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						</SidebarGroupContent>
-					</SidebarGroup>
-					<SidebarGroup>
-						<SidebarGroupContent>
-							<SidebarGroupLabel>
 								{t.admin.nav.account}
 							</SidebarGroupLabel>
 							<SidebarMenuItem>
@@ -228,6 +199,21 @@ function RouteComponent() {
 								))}
 							</SelectContent>
 						</Select>
+						<Button
+							onClick={() => {
+								navigate({
+									replace: true,
+									params: {
+										locale: locale === "en" ? "fr" : "en",
+									},
+									search: (prev) => ({ ...prev }),
+								});
+							}}
+							size="icon"
+							className="w-12"
+						>
+							{locale.toUpperCase()}
+						</Button>
 					</div>
 				</div>
 				<div className="py-4">
