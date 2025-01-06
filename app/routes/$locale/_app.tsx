@@ -54,10 +54,7 @@ function LayoutComponent() {
 						<Link
 							to="/$locale/saved"
 							params={{ locale }}
-							className={cn(
-								buttonVariants(),
-								"relative rounded-full",
-							)}
+							className={cn(buttonVariants(), "relative")}
 						>
 							<Bookmark size={20} />
 							<p className="hidden sm:block">
@@ -74,7 +71,6 @@ function LayoutComponent() {
 							onClick={() => {
 								window.print();
 							}}
-							className="rounded-full"
 						>
 							<Printer size={20} />
 							<p className="hidden sm:block">
@@ -92,18 +88,14 @@ function LayoutComponent() {
 								});
 							}}
 							size="icon"
-							className="rounded-full"
 						>
 							{locale === "en" ? "FR" : "EN"}
 						</Button>
 						<Popover>
 							<PopoverTrigger
-								className={cn(
-									buttonVariants({
-										size: "icon",
-									}),
-									"rounded-full",
-								)}
+								className={buttonVariants({
+									size: "icon",
+								})}
 							>
 								<Menu size={18} />
 							</PopoverTrigger>

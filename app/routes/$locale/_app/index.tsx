@@ -36,8 +36,7 @@ const filterIcons = {
 	parking: <Car size={18} />,
 	transit: <Bus size={18} />,
 	wheelchair: <Accessibility size={18} />,
-	dietaryOptionIds: <Utensils size={18} />,
-};
+} as const;
 
 export const Route = createFileRoute("/$locale/_app/")({
 	component: Home,
@@ -132,27 +131,25 @@ function Home() {
 		<div className="flex flex-col gap-3">
 			<div className="no-print flex flex-col gap-3">
 				<div className="flex-1">
-					<div className="relative">
-						<form>
-							<queryForm.Field
-								name="query"
-								children={(field) => (
-									<Input
-										type="text"
-										placeholder={translations.search}
-										value={field.state.value}
-										onChange={(e) =>
-											field.handleChange(e.target.value)
-										}
-										className="h-12 pl-10"
-									/>
-								)}
-							/>
-						</form>
+					<form className="relative">
+						<queryForm.Field
+							name="query"
+							children={(field) => (
+								<Input
+									type="text"
+									placeholder={translations.search}
+									value={field.state.value}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+									className="h-12 pl-10 !text-base"
+								/>
+							)}
+						/>
 						<div className="absolute left-3 top-0 flex h-full items-center pr-2">
 							<Search size={18} />
 						</div>
-					</div>
+					</form>
 				</div>
 				<div className="flex flex-wrap items-center gap-2">
 					<Button
@@ -212,16 +209,10 @@ function Home() {
 								</DialogDescription>
 							</DialogHeader>
 							<form className="flex flex-col gap-2">
-								{[
-									"free",
-									"preparation",
-									"parking",
-									"transit",
-									"wheelchair",
-								].map((name) => (
+								{Object.keys(filterIcons).map((name) => (
 									<filtersForm.Field
 										key={name}
-										name={name}
+										name={name as keyof typeof filterIcons}
 										listeners={{
 											onChange: () => {
 												filtersForm.handleSubmit();

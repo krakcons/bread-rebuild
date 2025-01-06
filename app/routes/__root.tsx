@@ -79,7 +79,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<Meta />
 			</head>
 			<body>
-				<main className="font-[Inter,sans-serif]">{children}</main>
+				<main className="w-screen font-[Inter,sans-serif]">
+					{children}
+				</main>
 				<ScrollRestoration getKey={(location) => location.pathname} />
 				<ReactQueryDevtools initialIsOpen={false} />
 				<Scripts />
