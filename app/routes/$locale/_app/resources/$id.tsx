@@ -15,6 +15,7 @@ import {
 } from "@tanstack/react-router";
 import {
 	Accessibility,
+	BadgeCheck,
 	Bus,
 	Car,
 	DollarSign,
@@ -178,7 +179,9 @@ function ResourceDetail() {
 						<h2 className="mb-4 text-xl font-bold">
 							{t.form.common.description}
 						</h2>
-						<p className="text-gray-600">{resource.description}</p>
+						<p className="text-muted-foreground">
+							{resource.description}
+						</p>
 					</div>
 				)}
 				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
@@ -246,6 +249,7 @@ function ResourceDetail() {
 						))}
 				</div>
 				{(resource.fees ||
+					resource.eligibility ||
 					resource.registrationNotes ||
 					resource.parkingNotes ||
 					resource.preparationNotes ||
@@ -256,6 +260,15 @@ function ResourceDetail() {
 						<h2 className="mb-4 text-xl font-bold">
 							{t.additionalInfo}
 						</h2>
+						{/* Eligibility */}
+						{resource.eligibility && (
+							<Contact
+								label={t.eligibility}
+								value={resource.eligibility}
+								icon={<BadgeCheck size={20} />}
+							/>
+						)}
+
 						{/* Fees */}
 						{resource.fees && (
 							<Contact
