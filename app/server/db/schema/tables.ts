@@ -24,7 +24,7 @@ const offeringEnum = text("offering", {
 });
 const phoneNumberTypeEnum = text("type", {
 	enum: ["phone", "fax", "toll-free", "tty"],
-});
+}).notNull();
 const dayEnum = text("day", {
 	enum: ["unassigned", "mon", "tue", "wed", "thu", "fri", "sat", "sun"],
 }).default("unassigned");

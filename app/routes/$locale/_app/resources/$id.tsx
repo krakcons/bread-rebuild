@@ -113,7 +113,6 @@ function ResourceDetail() {
 	}, [resource, t]);
 
 	const contactInfo = useMemo(() => {
-		console.log(resource);
 		return {
 			email: resource.email ?? resource.provider.email,
 			phoneNumbers:

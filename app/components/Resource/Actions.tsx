@@ -17,8 +17,9 @@ import {
 	updateSavedFn,
 } from "@/server/actions/saved";
 import { ResourceType, SavedResourceType } from "@/server/db/types";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useParams, useRouteContext } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/start";
 import { Bookmark, CalendarDays, Edit } from "lucide-react";
 import { Button, buttonVariants } from "../ui/Button";
 
@@ -36,6 +37,15 @@ export const ResourceActions = ({
 		queryKey: ["saved"],
 		queryFn: () => getSavedFn(),
 	});
+	const toggleSaved = useServerFn(toggleSavedFn);
+	const toggleSavedMutation = useMutation({
+		mutationFn: () => toggleSaved({ data: { resourceId: resource.id } }),
+		onSettled: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: ["saved"],
+			});
+		},
+	});
 
 	const { locale } = useParams({
 		from: "/$locale",
@@ -44,6 +54,9 @@ export const ResourceActions = ({
 	const savedResource = saved.find(
 		(savedResource) => savedResource.resourceId === resource.id,
 	);
+
+	let isSaved = savedResource !== undefined;
+	isSaved = toggleSavedMutation.isPending ? !isSaved : isSaved;
 
 	return (
 		<div
@@ -55,31 +68,22 @@ export const ResourceActions = ({
 		>
 			{children}
 			<Button
-				onClick={async () => {
-					await toggleSavedFn({ data: { resourceId: resource.id } });
-					await queryClient.invalidateQueries({
-						queryKey: ["saved"],
-					});
-				}}
+				onClick={() => toggleSavedMutation.mutate()}
 				className="no-print"
 			>
 				<Bookmark
 					size={18}
 					className={
-						savedResource
-							? "fill-primary text-primary"
-							: "fill-none"
+						isSaved ? "fill-primary text-primary" : "fill-none"
 					}
 				/>
-				{savedResource
-					? translations.saved.saved
-					: translations.saved.save}
+				{isSaved ? translations.saved.saved : translations.saved.save}
 			</Button>
-			{savedResource && (
+			{isSaved && (
 				<Select
 					value={
-						savedResource.day !== "unassigned"
-							? savedResource.day
+						savedResource?.day !== "unassigned"
+							? (savedResource?.day ?? undefined)
 							: undefined
 					}
 					onValueChange={async (value) => {

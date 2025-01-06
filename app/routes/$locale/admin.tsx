@@ -13,8 +13,6 @@ export const Route = createFileRoute("/$locale/admin")({
 	beforeLoad: async ({ params, location }) => {
 		const { user, session, providerId } = await getAuth();
 
-		console.log("My providerId", providerId);
-
 		if (
 			user === null &&
 			// Dont redirect to login if user is already on an unauthenticated page

@@ -115,7 +115,6 @@ export const verifyEmail = createServerFn({ method: "POST" })
 	.middleware([localeMiddleware, authMiddleware])
 	.validator(VerifyEmailSchema)
 	.handler(async ({ data, context }) => {
-		console.log("verifyEmail", context);
 		if (context.session === null) {
 			throw redirect({
 				to: "/$locale/admin/login",

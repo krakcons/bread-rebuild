@@ -44,7 +44,6 @@ export async function validateSessionToken(
 	const sessionId = encodeHexLowerCase(
 		sha256(new TextEncoder().encode(token)),
 	);
-	console.log("sessionId", sessionId);
 	const result = await db
 		.select({ user: users, session: sessions, provider: providers })
 		.from(sessions)

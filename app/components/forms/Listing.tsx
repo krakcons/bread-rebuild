@@ -119,7 +119,6 @@ const HoursInput = ({
 								false
 							}
 							onCheckedChange={(checked: boolean) => {
-								console.log("checked", hours);
 								handleChange(
 									hours.map((h) =>
 										h.day === day

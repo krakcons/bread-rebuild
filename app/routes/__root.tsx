@@ -11,6 +11,7 @@ import {
 	redirect,
 	ScrollRestoration,
 } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Meta, Scripts } from "@tanstack/start";
 import * as React from "react";
 
@@ -75,7 +76,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html>
+		<html className="overflow-x-hidden">
 			<head>
 				<Meta />
 			</head>
@@ -85,6 +86,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				</main>
 				<ScrollRestoration getKey={(location) => location.pathname} />
 				<ReactQueryDevtools initialIsOpen={false} />
+				<TanStackRouterDevtools />
 				<Scripts />
 			</body>
 		</html>

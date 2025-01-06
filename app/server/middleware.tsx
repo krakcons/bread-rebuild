@@ -18,7 +18,6 @@ export const localeMiddleware = createMiddleware().server(async ({ next }) => {
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
 	const token = getCookie("session") ?? null;
-	console.log(token);
 	if (token === null) {
 		return next({
 			context: {
