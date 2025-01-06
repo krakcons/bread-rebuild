@@ -203,16 +203,17 @@ function RouteComponent() {
 							onClick={() => {
 								navigate({
 									replace: true,
-									params: {
+									params: (prev) => ({
+										...prev,
 										locale: locale === "en" ? "fr" : "en",
-									},
+									}),
 									search: (prev) => ({ ...prev }),
 								});
 							}}
 							size="icon"
 							className="w-12"
 						>
-							{locale.toUpperCase()}
+							{locale === "en" ? "FR" : "EN"}
 						</Button>
 					</div>
 				</div>

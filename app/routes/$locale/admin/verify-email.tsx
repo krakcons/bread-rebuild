@@ -107,7 +107,7 @@ function RouteComponent() {
 				}}
 				size="icon"
 			>
-				{locale.toUpperCase()}
+				{locale === "en" ? "FR" : "EN"}
 			</Button>
 			<Button
 				variant="link"

@@ -131,7 +131,13 @@ function Home() {
 		<div className="flex flex-col gap-3">
 			<div className="no-print flex flex-col gap-3">
 				<div className="flex-1">
-					<form className="relative">
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+						}}
+						className="relative"
+					>
 						<queryForm.Field
 							name="query"
 							children={(field) => (
@@ -208,7 +214,13 @@ function Home() {
 									{translations.filters.description}
 								</DialogDescription>
 							</DialogHeader>
-							<form className="flex flex-col gap-2">
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+								}}
+								className="flex flex-col gap-2"
+							>
 								{Object.keys(filterIcons).map((name) => (
 									<filtersForm.Field
 										key={name}

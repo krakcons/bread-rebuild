@@ -81,15 +81,16 @@ function LayoutComponent() {
 							onClick={() => {
 								navigate({
 									replace: true,
-									params: {
+									params: (prev) => ({
+										...prev,
 										locale: locale === "en" ? "fr" : "en",
-									},
+									}),
 									search: (prev) => ({ ...prev }),
 								});
 							}}
 							size="icon"
 						>
-							{locale.toUpperCase()}
+							{locale === "en" ? "FR" : "EN"}
 						</Button>
 						<Popover>
 							<PopoverTrigger
