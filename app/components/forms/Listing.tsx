@@ -353,16 +353,16 @@ export const ListingForm = ({
 										<SelectValue placeholder="" />
 									</SelectTrigger>
 									<SelectContent>
-										{Object.keys(
-											t.form.listing.offering.types,
-										).map((key) => (
-											<SelectItem value={key} key={key}>
-												{
-													t.form.listing.offering
-														.types[key]
-												}
-											</SelectItem>
-										))}
+										{Object.keys(t.offeringTypes).map(
+											(key) => (
+												<SelectItem
+													value={key}
+													key={key}
+												>
+													{t.offeringTypes[key]}
+												</SelectItem>
+											),
+										)}
 									</SelectContent>
 								</Select>
 							</Label>

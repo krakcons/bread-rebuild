@@ -107,7 +107,7 @@ function ResourceDetail() {
 	});
 
 	const tags = useMemo(() => {
-		let tags: string[] = [];
+		let tags: string[] = [t.offeringTypes[resource.offering]];
 		if (resource.free) {
 			tags.push(t.free);
 		}

@@ -185,6 +185,15 @@ export const english = {
 			},
 		},
 	},
+	offeringTypes: {
+		meal: "Meals",
+		groceries: "Groceries",
+		delivery: "Delivery",
+		hamper: "Hampers",
+		pantry: "Pantry",
+		"drop-in": "Drop-in",
+		market: "Market",
+	},
 	form: {
 		common: {
 			submit: "Submit",
@@ -245,15 +254,6 @@ export const english = {
 			},
 			offering: {
 				title: "Offering",
-				types: {
-					meal: "Meals",
-					groceries: "Groceries",
-					delivery: "Delivery",
-					hamper: "Hampers",
-					pantry: "Pantry",
-					"drop-in": "Drop-in",
-					market: "Market",
-				},
 			},
 			location: {
 				title: "Location",
@@ -509,6 +509,15 @@ export const french: typeof english = {
 			},
 		},
 	},
+	offeringTypes: {
+		meal: "Repas",
+		groceries: "Légumes",
+		delivery: "Livraison",
+		hamper: "Hampers",
+		pantry: "Pantry",
+		"drop-in": "Drop-in",
+		market: "Marché",
+	},
 	form: {
 		common: {
 			submit: "Soumettre",
@@ -534,6 +543,7 @@ export const french: typeof english = {
 		resetPassword: {
 			code: "Code",
 		},
+
 		provider: {
 			name: "Nom",
 			contact: {
@@ -570,15 +580,6 @@ export const french: typeof english = {
 			},
 			offering: {
 				title: "Offre",
-				types: {
-					meal: "Repas",
-					groceries: "Légumes",
-					delivery: "Livraison",
-					hamper: "Hampers",
-					pantry: "Pantry",
-					"drop-in": "Drop-in",
-					market: "Marché",
-				},
 			},
 			location: {
 				title: "Localisation",

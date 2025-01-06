@@ -38,7 +38,7 @@ export const ListingFormSchema = z.object({
 	registration: z.boolean().optional(),
 	free: z.boolean().optional(),
 	wheelchair: z.boolean().optional(),
-	offering: OfferingEnum.optional(),
+	offering: OfferingEnum,
 	hours: z.string().optional(),
 
 	// Address
@@ -138,7 +138,7 @@ export const mutateListingFn = createServerFn({
 			lng: rest.lng,
 			street1: rest.street1,
 			street2: rest.street2 ?? null,
-			offering: rest.offering ?? null,
+			offering: rest.offering ?? "meal",
 			hours: rest.hours ?? null,
 			free: rest.free ?? null,
 			wheelchair: rest.wheelchair ?? null,

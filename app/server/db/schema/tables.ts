@@ -21,13 +21,19 @@ const offeringEnum = text("offering", {
 		"drop-in",
 		"market",
 	],
-});
+})
+	.default("meal")
+	.notNull();
 const phoneNumberTypeEnum = text("type", {
 	enum: ["phone", "fax", "toll-free", "tty"],
-}).notNull();
+})
+	.default("phone")
+	.notNull();
 const dayEnum = text("day", {
 	enum: ["unassigned", "mon", "tue", "wed", "thu", "fri", "sat", "sun"],
-}).default("unassigned");
+})
+	.default("unassigned")
+	.notNull();
 
 // Providers
 export const providers = pgTable("providers", {
