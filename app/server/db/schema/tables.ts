@@ -139,7 +139,8 @@ export const resourceTranslations = pgTable(
 			}),
 		locale: localeEnum,
 
-		// Description
+		// Info
+		name: text("name"),
 		description: text("description"),
 
 		// Contact

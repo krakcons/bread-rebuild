@@ -1,5 +1,6 @@
 import { formatAddress } from "@/lib/address";
 import { useTranslations } from "@/lib/locale";
+import { formatPhoneNumber } from "@/lib/phone";
 import { ResourceType } from "@/server/db/types";
 import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
@@ -73,7 +74,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 								className="flex items-center gap-2 text-muted-foreground"
 							>
 								<PhoneCall size={18} />
-								<p>{phone.phone}</p>
+								<p>{formatPhoneNumber(phone.phone)}</p>
 							</div>
 						))}
 						{/* Fees section */}

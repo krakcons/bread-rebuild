@@ -3,6 +3,7 @@ export const english = {
 	description:
 		"Bread is a directory of food resources in the greater Calgary area.",
 	common: {
+		name: "Name",
 		optional: "Optional",
 		back: "Back",
 		to: "to",
@@ -237,6 +238,7 @@ export const english = {
 			addPhoneNumber: "Add Phone Number",
 		},
 		listing: {
+			fallback: "Fallback:",
 			success: {
 				create: "Listing created",
 				update: "Listing updated",
@@ -326,6 +328,7 @@ export const french: typeof english = {
 	description:
 		"Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
 	common: {
+		name: "Nom",
 		optional: "Optionnel",
 		back: "Retour",
 		to: "à",
@@ -562,6 +565,7 @@ export const french: typeof english = {
 			addPhoneNumber: "Ajouter un téléphone",
 		},
 		listing: {
+			fallback: "De repli :",
 			success: {
 				create: "Annonce créée",
 				update: "Annonce mise à jour",

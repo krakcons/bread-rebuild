@@ -224,6 +224,7 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 					resourceId: resource.id,
 					email: contactInfo.email,
 					website: contactInfo.website,
+					name: "",
 					fees: drupalData.attributes.field_cost_notes,
 					locale: "en",
 					registrationNotes:
@@ -247,6 +248,7 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 					resourceId: resource.id,
 					email: contactInfo.email,
 					website: contactInfo.website,
+					name: "",
 					fees: drupalData.attributes.field_cost_notes,
 					locale: "fr",
 					registrationNotes:

@@ -51,7 +51,8 @@ export const ListingFormSchema = z.object({
 	lat: z.number(),
 	lng: z.number(),
 
-	// Description
+	// Info
+	name: z.string().optional(),
 	description: z.string().optional(),
 
 	// Additional details (CORDS)
@@ -153,6 +154,7 @@ export const mutateListingFn = createServerFn({
 			resourceId: listingId,
 			locale: rest.locale ?? context.locale,
 			description: rest.description ?? null,
+			name: rest.name ?? null,
 			email: rest.email ?? null,
 			website: rest.website ?? null,
 			fees: rest.fees ?? null,

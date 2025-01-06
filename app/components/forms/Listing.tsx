@@ -369,6 +369,33 @@ export const ListingForm = ({
 						)}
 					/>
 					<form.Field
+						name="name"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.common.name}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
+								</span>
+								<Input
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+								{defaultValues?.provider.name && (
+									<p className="text-xs text-muted-foreground">
+										{`${t.form.listing.fallback} ${defaultValues?.provider.name}`}
+									</p>
+								)}
+								<FieldError state={field.state} />
+							</Label>
+						)}
+					/>
+					<form.Field
 						name="description"
 						children={(field) => (
 							<Label>
@@ -726,6 +753,11 @@ export const ListingForm = ({
 										field.handleChange(e.target.value)
 									}
 								/>
+								{defaultValues?.provider.email && (
+									<p className="text-xs text-muted-foreground">
+										{`${t.form.listing.fallback} ${defaultValues?.provider.email}`}
+									</p>
+								)}
 								<FieldError state={field.state} />
 							</Label>
 						)}
@@ -748,6 +780,11 @@ export const ListingForm = ({
 										field.handleChange(e.target.value)
 									}
 								/>
+								{defaultValues?.provider.website && (
+									<p className="text-xs text-muted-foreground">
+										{`${t.form.listing.fallback} ${defaultValues?.provider.website}`}
+									</p>
+								)}
 								<FieldError state={field.state} />
 							</Label>
 						)}
@@ -861,6 +898,14 @@ export const ListingForm = ({
 								>
 									{t.form.contact.addPhoneNumber}
 								</Button>
+								{defaultValues?.provider.phoneNumbers &&
+									defaultValues?.provider.phoneNumbers
+										.length > 0 && (
+										<p className="text-xs text-muted-foreground">
+											{`${t.form.listing.fallback} ${defaultValues?.provider.phoneNumbers.map((phone) => formatPhoneNumber(phone.phone)).join(", ")}`}
+										</p>
+									)}
+								<FieldError state={field.state} />
 							</Label>
 						)}
 					/>
