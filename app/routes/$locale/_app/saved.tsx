@@ -58,6 +58,7 @@ export const Route = createFileRoute("/$locale/_app/saved")({
 				ids: saved.map((savedResource) => savedResource.resourceId),
 			},
 		});
+		console.log("My resources", resources);
 		return {
 			resources,
 		};

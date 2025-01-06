@@ -203,11 +203,15 @@ function ResourceDetail() {
 								key={phone.phone}
 								label={t.phoneTypes[phone.type]}
 								value={
-									phone.phone.slice(0, 3) +
+									phone.phone
+										.replaceAll(" ", "")
+										.slice(0, 3) +
 									"-" +
-									phone.phone.slice(3, 6) +
+									phone.phone
+										.replaceAll(" ", "")
+										.slice(3, 6) +
 									"-" +
-									phone.phone.slice(6, 10)
+									phone.phone.replaceAll(" ", "").slice(6, 10)
 								}
 								icon={
 									<PhoneCall

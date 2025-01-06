@@ -21,6 +21,7 @@ import {
 	ResourceTranslationType,
 	ResourceType,
 } from "@/server/db/types";
+import { and, eq } from "drizzle-orm";
 
 type LocalizedFieldType = {
 	en: string;
@@ -378,11 +379,19 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 
 			// Insert phone numbers
 			if (phone) {
-				await db.insert(providerPhoneNumbers).values({
-					providerId,
-					phone,
-					type: "phone",
+				const existing = await db.query.providerPhoneNumbers.findFirst({
+					where: and(
+						eq(providerPhoneNumbers.providerId, providerId),
+						eq(providerPhoneNumbers.phone, phone),
+					),
 				});
+				if (!existing) {
+					await db.insert(providerPhoneNumbers).values({
+						providerId,
+						phone,
+						type: "phone",
+					});
+				}
 			}
 
 			// Insert dietary restrictions
