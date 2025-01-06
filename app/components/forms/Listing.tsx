@@ -229,6 +229,7 @@ export const ListingForm = ({
 			onSubmit: ListingFormSchema,
 		},
 		onSubmit: async ({ value: data, formApi }) => {
+			console.log(data);
 			try {
 				await onSubmit(data);
 			} catch (error) {
@@ -584,7 +585,11 @@ export const ListingForm = ({
 										)}
 									/>
 									<form.Field
-										name={`${option}Notes`}
+										name={
+											option === "free"
+												? "fees"
+												: `${option}Notes`
+										}
 										children={(field) => (
 											<Label>
 												<span className="flex items-center gap-1">
