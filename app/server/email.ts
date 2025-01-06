@@ -14,7 +14,7 @@ export async function sendEmail(
 ): Promise<void> {
 	const html = await render(content);
 	const command = new SendEmailCommand({
-		FromEmailAddress: `noreply@${Resource.Email.sender}`,
+		FromEmailAddress: `Bread <noreply@${Resource.Email.sender}>`,
 		Destination: {
 			ToAddresses: to,
 		},
