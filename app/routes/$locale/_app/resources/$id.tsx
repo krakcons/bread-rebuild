@@ -5,6 +5,7 @@ import { formatAddress } from "@/lib/address";
 import { formatTime, useHours } from "@/lib/hours";
 import { useTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
+import { formatPhoneNumber } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 import { getResourceFn } from "@/server/actions/resource";
 import {
@@ -201,17 +202,7 @@ function ResourceDetail() {
 							<Contact
 								key={phone.phone}
 								label={t.phoneTypes[phone.type]}
-								value={
-									phone.phone
-										.replaceAll(" ", "")
-										.slice(0, 3) +
-									"-" +
-									phone.phone
-										.replaceAll(" ", "")
-										.slice(3, 6) +
-									"-" +
-									phone.phone.replaceAll(" ", "").slice(6, 10)
-								}
+								value={formatPhoneNumber(phone.phone)}
 								icon={
 									<PhoneCall
 										size={20}

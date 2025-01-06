@@ -33,6 +33,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 import { formatAddress } from "@/lib/address";
+import { formatPhoneNumber } from "@/lib/phone";
 import { Checkbox } from "../ui/Checkbox";
 import { BlockNavigation } from "./BlockNavigation";
 
@@ -192,7 +193,11 @@ export const ListingForm = ({
 			description: defaultValues?.description ?? undefined,
 			email: defaultValues?.email ?? undefined,
 			website: defaultValues?.website ?? undefined,
-			phoneNumbers: defaultValues?.phoneNumbers ?? undefined,
+			phoneNumbers:
+				defaultValues?.phoneNumbers.map((phone) => ({
+					...phone,
+					phone: formatPhoneNumber(phone.phone),
+				})) ?? undefined,
 			offering: defaultValues?.offering ?? "meal",
 			eligibility: defaultValues?.eligibility ?? undefined,
 			free: defaultValues?.free ?? false,

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/TextArea";
 import { useTranslations } from "@/lib/locale";
+import { formatPhoneNumber } from "@/lib/phone";
 import { ProviderFormSchema } from "@/server/actions/provider";
 import { ProviderPhoneNumberType, ProviderType } from "@/server/db/types";
 import { useForm, useStore } from "@tanstack/react-form";
@@ -35,7 +36,11 @@ export const ProviderForm = ({
 			email: defaultValues?.email ?? undefined,
 			website: defaultValues?.website ?? undefined,
 			description: defaultValues?.description ?? undefined,
-			phoneNumbers: defaultValues?.phoneNumbers ?? [],
+			phoneNumbers:
+				defaultValues?.phoneNumbers.map((phone) => ({
+					...phone,
+					phone: formatPhoneNumber(phone.phone),
+				})) ?? [],
 		},
 		validators: {
 			onSubmit: ProviderFormSchema,

@@ -16,7 +16,7 @@ export const ContactSchema = z.object({
 				// Validate Canadian phone number
 				.refine(
 					(phone) => /^1?\d{10}$/.test(phone),
-					"Invalid Canadian phone number. Must be 10 digits, optionally starting with 1",
+					"Invalid Canadian phone number. Must be 10 digits, optionally starting with a +1",
 				),
 			type: z.enum(["phone", "fax", "toll-free", "tty"]),
 		})
