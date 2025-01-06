@@ -1,5 +1,5 @@
 import { ProviderForm } from "@/components/forms/Provider";
-import { buttonVariants } from "@/components/ui/Button";
+import { Button, buttonVariants } from "@/components/ui/Button";
 import { Locale, useTranslations } from "@/lib/locale";
 import { mutateProviderFn } from "@/server/actions/provider";
 import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
@@ -16,9 +16,24 @@ function RouteComponent() {
 	const createProvider = useServerFn(mutateProviderFn);
 	const { locale } = Route.useParams();
 	const t = useTranslations(locale);
+	const navigate = Route.useNavigate();
 
 	return (
 		<div className="mx-auto flex h-screen w-screen max-w-[600px] flex-col justify-center gap-4 p-4">
+			<Button
+				onClick={() => {
+					navigate({
+						replace: true,
+						params: {
+							locale: locale === "en" ? "fr" : "en",
+						},
+						search: (prev) => ({ ...prev }),
+					});
+				}}
+				size="icon"
+			>
+				{locale === "en" ? "FR" : "EN"}
+			</Button>
 			<Link
 				to="/$locale"
 				params={{ locale }}
