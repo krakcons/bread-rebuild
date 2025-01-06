@@ -101,7 +101,7 @@ function SavedPage() {
 					<h1 className="text-3xl font-semibold">
 						{translations.saved.title}
 					</h1>
-					<p className="text-gray-500">
+					<p className="text-muted-foreground">
 						{translations.saved.description}
 					</p>
 				</div>

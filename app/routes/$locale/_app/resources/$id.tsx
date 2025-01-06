@@ -64,9 +64,11 @@ const Contact = ({
 	label,
 	value,
 	icon,
+	link,
 }: {
 	label: string;
 	value: string | null;
+	link?: string;
 	icon: React.ReactNode;
 }) => {
 	return (
@@ -76,7 +78,17 @@ const Contact = ({
 			</div>
 			<div>
 				<p className="mb-1 font-medium">{label}</p>
-				<p className="text-gray-600">{value || "-"}</p>
+				{link ? (
+					<a
+						href={link}
+						target="_blank"
+						className="text-muted-foreground hover:underline"
+					>
+						{value || "-"}
+					</a>
+				) : (
+					<p className="text-muted-foreground">{value || "-"}</p>
+				)}
 			</div>
 		</div>
 	);
@@ -175,7 +187,15 @@ function ResourceDetail() {
 					<Contact
 						label={t.address}
 						value={formatAddress(resource)}
-						icon={<MapPin size={20} className="text-gray-500" />}
+						link={`https://maps.google.com/?q=${formatAddress(
+							resource,
+						)}`}
+						icon={
+							<MapPin
+								size={20}
+								className="text-muted-foreground"
+							/>
+						}
 					/>
 
 					{/* Email */}
@@ -183,7 +203,13 @@ function ResourceDetail() {
 						<Contact
 							label={t.email}
 							value={contactInfo.email}
-							icon={<Mail size={20} className="text-gray-500" />}
+							link={`mailto:${contactInfo.email}`}
+							icon={
+								<Mail
+									size={20}
+									className="text-muted-foreground"
+								/>
+							}
 						/>
 					)}
 
@@ -192,7 +218,13 @@ function ResourceDetail() {
 						<Contact
 							label={t.website}
 							value={contactInfo.website}
-							icon={<Globe size={20} className="text-gray-500" />}
+							link={contactInfo.website}
+							icon={
+								<Globe
+									size={20}
+									className="text-muted-foreground"
+								/>
+							}
 						/>
 					)}
 
@@ -203,10 +235,11 @@ function ResourceDetail() {
 								key={phone.phone}
 								label={t.phoneTypes[phone.type]}
 								value={formatPhoneNumber(phone.phone)}
+								link={`tel:${phone.phone}`}
 								icon={
 									<PhoneCall
 										size={20}
-										className="text-gray-500"
+										className="text-muted-foreground"
 									/>
 								}
 							/>
@@ -231,7 +264,7 @@ function ResourceDetail() {
 								icon={
 									<DollarSign
 										size={20}
-										className="text-gray-500"
+										className="text-muted-foreground"
 									/>
 								}
 							/>
@@ -248,7 +281,7 @@ function ResourceDetail() {
 								icon={
 									<Utensils
 										size={20}
-										className="text-gray-500"
+										className="text-muted-foreground"
 									/>
 								}
 							/>
@@ -261,7 +294,7 @@ function ResourceDetail() {
 								icon={
 									<Accessibility
 										size={20}
-										className="text-gray-500"
+										className="text-muted-foreground"
 									/>
 								}
 							/>
@@ -272,7 +305,10 @@ function ResourceDetail() {
 								label={t.applicationProcess}
 								value={resource.registrationNotes}
 								icon={
-									<File size={20} className="text-gray-500" />
+									<File
+										size={20}
+										className="text-muted-foreground"
+									/>
 								}
 							/>
 						)}
@@ -282,7 +318,10 @@ function ResourceDetail() {
 								label={t.parking}
 								value={resource.parkingNotes}
 								icon={
-									<Car size={20} className="text-gray-500" />
+									<Car
+										size={20}
+										className="text-muted-foreground"
+									/>
 								}
 							/>
 						)}
@@ -294,7 +333,7 @@ function ResourceDetail() {
 								icon={
 									<UtensilsCrossed
 										size={20}
-										className="text-gray-500"
+										className="text-muted-foreground"
 									/>
 								}
 							/>
@@ -305,7 +344,10 @@ function ResourceDetail() {
 								label={t.transit}
 								value={resource.transitNotes}
 								icon={
-									<Bus size={20} className="text-gray-500" />
+									<Bus
+										size={20}
+										className="text-muted-foreground"
+									/>
 								}
 							/>
 						)}
