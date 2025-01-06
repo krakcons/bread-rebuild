@@ -9,10 +9,12 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/Dialog";
+import { Input } from "@/components/ui/Input";
 import { getTranslations, useTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { getDietaryOptionsFn } from "@/server/actions/dietary";
 import { searchFn, SearchParamsSchema } from "@/server/actions/resource";
+import { useForm } from "@tanstack/react-form";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import {
 	Accessibility,
@@ -79,6 +81,12 @@ function Home() {
 	const { resources, dietaryOptions } = Route.useLoaderData();
 	const translations = useTranslations(locale);
 
+	const form = useForm({
+		defaultValues: {
+			query,
+		},
+	});
+
 	const filters: Record<string, boolean> = {
 		free,
 		preparation,
@@ -92,23 +100,45 @@ function Home() {
 			<div className="no-print flex flex-col gap-3">
 				<div className="flex-1">
 					<div className="relative">
-						<input
-							type="text"
-							placeholder={translations.search}
-							className="h-12 w-full rounded-md border py-2 pl-10 pr-4 transition-colors focus:border-primary focus:outline-none"
-							value={query}
-							onChange={(e) =>
-								navigate({
-									search: (prev) => ({
-										...prev,
-										query:
-											e.target.value === ""
-												? undefined
-												: e.target.value,
-									}),
-								})
-							}
-						/>
+						<form
+							onSubmit={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								form.handleSubmit();
+							}}
+						>
+							<form.Field
+								name="query"
+								asyncDebounceMs={300}
+								validators={{
+									onChangeAsync: ({ value }) => {
+										navigate({
+											search: (prev) => ({
+												...prev,
+												query:
+													value === ""
+														? undefined
+														: value,
+											}),
+										});
+										if (value === "") {
+											return "Query cannot be empty";
+										}
+									},
+								}}
+								children={(field) => (
+									<Input
+										type="text"
+										placeholder={translations.search}
+										value={field.state.value}
+										onChange={(e) =>
+											field.handleChange(e.target.value)
+										}
+										className="h-12 pl-10"
+									/>
+								)}
+							/>
+						</form>
 						<div className="absolute left-3 top-0 flex h-full items-center pr-2">
 							<Search size={18} />
 						</div>
