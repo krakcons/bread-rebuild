@@ -81,9 +81,39 @@ function Home() {
 	const { resources, dietaryOptions } = Route.useLoaderData();
 	const translations = useTranslations(locale);
 
-	const form = useForm({
+	const queryForm = useForm({
 		defaultValues: {
 			query,
+		},
+		asyncDebounceMs: 300,
+		validators: {
+			onChangeAsync: ({ value: { query } }) => {
+				navigate({
+					search: (prev) => ({
+						...prev,
+						query: query === "" ? undefined : query,
+					}),
+				});
+				if (query === "") {
+					return "Query cannot be empty";
+				}
+			},
+		},
+	});
+
+	const filtersForm = useForm({
+		defaultValues: {
+			free,
+			preparation,
+			parking,
+			transit,
+			wheelchair,
+			dietaryOptionIds,
+		},
+		onSubmit: ({ value }) => {
+			navigate({
+				search: (prev) => ({ ...prev, ...value }),
+			});
 		},
 	});
 
@@ -100,32 +130,9 @@ function Home() {
 			<div className="no-print flex flex-col gap-3">
 				<div className="flex-1">
 					<div className="relative">
-						<form
-							onSubmit={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								form.handleSubmit();
-							}}
-						>
-							<form.Field
+						<form>
+							<queryForm.Field
 								name="query"
-								asyncDebounceMs={300}
-								validators={{
-									onChangeAsync: ({ value }) => {
-										navigate({
-											search: (prev) => ({
-												...prev,
-												query:
-													value === ""
-														? undefined
-														: value,
-											}),
-										});
-										if (value === "") {
-											return "Query cannot be empty";
-										}
-									},
-								}}
 								children={(field) => (
 									<Input
 										type="text"
@@ -148,7 +155,10 @@ function Home() {
 					<Button
 						onClick={() =>
 							navigate({
-								search: (prev) => ({ ...prev, tab: undefined }),
+								search: (prev) => ({
+									...prev,
+									tab: undefined,
+								}),
 							})
 						}
 						size="lg"
@@ -195,65 +205,94 @@ function Home() {
 									{translations.filters.description}
 								</DialogDescription>
 							</DialogHeader>
-							{Object.entries(filters).map(([name, value]) => (
-								<Button
-									key={name}
-									onClick={() =>
-										navigate({
-											search: (prev) => ({
-												...prev,
-												[name]: !value || undefined,
-											}),
-										})
-									}
-									active={value}
-									className="justify-start"
-								>
-									{
-										filterIcons[
-											name as keyof typeof filterIcons
-										]
-									}
-									{translations.filters[name]}
-								</Button>
-							))}
-							<p className="mt-2 text-lg font-semibold leading-none tracking-tight">
-								{translations.dietaryOptions}
-							</p>
-							<div className="flex flex-wrap gap-2">
-								{dietaryOptions.map((option) => (
-									<Button
-										key={option.id}
-										onClick={() =>
-											navigate({
-												search: (prev) => ({
-													...prev,
-													dietaryOptionIds:
-														dietaryOptionIds.includes(
-															option.id,
-														)
-															? dietaryOptionIds.filter(
-																	(o) =>
-																		o !==
-																		option.id,
-																)
-															: [
-																	...dietaryOptionIds,
-																	option.id,
-																],
-												}),
-											})
-										}
-										active={dietaryOptionIds.includes(
-											option.id,
+							<form className="flex flex-col gap-2">
+								{Object.entries(filters).map(([name]) => (
+									<filtersForm.Field
+										key={name}
+										name={name}
+										listeners={{
+											onChange: () => {
+												filtersForm.handleSubmit();
+											},
+										}}
+										children={(field) => (
+											<Button
+												onClick={(e) => {
+													e.preventDefault();
+													e.stopPropagation();
+													field.handleChange(
+														!field.state.value,
+													);
+												}}
+												active={field.state.value}
+												className="justify-start"
+											>
+												{
+													filterIcons[
+														name as keyof typeof filterIcons
+													]
+												}
+												{translations.filters[name]}
+											</Button>
 										)}
-										className="flex-grow justify-start"
-									>
-										<Utensils size={18} />
-										{option.name}
-									</Button>
+									/>
 								))}
-							</div>
+								<p className="mt-2 text-lg font-semibold leading-none tracking-tight">
+									{translations.dietaryOptions}
+								</p>
+								<div className="flex flex-wrap gap-2">
+									<filtersForm.Field
+										name={"dietaryOptionIds"}
+										listeners={{
+											onChange: () => {
+												filtersForm.handleSubmit();
+											},
+										}}
+										children={(field) => (
+											<>
+												{dietaryOptions.map(
+													(option) => (
+														<Button
+															key={option.id}
+															onClick={(e) => {
+																e.preventDefault();
+																e.stopPropagation();
+																field.handleChange(
+																	field.state.value.includes(
+																		option.id,
+																	)
+																		? field.state.value.filter(
+																				(
+																					id,
+																				) =>
+																					id !==
+																					option.id,
+																			)
+																		: [
+																				...field
+																					.state
+																					.value,
+																				option.id,
+																			],
+																);
+															}}
+															active={field.state.value.includes(
+																option.id,
+															)}
+															className="flex-grow justify-start"
+														>
+															<Utensils
+																size={18}
+															/>
+															{option.name}
+														</Button>
+													),
+												)}
+											</>
+										)}
+									/>
+								</div>
+							</form>
 						</DialogContent>
 					</Dialog>
 				</div>

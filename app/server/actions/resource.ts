@@ -1,11 +1,10 @@
 import { flattenLocalizedObject } from "@/lib/locale";
 import { db } from "@/server/db";
 import {
-	dietaryOptions,
-	dietaryOptionsTranslations,
 	providers,
 	providerTranslations,
 	resources,
+	resourceToDietaryOptions,
 } from "@/server/db/schema";
 import {
 	LocalizedQuerySchema,
@@ -14,7 +13,7 @@ import {
 } from "@/server/db/types";
 import { localeMiddleware } from "@/server/middleware";
 import { createServerFn } from "@tanstack/start";
-import { and, eq, exists, ilike, inArray } from "drizzle-orm";
+import { and, eq, exists, ilike, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 
 export const SearchParamsSchema = z.object({
@@ -38,6 +37,7 @@ export const searchFn = createServerFn({
 			locale: data?.locale ?? context.locale,
 			fallback: data?.fallback ?? true,
 		};
+
 		const resourceList = await db.query.resources.findMany({
 			where: and(
 				data.query
@@ -69,23 +69,23 @@ export const searchFn = createServerFn({
 				data.transit ? eq(resources.transit, true) : undefined,
 				data.wheelchair ? eq(resources.wheelchair, true) : undefined,
 				data.dietaryOptionIds && data.dietaryOptionIds.length > 0
-					? exists(
+					? eq(
 							db
-								.select()
-								.from(dietaryOptions)
-								.fullJoin(
-									dietaryOptionsTranslations,
-									eq(
-										dietaryOptions.id,
-										dietaryOptionsTranslations.dietaryOptionId,
-									),
-								)
+								.select({ count: sql`count(*)` })
+								.from(resourceToDietaryOptions)
 								.where(
-									inArray(
-										dietaryOptionsTranslations.dietaryOptionId,
-										data.dietaryOptionIds,
+									and(
+										eq(
+											resourceToDietaryOptions.resourceId,
+											resources.id,
+										),
+										inArray(
+											resourceToDietaryOptions.dietaryOptionId,
+											data.dietaryOptionIds,
+										),
 									),
 								),
+							data.dietaryOptionIds.length,
 						)
 					: undefined,
 			),
