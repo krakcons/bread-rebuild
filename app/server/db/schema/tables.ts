@@ -1,34 +1,33 @@
-import { relations } from "drizzle-orm";
 import {
 	boolean,
-	pgEnum,
 	pgTable,
 	primaryKey,
 	real,
 	text,
 	timestamp,
 } from "drizzle-orm/pg-core";
-import { generateId } from "../auth";
-import { users } from "./auth/schema";
+import { generateId } from "../../auth";
+import { users } from "./auth";
 
 // Enums
-export const localeEnum = pgEnum("locale", ["en", "fr"]);
-export const offeringEnum = pgEnum("offering", [
-	"meal",
-	"groceries",
-	"delivery",
-	"hamper",
-	"pantry",
-	"drop-in",
-	"market",
-]);
-
-export const phoneNumberTypeEnum = pgEnum("phone_number_type", [
-	"phone",
-	"fax",
-	"toll-free",
-	"tty",
-]);
+const localeEnum = text("locale", { enum: ["en", "fr"] }).notNull();
+const offeringEnum = text("offering", {
+	enum: [
+		"meal",
+		"groceries",
+		"delivery",
+		"hamper",
+		"pantry",
+		"drop-in",
+		"market",
+	],
+});
+const phoneNumberTypeEnum = text("type", {
+	enum: ["phone", "fax", "toll-free", "tty"],
+});
+const dayEnum = text("day", {
+	enum: ["unassigned", "mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+}).default("unassigned");
 
 // Providers
 export const providers = pgTable("providers", {
@@ -52,7 +51,7 @@ export const providerTranslations = pgTable(
 			.references(() => providers.id, {
 				onDelete: "cascade",
 			}),
-		locale: localeEnum("locale").notNull(),
+		locale: localeEnum,
 		name: text("name").notNull(),
 		description: text("description"),
 		website: text("website"),
@@ -72,7 +71,7 @@ export const providerPhoneNumbers = pgTable("provider_phone_numbers", {
 			onDelete: "cascade",
 		}),
 	phone: text("phone").notNull(),
-	type: phoneNumberTypeEnum("type").notNull(),
+	type: phoneNumberTypeEnum,
 });
 
 // Base Table
@@ -91,7 +90,7 @@ export const resources = pgTable("resources", {
 	registration: boolean("registration"),
 	free: boolean("free"),
 	wheelchair: boolean("wheelchair"),
-	offering: offeringEnum("offering"),
+	offering: offeringEnum,
 	hours: text("hours"),
 
 	// Address
@@ -120,7 +119,7 @@ export const resourcePhoneNumbers = pgTable("resource_phone_numbers", {
 			onDelete: "cascade",
 		}),
 	phone: text("phone").notNull(),
-	type: phoneNumberTypeEnum("type").notNull(),
+	type: phoneNumberTypeEnum,
 });
 
 // Extended Resource Info
@@ -132,7 +131,7 @@ export const resourceTranslations = pgTable(
 			.references(() => resources.id, {
 				onDelete: "cascade",
 			}),
-		locale: localeEnum("locale").notNull(),
+		locale: localeEnum,
 
 		// Description
 		description: text("description"),
@@ -188,23 +187,13 @@ export const dietaryOptionsTranslations = pgTable(
 			.references(() => dietaryOptions.id, {
 				onDelete: "cascade",
 			}),
-		locale: localeEnum("locale").notNull(),
+		locale: localeEnum,
 		name: text("name").notNull(),
 	},
 	(t) => [primaryKey({ columns: [t.dietaryOptionId, t.locale] })],
 );
 
 // Anonymous Users
-export const daysEnum = pgEnum("days", [
-	"unassigned",
-	"mon",
-	"tue",
-	"wed",
-	"thu",
-	"fri",
-	"sat",
-	"sun",
-]);
 
 export const anonymousSessions = pgTable("anonymous_sessions", {
 	id: text("id")
@@ -225,119 +214,8 @@ export const anonymousSessionsToResources = pgTable(
 			.references(() => resources.id, {
 				onDelete: "cascade",
 			}),
-		day: daysEnum("day").notNull().default("unassigned"),
+		day: dayEnum,
 		seen: boolean("seen").notNull().default(false),
 	},
 	(t) => [primaryKey({ columns: [t.anonymousSessionId, t.resourceId] })],
-);
-
-// Relations
-export const anonymousSessionsToResourcesRelations = relations(
-	anonymousSessionsToResources,
-	({ one }) => ({
-		anonymousSession: one(anonymousSessions, {
-			fields: [anonymousSessionsToResources.anonymousSessionId],
-			references: [anonymousSessions.id],
-		}),
-		resource: one(resources, {
-			fields: [anonymousSessionsToResources.resourceId],
-			references: [resources.id],
-		}),
-	}),
-);
-
-export const anonymousSessionsRelations = relations(
-	anonymousSessions,
-	({ many }) => ({
-		anonymousSessionsToResources: many(anonymousSessionsToResources),
-	}),
-);
-
-export const providerRelations = relations(providers, ({ many }) => ({
-	resources: many(resources),
-	translations: many(providerTranslations),
-	phoneNumbers: many(providerPhoneNumbers),
-}));
-
-export const providerTranslationsRelations = relations(
-	providerTranslations,
-	({ one }) => ({
-		provider: one(providers, {
-			fields: [providerTranslations.providerId],
-			references: [providers.id],
-		}),
-	}),
-);
-
-export const providerPhoneNumbersRelations = relations(
-	providerPhoneNumbers,
-	({ one }) => ({
-		provider: one(providers, {
-			fields: [providerPhoneNumbers.providerId],
-			references: [providers.id],
-		}),
-	}),
-);
-
-export const resourceRelations = relations(resources, ({ many, one }) => ({
-	translations: many(resourceTranslations),
-	phoneNumbers: many(resourcePhoneNumbers),
-	provider: one(providers, {
-		fields: [resources.providerId],
-		references: [providers.id],
-	}),
-	resourceToDietaryOptions: many(resourceToDietaryOptions),
-	anonymousSessionsToResources: many(anonymousSessionsToResources),
-}));
-
-export const resourceTranslationsRelations = relations(
-	resourceTranslations,
-	({ one }) => ({
-		resource: one(resources, {
-			fields: [resourceTranslations.resourceId],
-			references: [resources.id],
-		}),
-	}),
-);
-
-export const resourcePhoneNumbersRelations = relations(
-	resourcePhoneNumbers,
-	({ one }) => ({
-		resource: one(resources, {
-			fields: [resourcePhoneNumbers.resourceId],
-			references: [resources.id],
-		}),
-	}),
-);
-
-export const resourceToDietaryOptionsRelations = relations(
-	resourceToDietaryOptions,
-	({ one }) => ({
-		resource: one(resources, {
-			fields: [resourceToDietaryOptions.resourceId],
-			references: [resources.id],
-		}),
-		dietaryOption: one(dietaryOptions, {
-			fields: [resourceToDietaryOptions.dietaryOptionId],
-			references: [dietaryOptions.id],
-		}),
-	}),
-);
-
-export const dietaryOptionsRelations = relations(
-	dietaryOptions,
-	({ many }) => ({
-		resourceToDietaryOptions: many(resourceToDietaryOptions),
-		translations: many(dietaryOptionsTranslations),
-	}),
-);
-
-export const dietaryOptionsTranslationsRelations = relations(
-	dietaryOptionsTranslations,
-	({ one }) => ({
-		dietaryOption: one(dietaryOptions, {
-			fields: [dietaryOptionsTranslations.dietaryOptionId],
-			references: [dietaryOptions.id],
-		}),
-	}),
 );

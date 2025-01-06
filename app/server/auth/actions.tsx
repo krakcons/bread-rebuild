@@ -11,8 +11,8 @@ import {
 	invalidateSession,
 } from ".";
 import { db } from "../db";
-import { emailVerifications, passwordResets, users } from "../db/auth/schema";
-import { providers } from "../db/schema";
+import { emailVerifications, passwordResets, users } from "../db/schema/auth";
+import { providers } from "../db/schema/tables";
 import { authMiddleware, localeMiddleware } from "../middleware";
 import {
 	deleteSessionTokenCookie,

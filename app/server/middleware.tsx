@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { getCookie } from "vinxi/http";
 import { validateSessionToken } from "./auth";
 import { db } from "./db";
-import { providers } from "./db/schema";
+import { providers } from "./db/schema/tables";
 
 export const localeMiddleware = createMiddleware().server(async ({ next }) => {
 	const locale = await getLocale();

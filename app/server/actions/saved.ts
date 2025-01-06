@@ -3,29 +3,53 @@ import { and, eq } from "drizzle-orm";
 import { getCookie, setCookie } from "vinxi/http";
 import { generateId } from "../auth";
 import { db } from "../db";
-import { anonymousSessions, anonymousSessionsToResources } from "../db/schema";
+import {
+	anonymousSessions,
+	anonymousSessionsToResources,
+} from "../db/schema/tables";
 import { SavedResourceSchema } from "../db/types";
+
+const createAnonymousSession = async () => {
+	const anonymousSessionId = generateId(16);
+	setCookie("anonymous_session", anonymousSessionId, {
+		path: "/",
+		httpOnly: true,
+		sameSite: "lax",
+		secure: process.env.STAGE === "production",
+	});
+	await db.insert(anonymousSessions).values({ id: anonymousSessionId });
+	return anonymousSessionId;
+};
 
 export const anonymousSessionMiddleware = createMiddleware().server(
 	async ({ next }) => {
 		const token = getCookie("anonymous_session") ?? null;
+
+		// Verify anonymous session exists
+		if (token) {
+			const existing = await db.query.anonymousSessions.findFirst({
+				where: eq(anonymousSessions.id, token),
+			});
+			// Create anonymous session if not exists
+			if (!existing) {
+				return next({
+					context: {
+						anonymousSessionId: await createAnonymousSession(),
+					},
+				});
+			}
+		}
+
+		// Create anonymous session if not exists
 		if (token === null) {
-			const anonymousSessionId = generateId(16);
-			setCookie("anonymous_session", anonymousSessionId, {
-				path: "/",
-				httpOnly: true,
-				sameSite: "lax",
-				secure: process.env.STAGE === "production",
-			});
-			await db.insert(anonymousSessions).values({
-				id: anonymousSessionId,
-			});
 			return next({
 				context: {
-					anonymousSessionId,
+					anonymousSessionId: await createAnonymousSession(),
 				},
 			});
 		}
+
+		// Return valid anonymous session id
 		return next({
 			context: {
 				anonymousSessionId: token,

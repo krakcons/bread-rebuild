@@ -6,6 +6,16 @@ import "sst"
 export {}
 declare module "sst" {
   export interface Resource {
+    "Aurora": {
+      "clusterArn": string
+      "database": string
+      "host": string
+      "password": string
+      "port": number
+      "secretArn": string
+      "type": "sst.aws.Aurora"
+      "username": string
+    }
     "Email": {
       "configSet": string
       "sender": string
@@ -14,14 +24,6 @@ declare module "sst" {
     "GOOGLE_MAPS_API_KEY": {
       "type": "sst.sst.Secret"
       "value": string
-    }
-    "RDS": {
-      "database": string
-      "host": string
-      "password": string
-      "port": number
-      "type": "sst.aws.Postgres"
-      "username": string
     }
     "Vpc": {
       "bastion": string

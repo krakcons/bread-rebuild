@@ -1,24 +1,17 @@
-import * as auth from "@/server/db/auth/schema";
 import * as schema from "@/server/db/schema";
-import { drizzle } from "drizzle-orm/node-postgres";
-import pg from "pg";
+import { drizzle } from "drizzle-orm/aws-data-api/pg";
 import { Resource } from "sst";
 
 if (!process.env.TENANT_STAGE_NAME) {
 	throw new Error("TENANT_STAGE_NAME is not set");
 }
 
-export const config = {
-	host: Resource.RDS.host,
-	port: Resource.RDS.port,
-	user: Resource.RDS.username,
-	password: Resource.RDS.password,
-	database: process.env.TENANT_STAGE_NAME,
-	ssl: {
-		rejectUnauthorized: false,
+export const db = drizzle({
+	connection: {
+		region: "ca-central-1",
+		database: process.env.TENANT_STAGE_NAME!,
+		secretArn: Resource.Aurora.secretArn,
+		resourceArn: Resource.Aurora.clusterArn,
 	},
-} satisfies pg.PoolConfig;
-
-const pool = new pg.Pool(config);
-
-export const db = drizzle(pool, { schema: { ...schema, ...auth } });
+	schema,
+});

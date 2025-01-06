@@ -10,7 +10,7 @@ import {
 	resources,
 	resourceToDietaryOptions,
 	resourceTranslations,
-} from "../db/schema";
+} from "../db/schema/tables";
 import {
 	BaseResourceType,
 	LocalizedInputSchema,
@@ -166,64 +166,47 @@ export const mutateListingFn = createServerFn({
 		};
 
 		await db.transaction(async (tx) => {
-			const promises: Promise<unknown>[][] = [
-				[
-					tx
-						.insert(resources)
-						.values(resource)
-						.onConflictDoUpdate({
-							target: [resources.id],
-							set: resource,
-						}),
-					tx
-						.insert(resourceTranslations)
-						.values(translation)
-						.onConflictDoUpdate({
-							target: [
-								resourceTranslations.resourceId,
-								resourceTranslations.locale,
-							],
-							set: translation,
-						}),
-				],
-			];
+			await tx
+				.insert(resources)
+				.values(resource)
+				.onConflictDoUpdate({
+					target: [resources.id],
+					set: resource,
+				});
+			await tx
+				.insert(resourceTranslations)
+				.values(translation)
+				.onConflictDoUpdate({
+					target: [
+						resourceTranslations.resourceId,
+						resourceTranslations.locale,
+					],
+					set: translation,
+				});
 
 			if (dietaryOptions && dietaryOptions.length > 0) {
-				promises[0].push(
-					tx
-						.delete(resourceToDietaryOptions)
-						.where(
-							eq(resourceToDietaryOptions.resourceId, listingId),
-						),
-				);
-				promises[1].push(
-					tx.insert(resourceToDietaryOptions).values(
-						dietaryOptions.map((option) => ({
-							dietaryOptionId: option,
-							resourceId: listingId,
-						})),
-					),
+				await tx
+					.delete(resourceToDietaryOptions)
+					.where(eq(resourceToDietaryOptions.resourceId, listingId));
+				await tx.insert(resourceToDietaryOptions).values(
+					dietaryOptions.map((option) => ({
+						dietaryOptionId: option,
+						resourceId: listingId,
+					})),
 				);
 			}
 
 			if (phoneNumbers && phoneNumbers.length > 0) {
-				promises[0].push(
-					tx
-						.delete(resourcePhoneNumbers)
-						.where(eq(resourcePhoneNumbers.resourceId, listingId)),
-				);
-				promises[1].push(
-					tx.insert(resourcePhoneNumbers).values(
+				await tx
+					.delete(resourcePhoneNumbers)
+					.where(eq(resourcePhoneNumbers.resourceId, listingId)),
+					await tx.insert(resourcePhoneNumbers).values(
 						phoneNumbers.map((phoneNumber) => ({
 							...phoneNumber,
 							resourceId: listingId,
 						})),
-					),
-				);
+					);
 			}
-
-			await Promise.all(promises[0]);
-			await Promise.all(promises[1]);
 		});
 
 		if (data.redirect) {

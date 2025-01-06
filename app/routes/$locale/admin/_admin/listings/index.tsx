@@ -17,7 +17,7 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/")({
 });
 
 function RouteComponent() {
-	const { listings } = Route.useLoaderData();
+	const data = Route.useLoaderData();
 	const { locale } = Route.useParams();
 	const t = useTranslations(locale);
 
@@ -41,12 +41,12 @@ function RouteComponent() {
 				</Link>
 			</div>
 			<div className="flex flex-col gap-2">
-				{listings.length === 0 && (
+				{data.listings.length === 0 && (
 					<p className="text-muted-foreground">
 						{t.admin.listings.empty}
 					</p>
 				)}
-				{listings.map((listing) => (
+				{data.listings.map((listing) => (
 					<Resource key={listing.id} resource={listing} />
 				))}
 			</div>

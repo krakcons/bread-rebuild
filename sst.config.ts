@@ -41,9 +41,7 @@ export default $config({
 
 		// Multi-tenant resources
 		const vpc = sst.aws.Vpc.get("Vpc", "vpc-08c28b23ee20f3975");
-		const rds = sst.aws.Postgres.get("RDS", {
-			id: "krak-prod-rdsinstance",
-		});
+		const aurora = sst.aws.Aurora.get("Aurora", "krak-prod-auroracluster");
 
 		const environment = {
 			TENANT_STAGE_NAME: name,
@@ -60,7 +58,7 @@ export default $config({
 		});
 		const GOOGLE_MAPS_API_KEY = new sst.Secret("GOOGLE_MAPS_API_KEY");
 		new sst.aws.TanstackStart("Web", {
-			link: [rds, email, GOOGLE_MAPS_API_KEY],
+			link: [aurora, email, GOOGLE_MAPS_API_KEY],
 			domain: {
 				name: domain,
 				dns,
@@ -71,7 +69,7 @@ export default $config({
 
 		// Dev commands
 		new sst.x.DevCommand("Studio", {
-			link: [rds],
+			link: [aurora],
 			dev: {
 				command: "drizzle-kit studio",
 			},
@@ -79,7 +77,7 @@ export default $config({
 		});
 
 		return {
-			database: $interpolate`postgres://${rds.username}:${rds.password}@${rds.host}:${rds.port}/${rds.database}`,
+			database: $interpolate`postgres://${aurora.username}:${aurora.password}@${aurora.host}:${aurora.port}/${aurora.database}`,
 		};
 	},
 });

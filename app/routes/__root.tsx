@@ -60,7 +60,8 @@ export const Route = createRootRouteWithContext<SessionValidationResult>()({
 			await setLocale({ data: locale as Locale });
 		}
 		// Handle auth
-		return await getAuth();
+		const auth = await getAuth();
+		return auth;
 	},
 });
 

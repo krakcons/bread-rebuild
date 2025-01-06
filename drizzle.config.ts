@@ -1,9 +1,24 @@
 import { defineConfig } from "drizzle-kit";
-import { config } from "./app/server/db";
+import { Resource } from "sst";
+
+if (!process.env.TENANT_STAGE_NAME) {
+	throw new Error("TENANT_STAGE_NAME is not set");
+}
 
 export default defineConfig({
 	dialect: "postgresql",
-	schema: ["./app/server/db/schema.ts", "./app/server/db/auth/schema.ts"],
+	schema: ["./app/server/db/**/*.ts"],
 	out: "./migrations",
-	dbCredentials: config,
+	dbCredentials: {
+		database: process.env.TENANT_STAGE_NAME!,
+		host: Resource.Aurora.host,
+		port: Resource.Aurora.port,
+		user: Resource.Aurora.username,
+		password: Resource.Aurora.password,
+		ssl: {
+			rejectUnauthorized: false,
+		},
+	},
+	verbose: true,
+	strict: true,
 });

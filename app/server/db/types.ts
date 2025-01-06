@@ -11,7 +11,7 @@ import {
 	resourcePhoneNumbers,
 	resources,
 	resourceTranslations,
-} from "./schema";
+} from "./schema/tables";
 
 // Provider types
 

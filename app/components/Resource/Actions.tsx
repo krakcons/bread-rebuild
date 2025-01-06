@@ -30,7 +30,7 @@ export const ResourceActions = ({
 	children?: React.ReactNode;
 }) => {
 	const { providerId } = useRouteContext({
-		from: "/$locale",
+		from: "__root__",
 	});
 	const { data: saved } = useSuspenseQuery({
 		queryKey: ["saved"],
