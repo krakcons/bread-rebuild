@@ -245,6 +245,10 @@ export const english = {
 				create: "Listing created",
 				update: "Listing updated",
 			},
+			capacity: {
+				title: "Capacity",
+				example: "Ex: We can serve 30 people a day",
+			},
 			delete: {
 				title: "Delete Listing",
 				description:
@@ -588,6 +592,10 @@ export const french: typeof english = {
 			},
 			offering: {
 				title: "Offre",
+			},
+			capacity: {
+				title: "Capacité",
+				example: "Ex : Capacité de 100 personnes",
 			},
 			location: {
 				title: "Localisation",

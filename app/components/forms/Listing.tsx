@@ -194,6 +194,7 @@ export const ListingForm = ({
 			description: defaultValues?.description ?? undefined,
 			email: defaultValues?.email ?? undefined,
 			website: defaultValues?.website ?? undefined,
+			capacity: defaultValues?.capacity ?? undefined,
 			phoneNumbers:
 				defaultValues?.phoneNumbers.map((phone) => ({
 					...phone,
@@ -439,6 +440,31 @@ export const ListingForm = ({
 								<p className="text-xs text-muted-foreground">
 									{"Ex: " +
 										t.form.listing.eligibility.example}
+								</p>
+								<FieldError state={field.state} />
+							</Label>
+						)}
+					/>
+					<form.Field
+						name="capacity"
+						children={(field) => (
+							<Label>
+								<span className="flex items-center gap-1">
+									{t.form.listing.capacity.title}
+									<span className="text-xs text-muted-foreground">
+										({t.common.optional})
+									</span>
+								</span>
+								<Textarea
+									name={field.name}
+									value={field.state.value ?? ""}
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(e.target.value)
+									}
+								/>
+								<p className="text-xs text-muted-foreground">
+									{t.form.listing.capacity.example}
 								</p>
 								<FieldError state={field.state} />
 							</Label>

@@ -54,6 +54,7 @@ export const ListingFormSchema = z.object({
 	// Info
 	name: z.string().optional(),
 	description: z.string().optional(),
+	capacity: z.string().optional(),
 
 	// Additional details (CORDS)
 	fees: z.string().optional(), // If free is false
@@ -155,6 +156,7 @@ export const mutateListingFn = createServerFn({
 			locale: rest.locale ?? context.locale,
 			description: rest.description ?? null,
 			name: rest.name ?? null,
+			capacity: rest.capacity ?? null,
 			email: rest.email ?? null,
 			website: rest.website ?? null,
 			fees: rest.fees ?? null,

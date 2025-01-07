@@ -140,6 +140,7 @@ export const resourceTranslations = pgTable(
 		// Info
 		name: text("name"),
 		description: text("description"),
+		capacity: text("capacity"),
 
 		// Contact
 		email: text("email"),

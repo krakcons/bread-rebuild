@@ -24,6 +24,7 @@ import {
 	Mail,
 	MapPin,
 	PhoneCall,
+	Users,
 	Utensils,
 	UtensilsCrossed,
 } from "lucide-react";
@@ -252,6 +253,7 @@ function ResourceDetail() {
 				</div>
 				{(resource.fees ||
 					resource.eligibility ||
+					resource.capacity ||
 					resource.registrationNotes ||
 					resource.parkingNotes ||
 					resource.preparationNotes ||
@@ -268,6 +270,15 @@ function ResourceDetail() {
 								label={t.eligibility}
 								value={resource.eligibility}
 								icon={<BadgeCheck size={20} />}
+							/>
+						)}
+
+						{/* Capacity */}
+						{resource.capacity && (
+							<Contact
+								label={t.form.listing.capacity.title}
+								value={resource.capacity}
+								icon={<Users size={20} />}
 							/>
 						)}
 
