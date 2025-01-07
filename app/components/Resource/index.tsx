@@ -35,14 +35,14 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 	}, [resource, t]);
 
 	return (
-		<div className="relative flex flex-col items-start gap-2 rounded-lg border shadow-sm transition-shadow hover:shadow-md">
+		<div className="flex flex-col items-start rounded-lg border shadow-sm transition-shadow hover:shadow-md">
 			<Link
 				to="/$locale/resources/$id"
 				params={{
 					locale,
 					id: resource.id,
 				}}
-				className="flex w-full flex-col items-start gap-2 p-4 pb-16"
+				className="flex w-full flex-col items-start gap-2 p-4 pb-0"
 			>
 				<p className="text-xl font-semibold">
 					{resource.name ?? resource.provider.name}
@@ -74,8 +74,15 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 					</div>
 				))}
 			</Link>
-			<div className="absolute bottom-4 left-4">
-				<ResourceActions resource={resource} />
+			<div className="flex w-full">
+				<div className="p-4">
+					<ResourceActions resource={resource} />
+				</div>
+				<Link
+					to="/$locale/resources/$id"
+					params={{ locale, id: resource.id }}
+					className="flex-grow"
+				/>
 			</div>
 		</div>
 	);
