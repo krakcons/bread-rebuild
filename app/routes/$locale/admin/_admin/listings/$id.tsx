@@ -110,6 +110,7 @@ function RouteComponent() {
 				<ListingForm
 					key={`${editingLocale}-${listing?.updatedAt.toString()}`}
 					locale={locale}
+					provider={listing?.provider!}
 					defaultValues={listing}
 					dietaryOptions={dietaryOptions}
 					onSubmit={async (data) => {

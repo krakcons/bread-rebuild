@@ -22,6 +22,7 @@ import { ListingFormSchema } from "@/server/actions/listings";
 import {
 	DietaryOptionType,
 	ProviderPhoneNumberType,
+	ProviderType,
 	ResourceType,
 } from "@/server/db/types";
 import { OfferingEnum } from "@/server/types";
@@ -180,12 +181,14 @@ export const ListingForm = ({
 	onSubmit,
 	dietaryOptions,
 	blockNavigation = true,
+	provider,
 }: {
 	locale: string;
 	defaultValues?: ResourceType;
 	onSubmit: (data: z.infer<typeof ListingFormSchema>) => void;
 	dietaryOptions: DietaryOptionType[];
 	blockNavigation?: boolean;
+	provider: ProviderType;
 }) => {
 	const t = useTranslations(locale);
 	const form = useForm({
@@ -388,9 +391,9 @@ export const ListingForm = ({
 										field.handleChange(e.target.value)
 									}
 								/>
-								{defaultValues?.provider.name && (
+								{provider.name && (
 									<p className="text-xs text-muted-foreground">
-										{`${t.form.listing.fallback} ${defaultValues?.provider.name}`}
+										{`${t.form.listing.fallback} ${provider.name}`}
 									</p>
 								)}
 								<FieldError state={field.state} />
@@ -780,9 +783,9 @@ export const ListingForm = ({
 										field.handleChange(e.target.value)
 									}
 								/>
-								{defaultValues?.provider.email && (
+								{provider.email && (
 									<p className="text-xs text-muted-foreground">
-										{`${t.form.listing.fallback} ${defaultValues?.provider.email}`}
+										{`${t.form.listing.fallback} ${provider.email}`}
 									</p>
 								)}
 								<FieldError state={field.state} />
@@ -807,9 +810,9 @@ export const ListingForm = ({
 										field.handleChange(e.target.value)
 									}
 								/>
-								{defaultValues?.provider.website && (
+								{provider.website && (
 									<p className="text-xs text-muted-foreground">
-										{`${t.form.listing.fallback} ${defaultValues?.provider.website}`}
+										{`${t.form.listing.fallback} ${provider.website}`}
 									</p>
 								)}
 								<FieldError state={field.state} />
@@ -925,11 +928,10 @@ export const ListingForm = ({
 								>
 									{t.form.contact.addPhoneNumber}
 								</Button>
-								{defaultValues?.provider.phoneNumbers &&
-									defaultValues?.provider.phoneNumbers
-										.length > 0 && (
+								{provider.phoneNumbers &&
+									provider.phoneNumbers.length > 0 && (
 										<p className="text-xs text-muted-foreground">
-											{`${t.form.listing.fallback} ${defaultValues?.provider.phoneNumbers.map((phone) => formatPhoneNumber(phone.phone)).join(", ")}`}
+											{`${t.form.listing.fallback} ${provider.phoneNumbers.map((phone) => formatPhoneNumber(phone.phone)).join(", ")}`}
 										</p>
 									)}
 								<FieldError state={field.state} />
