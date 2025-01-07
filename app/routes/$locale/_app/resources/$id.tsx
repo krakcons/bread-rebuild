@@ -109,7 +109,11 @@ function ResourceDetail() {
 
 	const tags = useMemo(() => {
 		let tags: string[] = [
-			...resource.offerings.map((offering) => t.offeringTypes[offering]),
+			...resource.offerings.map((offering) =>
+				offering === "other" && resource.offeringsOther
+					? resource.offeringsOther
+					: t.offeringTypes[offering],
+			),
 		];
 		if (resource.free) {
 			tags.push(t.free);
@@ -303,10 +307,13 @@ function ResourceDetail() {
 								label={t.dietaryOptions}
 								value={
 									resource.dietaryOptions
-										.map(
-											(option) =>
-												t.dietaryOptionTypes[option],
+										.map((option) =>
+											option === "other" &&
+											resource.dietaryOptionsOther
+												? resource.dietaryOptionsOther
+												: t.dietaryOptionTypes[option],
 										)
+										.filter(Boolean)
 										.join(", ") || ""
 								}
 								icon={
