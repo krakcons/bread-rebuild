@@ -30,10 +30,8 @@ const phoneNumberTypeEnum = text("type", {
 	.default("phone")
 	.notNull();
 const dayEnum = text("day", {
-	enum: ["unassigned", "mon", "tue", "wed", "thu", "fri", "sat", "sun"],
-})
-	.default("unassigned")
-	.notNull();
+	enum: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+});
 
 // Providers
 export const providers = pgTable("providers", {

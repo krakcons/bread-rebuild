@@ -99,12 +99,7 @@ export const toggleSavedFn = createServerFn({ method: "POST" })
 
 export const updateSavedFn = createServerFn({ method: "POST" })
 	.middleware([anonymousSessionMiddleware])
-	.validator(
-		SavedResourceSchema.extend({
-			day: SavedResourceSchema.shape.day.optional(),
-			seen: SavedResourceSchema.shape.seen.optional(),
-		}),
-	)
+	.validator(SavedResourceSchema.pick({ resourceId: true, day: true }))
 	.handler(
 		async ({
 			data: { resourceId, ...data },

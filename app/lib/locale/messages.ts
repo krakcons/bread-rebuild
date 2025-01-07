@@ -43,7 +43,6 @@ export const english = {
 	day: "Schedule",
 	none: "None",
 	clear: "Clear",
-	unassigned: "Unassigned",
 	parking: "Parking",
 	preparation: "Preparation Required",
 	transit: "Transit",
@@ -63,6 +62,9 @@ export const english = {
 	privacy: "Privacy Policy",
 	dietaryOptions: "Dietary Options",
 	daysOfWeek: {
+		unassigned: "Unassigned",
+		open: "Open",
+		closed: "Closed",
 		short: {
 			mon: "Mon",
 			tue: "Tue",
@@ -369,7 +371,6 @@ export const french: typeof english = {
 	day: "Itinéraire",
 	none: "Aucun",
 	clear: "Effacer",
-	unassigned: "Non assigné",
 	parking: "Parking",
 	preparation: "Préparation Requise",
 	transit: "Transit",
@@ -389,6 +390,9 @@ export const french: typeof english = {
 	privacy: "Politique de confidentialité",
 	dietaryOptions: "Options Diététiques",
 	daysOfWeek: {
+		unassigned: "Non assigné",
+		open: "Ouvert",
+		closed: "Fermé",
 		short: {
 			mon: "Lun",
 			tue: "Mar",

@@ -213,7 +213,7 @@ export const mutateListingFn = createServerFn({
 
 		if (data.redirect) {
 			throw redirect({
-				to: `/$locale/admin/listings`,
+				to: "/$locale/admin/listings/list",
 				params: {
 					locale: context.locale,
 				},
@@ -236,7 +236,7 @@ export const deleteListingFn = createServerFn({
 				),
 			);
 		throw redirect({
-			to: `/$locale/admin/listings`,
+			to: "/$locale/admin/listings/list",
 			params: (prev) => ({
 				...prev,
 				locale: context.locale,

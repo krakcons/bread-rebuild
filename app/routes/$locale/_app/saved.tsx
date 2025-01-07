@@ -53,6 +53,7 @@ export const Route = createFileRoute("/$locale/_app/saved")({
 			queryKey: ["saved"],
 			queryFn: () => getSavedFn(),
 		});
+		console.log(saved);
 		const resources = await getResourcesFn({
 			data: {
 				ids: saved.map((savedResource) => savedResource.resourceId),
@@ -162,10 +163,9 @@ function SavedPage() {
 						>
 							{Array.from(activeDays)
 								.sort((dayA, dayB) => {
-									// Put unassigned at the bottom
+									// Sort by weekday order
 									if (dayA === "unassigned") return 1;
 									if (dayB === "unassigned") return -1;
-									// Sort by weekday order
 									return (
 										days.indexOf(dayA) - days.indexOf(dayB)
 									);
@@ -174,7 +174,8 @@ function SavedPage() {
 									<AccordionItem key={day} value={day}>
 										<AccordionTrigger className="text-xl font-semibold">
 											{day === "unassigned"
-												? translations.unassigned
+												? translations.daysOfWeek
+														.unassigned
 												: translations.daysOfWeek.long[
 														day
 													]}
@@ -182,15 +183,15 @@ function SavedPage() {
 										<AccordionContent className="flex flex-col gap-3">
 											{resources
 												.filter((resource) => {
-													const savedResource =
+													const resourceDay =
 														saved.find(
 															(savedResource) =>
 																savedResource.resourceId ===
 																resource.id,
 														)?.day;
-													return (
-														savedResource === day
-													);
+													return !resourceDay
+														? day === "unassigned"
+														: resourceDay === day;
 												})
 												.map((resource) => (
 													<Resource

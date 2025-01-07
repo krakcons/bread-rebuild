@@ -3,6 +3,7 @@ import {
 	SelectContent,
 	SelectGroup,
 	SelectItem,
+	SelectLabel,
 	SelectSeparator,
 	SelectTrigger,
 	SelectValue,
@@ -58,6 +59,13 @@ export const ResourceActions = ({
 	let isSaved = savedResource !== undefined;
 	isSaved = toggleSavedMutation.isPending ? !isSaved : isSaved;
 
+	const availableDays = days.filter((day) => {
+		return resource.hours?.toLowerCase().includes(day.toLowerCase());
+	});
+	const unavailableDays = days.filter(
+		(day) => !resource.hours?.toLowerCase().includes(day.toLowerCase()),
+	);
+
 	return (
 		<div
 			className="-m-4 flex flex-wrap items-center justify-start gap-2 p-4"
@@ -81,16 +89,15 @@ export const ResourceActions = ({
 			</Button>
 			{isSaved && (
 				<Select
-					value={
-						savedResource?.day !== "unassigned"
-							? (savedResource?.day ?? undefined)
-							: undefined
-					}
+					value={savedResource?.day ?? "unassigned"}
 					onValueChange={async (value) => {
 						await updateSavedFn({
 							data: {
 								resourceId: resource.id,
-								day: value as SavedResourceType["day"],
+								day:
+									value === "unassigned"
+										? null
+										: (value as SavedResourceType["day"]),
 							},
 						});
 						await queryClient.invalidateQueries({
@@ -105,25 +112,51 @@ export const ResourceActions = ({
 						)}
 					>
 						<CalendarDays size={18} />
-						<SelectValue />
+						<SelectValue placeholder={translations.day} />
 					</SelectTrigger>
 					<SelectContent>
-						{/* @ts-expect-error */}
-						<SelectItem value={undefined}>
+						<SelectItem value={"unassigned"}>
 							{translations.day}
 						</SelectItem>
 						<SelectSeparator />
-						<SelectGroup>
-							{days.map((day) => (
-								<SelectItem key={day} value={day.toLowerCase()}>
-									{
-										translations.daysOfWeek.short[
-											day.toLowerCase()
-										]
-									}
-								</SelectItem>
-							))}
-						</SelectGroup>
+						{availableDays.length > 0 && (
+							<SelectGroup>
+								<SelectLabel>
+									{translations.daysOfWeek.open}
+								</SelectLabel>
+								{availableDays.map((day) => (
+									<SelectItem
+										key={day}
+										value={day.toLowerCase()}
+									>
+										{
+											translations.daysOfWeek.short[
+												day.toLowerCase()
+											]
+										}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						)}
+						{unavailableDays.length > 0 && (
+							<SelectGroup>
+								<SelectLabel>
+									{translations.daysOfWeek.closed}
+								</SelectLabel>
+								{unavailableDays.map((day) => (
+									<SelectItem
+										key={day}
+										value={day.toLowerCase()}
+									>
+										{
+											translations.daysOfWeek.short[
+												day.toLowerCase()
+											]
+										}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						)}
 					</SelectContent>
 				</Select>
 			)}
