@@ -17,7 +17,7 @@ function RouteComponent() {
 			<p>{t.admin.dashboard.explanation}</p>
 			<div className="flex flex-col gap-2">
 				<Link
-					to="/$locale/admin/listings"
+					to="/$locale/admin/listings/list"
 					className="flex flex-col gap-2 border p-4"
 					from={Route.fullPath}
 					search={(prev) => prev}

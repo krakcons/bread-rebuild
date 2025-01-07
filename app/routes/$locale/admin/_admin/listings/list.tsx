@@ -5,7 +5,7 @@ import { getListingsFn } from "@/server/actions/listings";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 
-export const Route = createFileRoute("/$locale/admin/_admin/listings/")({
+export const Route = createFileRoute("/$locale/admin/_admin/listings/list")({
 	component: RouteComponent,
 	loaderDeps: ({ search }) => search,
 	loader: async () => {

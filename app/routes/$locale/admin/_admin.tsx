@@ -122,7 +122,7 @@ const AdminSidebar = () => {
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
 								<Link
-									to="/$locale/admin/listings"
+									to="/$locale/admin/listings/list"
 									params={{
 										locale,
 									}}
