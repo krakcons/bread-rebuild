@@ -18,6 +18,7 @@ import {
 	SidebarMenuItem,
 	SidebarProvider,
 	SidebarTrigger,
+	useSidebar,
 } from "@/components/ui/SideBar";
 import { Toaster } from "@/components/ui/Sonner";
 import { Locale, locales, LocaleSchema, useTranslations } from "@/lib/locale";
@@ -60,8 +61,130 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 	},
 });
 
-function RouteComponent() {
+const AdminSidebar = () => {
 	const logout = useServerFn(logoutFn);
+	const { setOpenMobile } = useSidebar();
+	const { locale } = Route.useParams();
+	const search = Route.useSearch();
+	const t = useTranslations(locale);
+
+	return (
+		<Sidebar>
+			<SidebarHeader>
+				<Link
+					to="/$locale"
+					params={{
+						locale,
+					}}
+					className={buttonVariants()}
+				>
+					<ExternalLink />
+					{t.admin.nav.exit}
+				</Link>
+			</SidebarHeader>
+			<SidebarContent>
+				<SidebarGroup>
+					<SidebarGroupContent>
+						<SidebarGroupLabel>
+							{t.admin.nav.admin}
+						</SidebarGroupLabel>
+						<SidebarMenuItem>
+							<SidebarMenuButton asChild>
+								<Link
+									to="/$locale/admin"
+									params={{
+										locale,
+									}}
+									search={search}
+									onClick={() => {
+										setOpenMobile(false);
+									}}
+								>
+									<LayoutDashboard />
+									{t.admin.nav.dashboard}
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+						<SidebarMenuItem>
+							<SidebarMenuButton asChild>
+								<Link
+									to="/$locale/admin/listings"
+									params={{
+										locale,
+									}}
+									search={search}
+									replace
+									onClick={() => {
+										setOpenMobile(false);
+									}}
+								>
+									<Utensils />
+									{t.admin.nav.listings}
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+						<SidebarMenuItem>
+							<SidebarMenuButton asChild>
+								<Link
+									to="/$locale/admin/provider"
+									params={{
+										locale,
+									}}
+									search={search}
+									onClick={() => {
+										setOpenMobile(false);
+									}}
+								>
+									<Building />
+									{t.admin.nav.provider}
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+						<SidebarMenuItem>
+							<SidebarMenuButton asChild>
+								<Link
+									to="/$locale/admin/analytics"
+									params={{
+										locale,
+									}}
+									search={search}
+									onClick={() => {
+										setOpenMobile(false);
+									}}
+								>
+									<BarChart />
+									{t.admin.nav.analytics}
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					</SidebarGroupContent>
+				</SidebarGroup>
+				<SidebarGroup>
+					<SidebarGroupContent>
+						<SidebarGroupLabel>
+							{t.admin.nav.account}
+						</SidebarGroupLabel>
+						<SidebarMenuItem>
+							<SidebarMenuButton asChild>
+								<button
+									onClick={() => {
+										logout();
+									}}
+								>
+									<UserMinus />
+									{t.admin.nav.logout}
+								</button>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					</SidebarGroupContent>
+				</SidebarGroup>
+			</SidebarContent>
+			<SidebarFooter />
+		</Sidebar>
+	);
+};
+
+function RouteComponent() {
 	const { locale } = Route.useParams();
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
@@ -69,106 +192,7 @@ function RouteComponent() {
 
 	return (
 		<SidebarProvider>
-			<Sidebar>
-				<SidebarHeader>
-					<Link
-						to="/$locale"
-						params={{
-							locale,
-						}}
-						className={buttonVariants()}
-					>
-						<ExternalLink />
-						{t.admin.nav.exit}
-					</Link>
-				</SidebarHeader>
-				<SidebarContent>
-					<SidebarGroup>
-						<SidebarGroupContent>
-							<SidebarGroupLabel>
-								{t.admin.nav.admin}
-							</SidebarGroupLabel>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
-									<Link
-										to="/$locale/admin"
-										params={{
-											locale,
-										}}
-										search={search}
-									>
-										<LayoutDashboard />
-										{t.admin.nav.dashboard}
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
-									<Link
-										to="/$locale/admin/listings"
-										params={{
-											locale,
-										}}
-										search={search}
-										replace
-									>
-										<Utensils />
-										{t.admin.nav.listings}
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
-									<Link
-										to="/$locale/admin/provider"
-										params={{
-											locale,
-										}}
-										search={search}
-									>
-										<Building />
-										{t.admin.nav.provider}
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
-									<Link
-										to="/$locale/admin/analytics"
-										params={{
-											locale,
-										}}
-										search={search}
-									>
-										<BarChart />
-										{t.admin.nav.analytics}
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						</SidebarGroupContent>
-					</SidebarGroup>
-					<SidebarGroup>
-						<SidebarGroupContent>
-							<SidebarGroupLabel>
-								{t.admin.nav.account}
-							</SidebarGroupLabel>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
-									<button
-										onClick={() => {
-											logout();
-										}}
-									>
-										<UserMinus />
-										{t.admin.nav.logout}
-									</button>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						</SidebarGroupContent>
-					</SidebarGroup>
-				</SidebarContent>
-				<SidebarFooter />
-			</Sidebar>
+			<AdminSidebar />
 			<main className="flex-1 p-4">
 				<div className="flex flex-row items-center justify-between">
 					<SidebarTrigger />
