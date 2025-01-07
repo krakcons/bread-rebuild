@@ -20,12 +20,10 @@ import {
 import { useTranslations } from "@/lib/locale";
 import { ListingFormSchema } from "@/server/actions/listings";
 import {
-	DietaryOptionType,
 	ProviderPhoneNumberType,
 	ProviderType,
 	ResourceType,
 } from "@/server/db/types";
-import { OfferingEnum } from "@/server/types";
 import { Libraries, useJsApiLoader } from "@react-google-maps/api";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useParams } from "@tanstack/react-router";
@@ -35,6 +33,7 @@ import { z } from "zod";
 
 import { formatAddress } from "@/lib/address";
 import { formatPhoneNumber } from "@/lib/phone";
+import { DietaryOptionType, OfferingType } from "@/server/types";
 import { Checkbox } from "../ui/Checkbox";
 import { BlockNavigation } from "./BlockNavigation";
 
@@ -179,14 +178,12 @@ export const ListingForm = ({
 	locale,
 	defaultValues,
 	onSubmit,
-	dietaryOptions,
 	blockNavigation = true,
 	provider,
 }: {
 	locale: string;
 	defaultValues?: ResourceType;
 	onSubmit: (data: z.infer<typeof ListingFormSchema>) => void;
-	dietaryOptions: DietaryOptionType[];
 	blockNavigation?: boolean;
 	provider: ProviderType;
 }) => {
@@ -203,7 +200,9 @@ export const ListingForm = ({
 					...phone,
 					phone: formatPhoneNumber(phone.phone),
 				})) ?? undefined,
-			offering: defaultValues?.offering ?? "meal",
+			offerings: defaultValues?.offerings ?? [],
+			offeringsOther: defaultValues?.offeringsOther ?? undefined,
+			dietaryOptions: defaultValues?.dietaryOptions ?? [],
 			eligibility: defaultValues?.eligibility ?? undefined,
 			free: defaultValues?.free ?? false,
 			preparation: defaultValues?.preparation ?? false,
@@ -226,15 +225,13 @@ export const ListingForm = ({
 			postalCode: defaultValues?.postalCode ?? "",
 			province: defaultValues?.province ?? "",
 			country: defaultValues?.country ?? "",
-			dietaryOptions:
-				defaultValues?.dietaryOptions?.map((option) => option.id) ??
-				undefined,
+			dietaryOptionsOther:
+				defaultValues?.dietaryOptionsOther ?? undefined,
 		},
 		validators: {
 			onSubmit: ListingFormSchema,
 		},
 		onSubmit: async ({ value: data, formApi }) => {
-			console.log(data);
 			try {
 				await onSubmit(data);
 			} catch (error) {
@@ -341,38 +338,6 @@ export const ListingForm = ({
 					{serverError && (
 						<ErrorMessage text={serverError as string} />
 					)}
-					<form.Field
-						name="offering"
-						children={(field) => (
-							<Label>
-								{t.form.listing.offering.title}
-								<Select
-									value={field.state.value}
-									onValueChange={(value) =>
-										field.handleChange(
-											value as OfferingEnum,
-										)
-									}
-								>
-									<SelectTrigger className="w-[180px]">
-										<SelectValue placeholder="" />
-									</SelectTrigger>
-									<SelectContent>
-										{Object.keys(t.offeringTypes).map(
-											(key) => (
-												<SelectItem
-													value={key}
-													key={key}
-												>
-													{t.offeringTypes[key]}
-												</SelectItem>
-											),
-										)}
-									</SelectContent>
-								</Select>
-							</Label>
-						)}
-					/>
 					<form.Field
 						name="name"
 						children={(field) => (
@@ -685,6 +650,88 @@ export const ListingForm = ({
 					</div>
 					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 						<p className="font-medium">
+							{t.form.listing.offerings.title}
+						</p>
+						<p className="text-sm text-muted-foreground">
+							{t.form.listing.offerings.description}
+						</p>
+					</div>
+					<form.Field
+						name="offerings"
+						children={(field) => (
+							<>
+								{Object.keys(t.offeringTypes).map(
+									(key: OfferingType) => (
+										<div
+											key={key}
+											className="flex items-center gap-2"
+										>
+											<Checkbox
+												name={key}
+												checked={field.state.value?.includes(
+													key,
+												)}
+												onCheckedChange={(checked) => {
+													if (checked) {
+														field.handleChange([
+															...(field.state
+																.value ?? []),
+															key,
+														]);
+													} else {
+														field.handleChange(
+															(
+																field.state
+																	.value ?? []
+															).filter(
+																(id) =>
+																	id !== key,
+															),
+														);
+													}
+												}}
+											/>
+											{t.offeringTypes[key]}
+										</div>
+									),
+								)}
+								<FieldError state={field.state} />
+							</>
+						)}
+					/>
+					<form.Subscribe selector={(s) => [s.values.offerings]}>
+						{([offerings]) => (
+							<>
+								{offerings?.includes("other") && (
+									<form.Field
+										name="offeringsOther"
+										children={(field) => (
+											<>
+												<Input
+													name={field.name}
+													value={
+														field.state.value ?? ""
+													}
+													onBlur={field.handleBlur}
+													onChange={(e) =>
+														field.handleChange(
+															e.target.value,
+														)
+													}
+													autoComplete="off"
+												/>
+												<FieldError
+													state={field.state}
+												/>
+											</>
+										)}
+									/>
+								)}
+							</>
+						)}
+					</form.Subscribe>
+					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+						<p className="font-medium">
 							{t.form.listing.dietaryOptions.title}
 						</p>
 						<p className="text-sm text-muted-foreground">
@@ -696,45 +743,82 @@ export const ListingForm = ({
 							name="dietaryOptions"
 							children={(field) => (
 								<>
-									{dietaryOptions.map((option) => (
-										<div
-											key={option.id}
-											className="flex items-center gap-2"
-										>
-											<Checkbox
-												name={option.id}
-												checked={field.state.value?.includes(
-													option.id,
-												)}
-												onCheckedChange={(checked) => {
-													if (checked) {
-														field.handleChange([
-															...(field.state
-																.value ?? []),
-															option.id,
-														]);
-													} else {
-														field.handleChange(
-															(
-																field.state
-																	.value ?? []
-															).filter(
-																(id) =>
-																	id !==
-																	option.id,
-															),
-														);
-													}
-												}}
-											/>
-											{option.name}
-										</div>
-									))}
+									{Object.keys(t.dietaryOptionTypes).map(
+										(key: DietaryOptionType) => (
+											<div
+												key={key}
+												className="flex items-center gap-2"
+											>
+												<Checkbox
+													name={key}
+													checked={field.state.value?.includes(
+														key,
+													)}
+													onCheckedChange={(
+														checked,
+													) => {
+														if (checked) {
+															field.handleChange([
+																...(field.state
+																	.value ??
+																	[]),
+																key,
+															]);
+														} else {
+															field.handleChange(
+																(
+																	field.state
+																		.value ??
+																	[]
+																).filter(
+																	(id) =>
+																		id !==
+																		key,
+																),
+															);
+														}
+													}}
+												/>
+												{t.dietaryOptionTypes[key]}
+											</div>
+										),
+									)}
 									<FieldError state={field.state} />
 								</>
 							)}
 						/>
 					</div>
+					<form.Subscribe selector={(s) => [s.values.dietaryOptions]}>
+						{([dietaryOptions]) => (
+							<>
+								{dietaryOptions?.includes("other") && (
+									<form.Field
+										name="dietaryOptionsOther"
+										children={(field) => (
+											<>
+												<Input
+													name={field.name}
+													value={
+														field.state.value ?? ""
+													}
+													onBlur={field.handleBlur}
+													onChange={(e) =>
+														field.handleChange(
+															e.target.value,
+														)
+													}
+													autoComplete="off"
+												/>
+												<FieldError
+													state={field.state}
+												/>
+											</>
+										)}
+									/>
+								)}
+							</>
+						)}
+					</form.Subscribe>
 					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 						<p className="font-medium">
 							{t.form.listing.hours.title}

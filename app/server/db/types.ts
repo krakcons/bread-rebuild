@@ -3,8 +3,6 @@ import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import {
 	anonymousSessionsToResources,
-	dietaryOptions,
-	dietaryOptionsTranslations,
 	providerPhoneNumbers,
 	providers,
 	providerTranslations,
@@ -39,25 +37,6 @@ export const ProviderPhoneNumberSchema =
 	createSelectSchema(providerPhoneNumbers);
 export type ProviderPhoneNumberType = z.infer<typeof ProviderPhoneNumberSchema>;
 
-// Dietary option types
-
-export const DietaryOptionSchema = createSelectSchema(dietaryOptions);
-export type BaseDietaryOptionType = z.infer<typeof DietaryOptionSchema>;
-
-export const DietaryOptionTranslationSchema = createSelectSchema(
-	dietaryOptionsTranslations,
-);
-export type DietaryOptionTranslationType = z.infer<
-	typeof DietaryOptionTranslationSchema
->;
-
-export type DietaryOptionType = FlattenedLocalized<
-	BaseDietaryOptionType & {
-		translations: DietaryOptionTranslationType[];
-	},
-	DietaryOptionTranslationType
->;
-
 // Resource types
 
 export const ResourceSchema = createSelectSchema(resources);
@@ -72,7 +51,6 @@ export type ResourceType = FlattenedLocalized<
 		translations: ResourceTranslationType[];
 		provider: ProviderType;
 		phoneNumbers: PhoneNumberType[];
-		dietaryOptions: DietaryOptionType[];
 	},
 	ResourceTranslationType
 >;

@@ -61,6 +61,18 @@ export const english = {
 	terms: "Terms of Use",
 	privacy: "Privacy Policy",
 	dietaryOptions: "Dietary Options",
+	dietaryOptionTypes: {
+		vegetarian: "Vegetarian",
+		vegan: "Vegan",
+		halal: "Halal",
+		kosher: "Kosher",
+		"renal-disease": "Renal Disease",
+		"gluten-free": "Gluten-Free",
+		celiac: "Celiac",
+		baby: "Baby",
+		pet: "Pet",
+		other: "Other",
+	},
 	daysOfWeek: {
 		unassigned: "Unassigned",
 		open: "Open",
@@ -196,6 +208,7 @@ export const english = {
 		pantry: "Pantry",
 		"drop-in": "Drop-in",
 		market: "Market",
+		other: "Other",
 	},
 	form: {
 		common: {
@@ -244,6 +257,10 @@ export const english = {
 			success: {
 				create: "Listing created",
 				update: "Listing updated",
+			},
+			offerings: {
+				title: "Offerings",
+				description: "Select the offerings for your listing.",
 			},
 			capacity: {
 				title: "Capacity",
@@ -393,6 +410,18 @@ export const french: typeof english = {
 	terms: "Conditions d'utilisation",
 	privacy: "Politique de confidentialité",
 	dietaryOptions: "Options Diététiques",
+	dietaryOptionTypes: {
+		vegetarian: "Végétarien",
+		vegan: "Vegan",
+		halal: "Halal",
+		kosher: "Kosher",
+		"renal-disease": "Maladie Rénale",
+		"gluten-free": "Sans gluten",
+		celiac: "Céliaque",
+		baby: "Bébé",
+		pet: "Animal de compagnie",
+		other: "Autre",
+	},
 	daysOfWeek: {
 		unassigned: "Non assigné",
 		open: "Ouvert",
@@ -528,6 +557,7 @@ export const french: typeof english = {
 		pantry: "Pantry",
 		"drop-in": "Drop-in",
 		market: "Marché",
+		other: "Autre",
 	},
 	form: {
 		common: {
@@ -577,6 +607,10 @@ export const french: typeof english = {
 			success: {
 				create: "Annonce créée",
 				update: "Annonce mise à jour",
+			},
+			offerings: {
+				title: "Offres",
+				description: "Sélectionnez les offres pour votre listing.",
 			},
 			delete: {
 				title: "Supprimer l'annonce",

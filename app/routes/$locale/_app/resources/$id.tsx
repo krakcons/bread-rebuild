@@ -108,7 +108,9 @@ function ResourceDetail() {
 	});
 
 	const tags = useMemo(() => {
-		let tags: string[] = [t.offeringTypes[resource.offering]];
+		let tags: string[] = [
+			...resource.offerings.map((offering) => t.offeringTypes[offering]),
+		];
 		if (resource.free) {
 			tags.push(t.free);
 		}
@@ -301,7 +303,10 @@ function ResourceDetail() {
 								label={t.dietaryOptions}
 								value={
 									resource.dietaryOptions
-										.map((option) => option.name)
+										.map(
+											(option) =>
+												t.dietaryOptions[option],
+										)
 										.join(", ") || ""
 								}
 								icon={

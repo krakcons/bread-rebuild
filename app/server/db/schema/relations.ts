@@ -1,12 +1,9 @@
 import {
 	anonymousSessions,
-	dietaryOptions,
-	dietaryOptionsTranslations,
 	providerPhoneNumbers,
 	providers,
 	providerTranslations,
 	resourcePhoneNumbers,
-	resourceToDietaryOptions,
 	resourceTranslations,
 } from "./tables";
 
@@ -69,7 +66,6 @@ export const resourceRelations = relations(resources, ({ many, one }) => ({
 		fields: [resources.providerId],
 		references: [providers.id],
 	}),
-	resourceToDietaryOptions: many(resourceToDietaryOptions),
 	anonymousSessionsToResources: many(anonymousSessionsToResources),
 }));
 
@@ -89,38 +85,6 @@ export const resourcePhoneNumbersRelations = relations(
 		resource: one(resources, {
 			fields: [resourcePhoneNumbers.resourceId],
 			references: [resources.id],
-		}),
-	}),
-);
-
-export const resourceToDietaryOptionsRelations = relations(
-	resourceToDietaryOptions,
-	({ one }) => ({
-		resource: one(resources, {
-			fields: [resourceToDietaryOptions.resourceId],
-			references: [resources.id],
-		}),
-		dietaryOption: one(dietaryOptions, {
-			fields: [resourceToDietaryOptions.dietaryOptionId],
-			references: [dietaryOptions.id],
-		}),
-	}),
-);
-
-export const dietaryOptionsRelations = relations(
-	dietaryOptions,
-	({ many }) => ({
-		resourceToDietaryOptions: many(resourceToDietaryOptions),
-		translations: many(dietaryOptionsTranslations),
-	}),
-);
-
-export const dietaryOptionsTranslationsRelations = relations(
-	dietaryOptionsTranslations,
-	({ one }) => ({
-		dietaryOption: one(dietaryOptions, {
-			fields: [dietaryOptionsTranslations.dietaryOptionId],
-			references: [dietaryOptions.id],
 		}),
 	}),
 );

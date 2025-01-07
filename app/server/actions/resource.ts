@@ -1,11 +1,6 @@
 import { flattenLocalizedObject } from "@/lib/locale";
 import { db } from "@/server/db";
-import {
-	providers,
-	providerTranslations,
-	resources,
-	resourceToDietaryOptions,
-} from "@/server/db/schema";
+import { providers, providerTranslations, resources } from "@/server/db/schema";
 import {
 	LocalizedQuerySchema,
 	LocalizedQueryType,
@@ -13,7 +8,7 @@ import {
 } from "@/server/db/types";
 import { localeMiddleware } from "@/server/middleware";
 import { createServerFn } from "@tanstack/start";
-import { and, eq, exists, ilike, inArray, sql } from "drizzle-orm";
+import { and, eq, exists, ilike, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 export const SearchParamsSchema = z.object({
@@ -68,26 +63,6 @@ export const searchFn = createServerFn({
 				data.parking ? eq(resources.parking, true) : undefined,
 				data.transit ? eq(resources.transit, true) : undefined,
 				data.wheelchair ? eq(resources.wheelchair, true) : undefined,
-				data.dietaryOptionIds && data.dietaryOptionIds.length > 0
-					? eq(
-							db
-								.select({ count: sql`count(*)` })
-								.from(resourceToDietaryOptions)
-								.where(
-									and(
-										eq(
-											resourceToDietaryOptions.resourceId,
-											resources.id,
-										),
-										inArray(
-											resourceToDietaryOptions.dietaryOptionId,
-											data.dietaryOptionIds,
-										),
-									),
-								),
-							data.dietaryOptionIds.length,
-						)
-					: undefined,
 			),
 			with: {
 				provider: {
@@ -97,26 +72,14 @@ export const searchFn = createServerFn({
 				},
 				translations: true,
 				phoneNumbers: true,
-				resourceToDietaryOptions: {
-					with: {
-						dietaryOption: {
-							with: {
-								translations: true,
-							},
-						},
-					},
-				},
 			},
 		});
 		return resourceList.map((resource) => {
-			const { provider, resourceToDietaryOptions, ...rest } = resource;
+			const { provider, ...rest } = resource;
 			return flattenLocalizedObject(
 				{
 					...rest,
 					provider: flattenLocalizedObject(provider, localeOpts),
-					dietaryOptions: resourceToDietaryOptions.map((r) =>
-						flattenLocalizedObject(r.dietaryOption, localeOpts),
-					),
 				},
 				localeOpts,
 			)!;
@@ -144,26 +107,14 @@ export const getResourceFn = createServerFn({
 				},
 				translations: true,
 				phoneNumbers: true,
-				resourceToDietaryOptions: {
-					with: {
-						dietaryOption: {
-							with: {
-								translations: true,
-							},
-						},
-					},
-				},
 			},
 		});
 		if (!resource) return undefined;
-		const { provider, resourceToDietaryOptions, ...rest } = resource;
+		const { provider, ...rest } = resource;
 		return flattenLocalizedObject(
 			{
 				...rest,
 				provider: flattenLocalizedObject(provider, localeOpts),
-				dietaryOptions: resourceToDietaryOptions.map((r) =>
-					flattenLocalizedObject(r.dietaryOption, localeOpts),
-				),
 			},
 			localeOpts,
 		);
@@ -189,26 +140,14 @@ export const getResourcesFn = createServerFn({
 				},
 				translations: true,
 				phoneNumbers: true,
-				resourceToDietaryOptions: {
-					with: {
-						dietaryOption: {
-							with: {
-								translations: true,
-							},
-						},
-					},
-				},
 			},
 		});
 		return resourceList.map((resource) => {
-			const { provider, resourceToDietaryOptions, ...rest } = resource;
+			const { provider, ...rest } = resource;
 			return flattenLocalizedObject(
 				{
 					...rest,
 					provider: flattenLocalizedObject(provider, localeOpts),
-					dietaryOptions: resourceToDietaryOptions.map((r) =>
-						flattenLocalizedObject(r.dietaryOption, localeOpts),
-					),
 				},
 				localeOpts,
 			)!;

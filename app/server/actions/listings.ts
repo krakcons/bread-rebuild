@@ -8,7 +8,6 @@ import { db } from "../db";
 import {
 	resourcePhoneNumbers,
 	resources,
-	resourceToDietaryOptions,
 	resourceTranslations,
 } from "../db/schema/tables";
 import {
@@ -20,16 +19,13 @@ import {
 	ResourceType,
 } from "../db/types";
 import { localeMiddleware, providerMiddleware } from "../middleware";
-import { ContactSchema, OfferingEnum } from "../types";
+import { ContactSchema, DietaryOptionSchema, OfferingSchema } from "../types";
 
 export const ListingFormSchema = z.object({
 	// Contact
 	email: ContactSchema.shape.email,
 	website: ContactSchema.shape.website,
 	phoneNumbers: ContactSchema.shape.phoneNumbers,
-
-	// Dietary options
-	dietaryOptions: z.array(z.string()).optional(),
 
 	// Resource
 	parking: z.boolean().optional(),
@@ -38,7 +34,10 @@ export const ListingFormSchema = z.object({
 	registration: z.boolean().optional(),
 	free: z.boolean().optional(),
 	wheelchair: z.boolean().optional(),
-	offering: OfferingEnum,
+	offerings: OfferingSchema.array().optional(),
+	offeringsOther: z.string().optional(),
+	dietaryOptions: DietaryOptionSchema.array().optional(),
+	dietaryOptionsOther: z.string().optional(),
 	hours: z.string().optional(),
 
 	// Address
@@ -89,26 +88,14 @@ export const getListingsFn = createServerFn({
 				},
 				translations: true,
 				phoneNumbers: true,
-				resourceToDietaryOptions: {
-					with: {
-						dietaryOption: {
-							with: {
-								translations: true,
-							},
-						},
-					},
-				},
 			},
 		});
 		return resourceList.map((resource) => {
-			const { provider, resourceToDietaryOptions, ...rest } = resource;
+			const { provider, ...rest } = resource;
 			return flattenLocalizedObject(
 				{
 					...rest,
 					provider: flattenLocalizedObject(provider, localeOpts),
-					dietaryOptions: resourceToDietaryOptions.map((r) =>
-						flattenLocalizedObject(r.dietaryOption, localeOpts),
-					),
 				},
 				localeOpts,
 			)!;
@@ -126,7 +113,7 @@ export const mutateListingFn = createServerFn({
 		}).and(LocalizedInputSchema),
 	)
 	.handler(async ({ context, data }) => {
-		const { dietaryOptions, phoneNumbers, ...rest } = data;
+		const { phoneNumbers, ...rest } = data;
 		const listingId = data.id ?? generateId(16);
 
 		const resource: Omit<BaseResourceType, "createdAt"> = {
@@ -140,7 +127,8 @@ export const mutateListingFn = createServerFn({
 			lng: rest.lng,
 			street1: rest.street1,
 			street2: rest.street2 ?? null,
-			offering: rest.offering ?? "meal",
+			offerings: rest.offerings ?? [],
+			dietaryOptions: rest.dietaryOptions ?? [],
 			hours: rest.hours ?? null,
 			free: rest.free ?? null,
 			wheelchair: rest.wheelchair ?? null,
@@ -167,6 +155,12 @@ export const mutateListingFn = createServerFn({
 			registrationNotes: rest.registrationNotes ?? null,
 			wheelchairNotes: rest.wheelchairNotes ?? null,
 			capacityNotes: rest.capacityNotes ?? null,
+			offeringsOther: rest.offerings?.includes("other")
+				? (rest.offeringsOther ?? null)
+				: null,
+			dietaryOptionsOther: rest.dietaryOptions?.includes("other")
+				? (rest.dietaryOptionsOther ?? null)
+				: null,
 		};
 
 		await db.transaction(async (tx) => {
@@ -187,18 +181,6 @@ export const mutateListingFn = createServerFn({
 					],
 					set: translation,
 				});
-
-			if (dietaryOptions && dietaryOptions.length > 0) {
-				await tx
-					.delete(resourceToDietaryOptions)
-					.where(eq(resourceToDietaryOptions.resourceId, listingId));
-				await tx.insert(resourceToDietaryOptions).values(
-					dietaryOptions.map((option) => ({
-						dietaryOptionId: option,
-						resourceId: listingId,
-					})),
-				);
-			}
 
 			if (phoneNumbers && phoneNumbers.length > 0) {
 				await tx

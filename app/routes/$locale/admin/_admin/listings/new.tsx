@@ -1,6 +1,5 @@
 import { ListingForm } from "@/components/forms/Listing";
 import { Locale, useTranslations } from "@/lib/locale";
-import { getDietaryOptionsFn } from "@/server/actions/dietary";
 import { mutateListingFn } from "@/server/actions/listings";
 import { getProviderFn } from "@/server/actions/provider";
 import {
@@ -24,15 +23,8 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 		if (!provider) {
 			throw notFound();
 		}
-		const dietaryOptions = await getDietaryOptionsFn({
-			data: {
-				locale: params.locale as Locale,
-				fallback: true,
-			},
-		});
 		return {
 			provider,
-			dietaryOptions,
 		};
 	},
 });
@@ -42,7 +34,7 @@ function RouteComponent() {
 	const createListing = useServerFn(mutateListingFn);
 	const { locale } = Route.useParams();
 	const t = useTranslations(locale);
-	const { provider, dietaryOptions } = Route.useLoaderData();
+	const { provider } = Route.useLoaderData();
 	const { editingLocale } = Route.useSearch();
 
 	return (
@@ -54,7 +46,6 @@ function RouteComponent() {
 			<div className="flex flex-col gap-2">
 				<ListingForm
 					locale={locale}
-					dietaryOptions={dietaryOptions}
 					provider={provider}
 					onSubmit={async (data) => {
 						await createListing({

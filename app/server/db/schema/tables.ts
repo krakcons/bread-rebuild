@@ -11,7 +11,7 @@ import { users } from "./auth";
 
 // Enums
 const localeEnum = text("locale", { enum: ["en", "fr"] }).notNull();
-const offeringEnum = text("offering", {
+const offeringsEnum = text("offerings", {
 	enum: [
 		"meal",
 		"groceries",
@@ -20,14 +20,31 @@ const offeringEnum = text("offering", {
 		"pantry",
 		"drop-in",
 		"market",
+		"other",
 	],
 })
-	.default("meal")
+	.array()
 	.notNull();
 const phoneNumberTypeEnum = text("type", {
 	enum: ["phone", "fax", "toll-free", "tty"],
 })
 	.default("phone")
+	.notNull();
+export const dietaryOptionsEnum = text("dietary_option", {
+	enum: [
+		"vegetarian",
+		"vegan",
+		"halal",
+		"kosher",
+		"celiac",
+		"gluten-free",
+		"renal-disease",
+		"baby",
+		"pet",
+		"other",
+	],
+})
+	.array()
 	.notNull();
 const dayEnum = text("day", {
 	enum: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
@@ -94,7 +111,8 @@ export const resources = pgTable("resources", {
 	registration: boolean("registration"),
 	free: boolean("free"),
 	wheelchair: boolean("wheelchair"),
-	offering: offeringEnum,
+	offerings: offeringsEnum,
+	dietaryOptions: dietaryOptionsEnum,
 	hours: text("hours"),
 
 	// Address
@@ -157,46 +175,10 @@ export const resourceTranslations = pgTable(
 		registrationNotes: text("registration_notes"), // If registration is true
 		wheelchairNotes: text("wheelchair_notes"), // If wheelchair is true
 		capacityNotes: text("capacity_notes"),
+		offeringsOther: text("offerings_other"),
+		dietaryOptionsOther: text("dietary_options_other"),
 	},
 	(t) => [primaryKey({ columns: [t.resourceId, t.locale] })],
-);
-
-// Dietary Options
-export const resourceToDietaryOptions = pgTable(
-	"resource_to_dietary_options",
-	{
-		resourceId: text("resource_id")
-			.notNull()
-			.references(() => resources.id, {
-				onDelete: "cascade",
-			}),
-		dietaryOptionId: text("dietary_option_id")
-			.notNull()
-			.references(() => dietaryOptions.id, {
-				onDelete: "cascade",
-			}),
-	},
-	(t) => [primaryKey({ columns: [t.resourceId, t.dietaryOptionId] })],
-);
-
-export const dietaryOptions = pgTable("dietary_options", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => generateId(16)),
-});
-
-export const dietaryOptionsTranslations = pgTable(
-	"dietary_options_translations",
-	{
-		dietaryOptionId: text("dietary_option_id")
-			.notNull()
-			.references(() => dietaryOptions.id, {
-				onDelete: "cascade",
-			}),
-		locale: localeEnum,
-		name: text("name").notNull(),
-	},
-	(t) => [primaryKey({ columns: [t.dietaryOptionId, t.locale] })],
 );
 
 // Anonymous Users

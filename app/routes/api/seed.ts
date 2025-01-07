@@ -5,22 +5,19 @@ import { generateId } from "@/server/auth";
 import { db } from "@/server/db";
 import {
 	anonymousSessionsToResources,
-	dietaryOptions,
-	dietaryOptionsTranslations,
 	providerPhoneNumbers,
 	providers,
 	providerTranslations,
 	resourcePhoneNumbers,
 	resources,
-	resourceToDietaryOptions,
 	resourceTranslations,
 } from "@/server/db/schema";
+import { BaseResourceType, ResourceTranslationType } from "@/server/db/types";
 import {
-	BaseResourceType,
-	ResourceSchema,
-	ResourceTranslationType,
-	ResourceType,
-} from "@/server/db/types";
+	DietaryOptionType,
+	OfferingSchema,
+	OfferingType,
+} from "@/server/types";
 import { and, eq } from "drizzle-orm";
 
 type LocalizedFieldType = {
@@ -153,22 +150,23 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 				fr: Omit<ResourceTranslationType, "id">;
 			};
 			phone: string | null;
-			dietaryOptions: string[];
 		} => {
 			const contactInfo = parseContactInfo(
 				drupalData.attributes.field_registration_notes ?? "",
 			);
 			const hours = parseHours(drupalData);
-			const dietaryOptions: string[] = dietary.data
+			const dietaryOptions = dietary.data
 				.filter((dietary) =>
 					drupalData.relationships.field_dietary.data.some(
 						({ id }) => dietary.id === id,
 					),
 				)
-				.map((dietary) => dietary.attributes.name);
+				.map((dietary) =>
+					dietary.attributes.name.toLowerCase().replace(" ", "-"),
+				) as DietaryOptionType[];
 
-			let offering: ResourceType["offering"];
-			const offeringParsed = ResourceSchema.shape.offering.safeParse(
+			let offering: OfferingType;
+			const offeringParsed = OfferingSchema.safeParse(
 				drupalData.attributes.field_service_type.toLowerCase(),
 			);
 			if (offeringParsed.success) {
@@ -177,11 +175,14 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 				offering = "meal";
 			}
 
+			console.log(dietaryOptions);
+
 			const resource: Omit<BaseResourceType, "createdAt" | "updatedAt"> =
 				{
 					id: generateId(16),
 					providerId,
 					...contactInfo,
+					dietaryOptions,
 					parking:
 						drupalData.attributes.field_parking_avail_bool || false,
 					preparation:
@@ -196,7 +197,7 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 						drupalData.attributes.field__near_transit_bool || false,
 					registration:
 						drupalData.attributes.field_registration_bool || false,
-					offering,
+					offerings: [offering],
 					street1:
 						drupalData.attributes.field_pickup_address
 							.address_line1,
@@ -224,9 +225,12 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 					resourceId: resource.id,
 					email: contactInfo.email,
 					website: contactInfo.website,
-					name: "",
+					name: null,
+					offeringsOther: null,
+					dietaryOptionsOther: null,
 					fees: drupalData.attributes.field_cost_notes,
 					locale: "en",
+					capacity: drupalData.attributes.field_resource_capacity,
 					registrationNotes:
 						drupalData.attributes.field_registration_notes,
 					parkingNotes: drupalData.attributes.field_parking_notes,
@@ -248,9 +252,12 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 					resourceId: resource.id,
 					email: contactInfo.email,
 					website: contactInfo.website,
-					name: "",
+					name: null,
+					offeringsOther: null,
+					dietaryOptionsOther: null,
 					fees: drupalData.attributes.field_cost_notes,
 					locale: "fr",
+					capacity: drupalData.attributes.field_resource_capacity,
 					registrationNotes:
 						drupalData.attributes.field_registration_notes,
 					parkingNotes: drupalData.attributes.field_parking_notes,
@@ -273,55 +280,20 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			return {
 				resource,
 				body,
-				dietaryOptions,
 				phone: contactInfo.phone,
 			};
 		};
 
 		// Clear existing data in correct order (dependent tables first)
-		await db.delete(resourceToDietaryOptions);
-		await db.delete(providerPhoneNumbers);
-		await db.delete(dietaryOptionsTranslations);
-		await db.delete(dietaryOptions);
-		await db.delete(resourcePhoneNumbers);
-		await db.delete(resourceTranslations);
-		await db.delete(providerTranslations);
-		await db.delete(anonymousSessionsToResources);
-		await db.delete(resources); // Move resources delete after its dependent tables
-		await db.delete(providers); // Move providers delete last
-
-		// Create dietary restrictions
-		const dietaryMap = new Map();
-		const dietaryData = [
-			{ en: "Vegetarian", fr: "Vegetarien" },
-			{ en: "Halal", fr: "Halal" },
-			{ en: "Celiac", fr: "Céliaque" },
-			{ en: "Renal Disease", fr: "Maladie Rénale" },
-			{ en: "Baby", fr: "Bébé" },
-			{ en: "Kosher", fr: "Kosher" },
-			{ en: "Gluten Free", fr: "Sans Gluten" },
-			{ en: "Pet Food", fr: "Alimentation pour animaux" },
-		];
-
-		for (const dietary of dietaryData) {
-			const id = generateId(16);
-			dietaryMap.set(dietary.en, id);
-
-			await db.insert(dietaryOptions).values({ id });
-
-			await db.insert(dietaryOptionsTranslations).values([
-				{
-					dietaryOptionId: id,
-					locale: "en",
-					name: dietary.en,
-				},
-				{
-					dietaryOptionId: id,
-					locale: "fr",
-					name: dietary.fr,
-				},
-			]);
-		}
+		await Promise.all([
+			db.delete(providerPhoneNumbers),
+			db.delete(resourcePhoneNumbers),
+			db.delete(resourceTranslations),
+			db.delete(providerTranslations),
+			db.delete(anonymousSessionsToResources),
+			db.delete(resources), // Move resources delete after its dependent tables
+			db.delete(providers), // Move providers delete last
+		]);
 
 		const providerMap = new Map();
 		const providerIdMap = new Map();
@@ -341,20 +313,26 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			providerIdMap.set(organization.id, id);
 		}
 
+		const promises: Promise<any>[][] = [[], []];
+
 		for (const provider of providerMap.values()) {
-			await db.insert(providers).values(provider);
-			await db.insert(providerTranslations).values({
-				providerId: provider.id,
-				locale: "en",
-				name: provider.name,
-				email: provider.email,
-			});
-			await db.insert(providerTranslations).values({
-				providerId: provider.id,
-				locale: "fr",
-				name: provider.name,
-				email: provider.email,
-			});
+			promises[0].push(db.insert(providers).values(provider));
+			promises[1].push(
+				db.insert(providerTranslations).values({
+					providerId: provider.id,
+					locale: "en",
+					name: provider.name,
+					email: provider.email,
+				}),
+			);
+			promises[1].push(
+				db.insert(providerTranslations).values({
+					providerId: provider.id,
+					locale: "fr",
+					name: provider.name,
+					email: provider.email,
+				}),
+			);
 		}
 
 		// Convert and insert resources
@@ -362,22 +340,23 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			const providerId: any = providerIdMap.get(
 				meal.relationships.field_organization_name.data.id,
 			);
-			console.log("providerId", providerId);
 			if (!providerId) {
 				console.warn(
 					`No provider found for meal ${meal.id} (org: ${meal.relationships.field_organization_name.data?.id})`,
 				);
 				continue;
 			}
-			const { resource, body, phone, dietaryOptions } =
-				convertDrupalToResource(meal, providerId);
+			const { resource, body, phone } = convertDrupalToResource(
+				meal,
+				providerId,
+			);
 
 			// Insert resource
-			await db.insert(resources).values(resource);
+			promises[0].push(db.insert(resources).values(resource));
 
 			// Insert resource body
-			await db.insert(resourceTranslations).values(body.en);
-			await db.insert(resourceTranslations).values(body.fr);
+			promises[1].push(db.insert(resourceTranslations).values(body.en));
+			promises[1].push(db.insert(resourceTranslations).values(body.fr));
 
 			// Insert phone numbers
 			if (phone) {
@@ -388,25 +367,19 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 					),
 				});
 				if (!existing) {
-					await db.insert(providerPhoneNumbers).values({
-						providerId,
-						phone,
-						type: "phone",
-					});
-				}
-			}
-
-			// Insert dietary restrictions
-			for (const dietary of dietaryOptions) {
-				const dietaryId = dietaryMap.get(dietary);
-				if (dietaryId) {
-					await db.insert(resourceToDietaryOptions).values({
-						resourceId: resource.id,
-						dietaryOptionId: dietaryId,
-					});
+					promises[1].push(
+						db.insert(providerPhoneNumbers).values({
+							providerId,
+							phone,
+							type: "phone",
+						}),
+					);
 				}
 			}
 		}
+
+		await Promise.all(promises[0]);
+		await Promise.all(promises[1]);
 
 		return json({ success: true });
 	},

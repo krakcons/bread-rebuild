@@ -11,14 +11,14 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/AlertDialog";
 import { Button } from "@/components/ui/Button";
-import { Locale, useTranslations } from "@/lib/locale";
-import { getDietaryOptionsFn } from "@/server/actions/dietary";
+import { useTranslations } from "@/lib/locale";
 import { deleteListingFn, mutateListingFn } from "@/server/actions/listings";
 import { getResourceFn } from "@/server/actions/resource";
 import {
 	createFileRoute,
 	ErrorComponent,
 	Link,
+	notFound,
 	useRouter,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
@@ -37,12 +37,11 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/$id")({
 				fallback: false,
 			},
 		});
-		const dietaryOptions = await getDietaryOptionsFn({
-			data: {
-				locale: params.locale as Locale,
-			},
-		});
-		return { listing, dietaryOptions };
+		console.log("listing", listing);
+		if (!listing) {
+			throw notFound();
+		}
+		return { listing };
 	},
 });
 
@@ -54,7 +53,6 @@ function RouteComponent() {
 	const deleteListing = useServerFn(deleteListingFn);
 	const { locale } = Route.useParams();
 	const { editingLocale } = Route.useSearch();
-	const { dietaryOptions } = Route.useLoaderData();
 	const t = useTranslations(locale);
 	const [deleting, setDeleting] = useState(false);
 
@@ -112,7 +110,6 @@ function RouteComponent() {
 					locale={locale}
 					provider={listing?.provider!}
 					defaultValues={listing}
-					dietaryOptions={dietaryOptions}
 					onSubmit={async (data) => {
 						await updateListing({
 							data: {

@@ -25,7 +25,7 @@ export const ContactSchema = z.object({
 });
 export type ContactType = z.infer<typeof ContactSchema>;
 
-export const OfferingEnum = z.enum([
+export const OfferingSchema = z.enum([
 	"meal",
 	"groceries",
 	"delivery",
@@ -33,5 +33,20 @@ export const OfferingEnum = z.enum([
 	"pantry",
 	"drop-in",
 	"market",
+	"other",
 ]);
-export type OfferingEnum = z.infer<typeof OfferingEnum>;
+export type OfferingType = z.infer<typeof OfferingSchema>;
+
+export const DietaryOptionSchema = z.enum([
+	"vegetarian",
+	"vegan",
+	"halal",
+	"kosher",
+	"celiac",
+	"gluten-free",
+	"renal-disease",
+	"baby",
+	"pet",
+	"other",
+]);
+export type DietaryOptionType = z.infer<typeof DietaryOptionSchema>;

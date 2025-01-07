@@ -15,7 +15,9 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 	const t = useTranslations(locale);
 
 	const tags = useMemo(() => {
-		let tags: string[] = [t.offeringTypes[resource.offering]];
+		let tags: string[] = [
+			...resource.offerings.map((offering) => t.offeringTypes[offering]),
+		];
 		if (resource.free) {
 			tags.push(t.free);
 		}
