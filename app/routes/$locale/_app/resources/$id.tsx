@@ -140,7 +140,9 @@ function ResourceDetail() {
 	return (
 		<div className="mx-auto flex max-w-3xl flex-col gap-4 py-8">
 			{/* Header */}
-			<h1 className="text-3xl font-bold">{resource.provider.name}</h1>
+			<h1 className="text-3xl font-bold">
+				{resource.name ?? resource.provider.name}
+			</h1>
 			<div className="flex flex-wrap items-end justify-between gap-2">
 				<ResourceActions resource={resource} />
 				<div className="flex flex-wrap gap-2">

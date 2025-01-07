@@ -45,7 +45,7 @@ export const Resource = ({ resource }: { resource: ResourceType }) => {
 				className="flex w-full flex-col items-start gap-2 p-4 pb-16"
 			>
 				<p className="text-xl font-semibold">
-					{resource.provider.name}
+					{resource.name ?? resource.provider.name}
 				</p>
 				{tags.length > 0 && (
 					<div className="flex flex-wrap gap-2">

@@ -190,6 +190,7 @@ export const ListingForm = ({
 	const t = useTranslations(locale);
 	const form = useForm({
 		defaultValues: {
+			name: defaultValues?.name ?? undefined,
 			description: defaultValues?.description ?? undefined,
 			email: defaultValues?.email ?? undefined,
 			website: defaultValues?.website ?? undefined,

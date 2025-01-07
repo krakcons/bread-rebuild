@@ -58,7 +58,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 							}}
 							className="text-lg font-semibold hover:underline"
 						>
-							{resource.provider.name}
+							{resource.name ?? resource.provider.name}
 						</Link>
 						{/* Address section */}
 						{resource.street1 && (
