@@ -38,6 +38,7 @@ import {
 	LayoutDashboard,
 	UserMinus,
 	Utensils,
+	X,
 } from "lucide-react";
 import { z } from "zod";
 
@@ -63,24 +64,37 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 
 const AdminSidebar = () => {
 	const logout = useServerFn(logoutFn);
-	const { setOpenMobile } = useSidebar();
+	const { setOpenMobile, isMobile } = useSidebar();
 	const { locale } = Route.useParams();
 	const search = Route.useSearch();
 	const t = useTranslations(locale);
 
 	return (
 		<Sidebar>
-			<SidebarHeader>
+			<SidebarHeader className="flex-row items-center justify-between">
 				<Link
 					to="/$locale"
 					params={{
 						locale,
 					}}
-					className={buttonVariants()}
+					className="flex items-center gap-2"
 				>
-					<ExternalLink />
-					{t.admin.nav.exit}
+					<img src="/logo.png" alt="Bread Logo" className="w-10" />
+					<p className="print font-semibold tracking-widest text-primary">
+						BREAD
+					</p>
 				</Link>
+				{isMobile && (
+					<Button
+						onClick={() => {
+							setOpenMobile(false);
+						}}
+						variant="ghost"
+						size="icon"
+					>
+						<X />
+					</Button>
+				)}
 			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
@@ -179,7 +193,18 @@ const AdminSidebar = () => {
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
-			<SidebarFooter />
+			<SidebarFooter>
+				<Link
+					to="/$locale"
+					params={{
+						locale,
+					}}
+					className={buttonVariants()}
+				>
+					<ExternalLink />
+					{t.admin.nav.exit}
+				</Link>
+			</SidebarFooter>
 		</Sidebar>
 	);
 };
