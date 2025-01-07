@@ -30,7 +30,7 @@ const phoneNumberTypeEnum = text("type", {
 })
 	.default("phone")
 	.notNull();
-export const dietaryOptionsEnum = text("dietary_option", {
+export const dietaryOptionsEnum = text("dietary_options", {
 	enum: [
 		"vegetarian",
 		"vegan",

@@ -305,7 +305,7 @@ function ResourceDetail() {
 									resource.dietaryOptions
 										.map(
 											(option) =>
-												t.dietaryOptions[option],
+												t.dietaryOptionTypes[option],
 										)
 										.join(", ") || ""
 								}

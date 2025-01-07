@@ -15,6 +15,7 @@ import { useDebounce } from "@/lib/debounce";
 import { getTranslations, useTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { searchFn, SearchParamsSchema } from "@/server/actions/resource";
+import { DietaryOptionType } from "@/server/types";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
@@ -71,7 +72,7 @@ function Home() {
 		parking = false,
 		transit = false,
 		wheelchair = false,
-		dietaryOptionIds = [],
+		dietaryOptions = [],
 	} = searchParams;
 	const translations = useTranslations(locale);
 
@@ -158,7 +159,7 @@ function Home() {
 									parking ||
 									transit ||
 									wheelchair ||
-									dietaryOptionIds.length > 0
+									dietaryOptions.length > 0
 								}
 							>
 								<Filter size={18} />
@@ -178,6 +179,7 @@ function Home() {
 							</DialogHeader>
 							{Object.keys(filterIcons).map((name) => (
 								<Button
+									key={name}
 									onClick={(e) => {
 										e.preventDefault();
 										e.stopPropagation();
@@ -203,47 +205,47 @@ function Home() {
 								{translations.dietaryOptions}
 							</p>
 							<div className="flex flex-wrap gap-2">
-								{Object.keys(translations.dietaryOptions).map(
-									(option) => (
-										<Button
-											key={option}
-											onClick={(e) => {
-												e.preventDefault();
-												e.stopPropagation();
-												navigate({
-													search: (prev) => ({
-														...prev,
-														dietaryOptionIds:
-															prev.dietaryOptionIds?.includes(
-																option,
-															)
-																? prev.dietaryOptionIds?.filter(
-																		(id) =>
-																			id !==
-																			option,
-																	)
-																: [
-																		...(prev.dietaryOptionIds ??
-																			[]),
+								{Object.keys(
+									translations.dietaryOptionTypes,
+								).map((option: DietaryOptionType) => (
+									<Button
+										key={option}
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											navigate({
+												search: (prev) => ({
+													...prev,
+													dietaryOptions:
+														prev.dietaryOptions?.includes(
+															option,
+														)
+															? prev.dietaryOptions?.filter(
+																	(id) =>
+																		id !==
 																		option,
-																	],
-													}),
-												});
-											}}
-											active={searchParams.dietaryOptionIds?.includes(
-												option,
-											)}
-											className="flex-grow justify-start"
-										>
-											<Utensils size={18} />
-											{
-												translations.dietaryOptions[
-													option
-												]
-											}
-										</Button>
-									),
-								)}
+																)
+															: [
+																	...(prev.dietaryOptions ??
+																		[]),
+																	option,
+																],
+												}),
+											});
+										}}
+										active={searchParams.dietaryOptions?.includes(
+											option,
+										)}
+										className="flex-grow justify-start"
+									>
+										<Utensils size={18} />
+										{
+											translations.dietaryOptionTypes[
+												option
+											]
+										}
+									</Button>
+								))}
 							</div>
 						</DialogContent>
 					</Dialog>

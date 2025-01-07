@@ -8,8 +8,9 @@ import {
 } from "@/server/db/types";
 import { localeMiddleware } from "@/server/middleware";
 import { createServerFn } from "@tanstack/start";
-import { and, eq, exists, ilike, inArray } from "drizzle-orm";
+import { and, eq, exists, ilike, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
+import { DietaryOptionSchema } from "../types";
 
 export const SearchParamsSchema = z.object({
 	query: z.string().optional(),
@@ -19,7 +20,7 @@ export const SearchParamsSchema = z.object({
 	parking: z.boolean().optional(),
 	transit: z.boolean().optional(),
 	wheelchair: z.boolean().optional(),
-	dietaryOptionIds: z.string().array().optional(),
+	dietaryOptions: DietaryOptionSchema.array().optional(),
 });
 
 export const searchFn = createServerFn({
@@ -63,6 +64,13 @@ export const searchFn = createServerFn({
 				data.parking ? eq(resources.parking, true) : undefined,
 				data.transit ? eq(resources.transit, true) : undefined,
 				data.wheelchair ? eq(resources.wheelchair, true) : undefined,
+				data.dietaryOptions && data.dietaryOptions.length > 0
+					? sql.raw(
+							`dietary_options @> '{${data.dietaryOptions
+								?.map((option) => `"${option}"`)
+								.join(", ")}}'`,
+						)
+					: undefined,
 			),
 			with: {
 				provider: {
