@@ -3,7 +3,6 @@ import { Locale, locales } from "@/lib/locale";
 import { getLocale, setLocale } from "@/lib/locale/actions";
 import { SessionValidationResult } from "@/server/auth";
 import { getAuth } from "@/server/auth/actions";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
 	createRootRouteWithContext,
 	ErrorComponent,
@@ -11,7 +10,6 @@ import {
 	redirect,
 	ScrollRestoration,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Meta, Scripts } from "@tanstack/start";
 import * as React from "react";
 
@@ -85,8 +83,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 					{children}
 				</main>
 				<ScrollRestoration getKey={(location) => location.pathname} />
-				<ReactQueryDevtools initialIsOpen={false} />
-				<TanStackRouterDevtools />
+				{/* <ReactQueryDevtools initialIsOpen={false} />
+				<TanStackRouterDevtools  /> */}
 				<Scripts />
 			</body>
 		</html>
