@@ -10,7 +10,7 @@ export default defineConfig({
 	schema: ["./app/server/db/schema/index.ts"],
 	out: "./migrations",
 	dbCredentials: {
-		database: process.env.TENANT_STAGE_NAME,
+		database: "bread-prod",
 		host: Resource.Aurora.host,
 		port: Resource.Aurora.port,
 		user: Resource.Aurora.username,

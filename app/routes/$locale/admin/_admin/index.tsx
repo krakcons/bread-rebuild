@@ -29,7 +29,7 @@ function RouteComponent() {
 					<p>{t.admin.listings.description}</p>
 				</Link>
 				<Link
-					to="/$locale/admin/provider"
+					to="/$locale/admin/providers/me"
 					className="flex flex-col gap-2 border p-4"
 					from={Route.fullPath}
 					search={(prev) => prev}
