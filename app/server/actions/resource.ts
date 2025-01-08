@@ -41,7 +41,19 @@ export const searchFn = createServerFn({
 
 		const resourceList = await db.query.resources.findMany({
 			where: and(
-				// Search
+				// Always check for approved provider
+				exists(
+					db
+						.select()
+						.from(providers)
+						.where(
+							and(
+								eq(providers.id, resources.providerId),
+								eq(providers.status, "approved"),
+							),
+						),
+				),
+				// Search conditions if query exists
 				data.query
 					? or(
 							exists(
