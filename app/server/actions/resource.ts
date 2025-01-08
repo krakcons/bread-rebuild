@@ -1,6 +1,11 @@
 import { flattenLocalizedObject } from "@/lib/locale";
 import { db } from "@/server/db";
-import { providers, providerTranslations, resources } from "@/server/db/schema";
+import {
+	providers,
+	providerTranslations,
+	resources,
+	resourceTranslations,
+} from "@/server/db/schema";
 import {
 	LocalizedQuerySchema,
 	LocalizedQueryType,
@@ -8,7 +13,7 @@ import {
 } from "@/server/db/types";
 import { localeMiddleware } from "@/server/middleware";
 import { createServerFn } from "@tanstack/start";
-import { and, eq, exists, ilike, inArray, sql } from "drizzle-orm";
+import { and, eq, exists, ilike, inArray, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { DietaryOptionSchema } from "../types";
 
@@ -36,29 +41,53 @@ export const searchFn = createServerFn({
 
 		const resourceList = await db.query.resources.findMany({
 			where: and(
+				// Search
 				data.query
-					? exists(
-							db
-								.select()
-								.from(providers)
-								.fullJoin(
-									providerTranslations,
-									eq(
-										providers.id,
-										providerTranslations.providerId,
-									),
-								)
-								.where(
-									and(
-										eq(providers.id, resources.providerId),
-										ilike(
-											providerTranslations.name,
-											`%${data.query}%`,
+					? or(
+							exists(
+								db
+									.select()
+									.from(providers)
+									.fullJoin(
+										providerTranslations,
+										eq(
+											providers.id,
+											providerTranslations.providerId,
+										),
+									)
+									.where(
+										and(
+											eq(
+												providers.id,
+												resources.providerId,
+											),
+											ilike(
+												providerTranslations.name,
+												`%${data.query}%`,
+											),
 										),
 									),
-								),
+							),
+							exists(
+								db
+									.select()
+									.from(resourceTranslations)
+									.where(
+										and(
+											eq(
+												resourceTranslations.resourceId,
+												resources.id,
+											),
+											ilike(
+												resourceTranslations.name,
+												`%${data.query}%`,
+											),
+										),
+									),
+							),
 						)
 					: undefined,
+				// Filters
 				data.free ? eq(resources.free, true) : undefined,
 				data.preparation ? eq(resources.preparation, true) : undefined,
 				data.parking ? eq(resources.parking, true) : undefined,

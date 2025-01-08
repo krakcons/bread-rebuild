@@ -31,7 +31,7 @@ export const ResourceActions = ({
 	resource: ResourceType;
 	children?: React.ReactNode;
 }) => {
-	const { providerId } = useRouteContext({
+	const { provider } = useRouteContext({
 		from: "__root__",
 	});
 	const { data: saved } = useSuspenseQuery({
@@ -160,7 +160,7 @@ export const ResourceActions = ({
 					</SelectContent>
 				</Select>
 			)}
-			{providerId === resource.provider.id && (
+			{provider?.id === resource.providerId && (
 				<Link
 					to="/$locale/admin/listings/$id"
 					onClick={(e) => {
