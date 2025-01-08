@@ -11,7 +11,7 @@ export function createRouter() {
 		context: {
 			session: null,
 			user: null,
-			providerId: null,
+			provider: null,
 		},
 		Wrap: ({ children }) => (
 			<QueryClientProvider client={queryClient}>

@@ -2,7 +2,12 @@ import { ProviderForm } from "@/components/forms/Provider";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { Locale, useTranslations } from "@/lib/locale";
 import { mutateProviderFn } from "@/server/actions/provider";
-import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	Link,
+	redirect,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
@@ -10,6 +15,17 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/$locale/admin/onboarding")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
+	beforeLoad: async ({ context, params }) => {
+		if (context.provider) {
+			throw redirect({
+				replace: true,
+				to: "/$locale/admin",
+				params: {
+					locale: params.locale,
+				},
+			});
+		}
+	},
 });
 
 function RouteComponent() {

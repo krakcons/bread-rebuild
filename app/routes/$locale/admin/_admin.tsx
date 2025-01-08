@@ -187,25 +187,6 @@ const AdminSidebar = () => {
 						</SidebarMenuItem>
 					</SidebarGroupContent>
 				</SidebarGroup>
-				<SidebarGroup>
-					<SidebarGroupContent>
-						<SidebarGroupLabel>
-							{t.admin.nav.account}
-						</SidebarGroupLabel>
-						<SidebarMenuItem>
-							<SidebarMenuButton asChild>
-								<button
-									onClick={() => {
-										logout();
-									}}
-								>
-									<UserMinus />
-									{t.admin.nav.logout}
-								</button>
-							</SidebarMenuButton>
-						</SidebarMenuItem>
-					</SidebarGroupContent>
-				</SidebarGroup>
 				{user?.role === "admin" && (
 					<SidebarGroup>
 						<SidebarGroupContent>
@@ -232,6 +213,25 @@ const AdminSidebar = () => {
 						</SidebarMenuItem>
 					</SidebarGroup>
 				)}
+				<SidebarGroup>
+					<SidebarGroupContent>
+						<SidebarGroupLabel>
+							{t.admin.nav.account}
+						</SidebarGroupLabel>
+						<SidebarMenuItem>
+							<SidebarMenuButton asChild>
+								<button
+									onClick={() => {
+										logout();
+									}}
+								>
+									<UserMinus />
+									{t.admin.nav.logout}
+								</button>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					</SidebarGroupContent>
+				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
 				{provider.status === "pending" && (

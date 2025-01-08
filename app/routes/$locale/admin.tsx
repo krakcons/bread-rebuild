@@ -11,7 +11,7 @@ const unauthenticatedPages = [
 export const Route = createFileRoute("/$locale/admin")({
 	component: RouteComponent,
 	beforeLoad: async ({ params, location }) => {
-		const { user, session, providerId } = await getAuth();
+		const { user, session, provider } = await getAuth();
 
 		if (
 			user === null &&
@@ -42,7 +42,7 @@ export const Route = createFileRoute("/$locale/admin")({
 			user &&
 			user.emailVerified &&
 			session &&
-			providerId === null
+			provider === null
 		) {
 			throw redirect({
 				to: "/$locale/admin/onboarding",
@@ -50,7 +50,7 @@ export const Route = createFileRoute("/$locale/admin")({
 			});
 		}
 
-		return { user, session, providerId };
+		return { user, session, provider };
 	},
 });
 
