@@ -38,6 +38,14 @@ export const Route = createRootRouteWithContext<SessionValidationResult>()({
 			},
 		],
 		links: [
+			{
+				rel: "preload",
+				href: "/fonts/Inter-Variable.ttf",
+				as: "font",
+				type: "font/ttf",
+				crossOrigin: "anonymous",
+				fetchPriority: "high",
+			},
 			{ rel: "stylesheet", href: globalStyles },
 			{
 				rel: "stylesheet",
