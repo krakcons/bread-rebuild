@@ -6,6 +6,7 @@ import {
 	getCoreRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
+	PaginationState,
 	SortingState,
 	useReactTable,
 } from "@tanstack/react-table";
@@ -19,31 +20,59 @@ import {
 	TableRow,
 } from "@/components/ui/Table";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { DataTablePagination } from "./DataTablePagination";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 	onRowClick?: (row: TData) => void;
+	sorting: SortingState;
+	pagination: PaginationState;
+	setSorting: (sorting: SortingState) => void;
+	setPagination: (pagination: PaginationState) => void;
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
 	onRowClick,
+	sorting,
+	pagination,
+	setSorting,
+	setPagination,
 }: DataTableProps<TData, TValue>) {
-	const [sorting, setSorting] = useState<SortingState>([]);
-
 	const table = useReactTable({
 		data,
 		columns,
-		onSortingChange: setSorting,
+		onPaginationChange: (updater) => {
+			const newPagination =
+				typeof updater === "function" ? updater(pagination) : updater;
+			if (
+				pagination.pageIndex === newPagination.pageIndex &&
+				pagination.pageSize === newPagination.pageSize
+			) {
+				return;
+			}
+			setPagination(newPagination);
+		},
+		onSortingChange: (updater) => {
+			const newSorting =
+				typeof updater === "function" ? updater(sorting) : updater;
+			if (
+				sorting.length === newSorting.length &&
+				sorting.every((s, i) => s.id === newSorting[i]?.id)
+			) {
+				return;
+			}
+			setSorting(newSorting);
+		},
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
+		autoResetPageIndex: false,
 		state: {
 			sorting,
+			pagination,
 		},
 	});
 

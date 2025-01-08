@@ -10,7 +10,7 @@ if (!process.env.TENANT_STAGE_NAME) {
 export const db = drizzle({
 	connection: {
 		region: "ca-central-1",
-		database: "bread-prod",
+		database: process.env.TENANT_STAGE_NAME,
 		secretArn: Resource.Aurora.secretArn,
 		resourceArn: Resource.Aurora.clusterArn,
 	},

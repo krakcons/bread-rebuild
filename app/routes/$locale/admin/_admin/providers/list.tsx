@@ -84,6 +84,8 @@ function RouteComponent() {
 	const t = useTranslations(locale);
 	const columns = useColumns();
 	const navigate = Route.useNavigate();
+	const { pagination = { pageIndex: 0, pageSize: 10 }, sorting = [] } =
+		Route.useSearch();
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -107,6 +109,29 @@ function RouteComponent() {
 							id: row.id,
 						}),
 						search: (prev) => prev,
+					});
+				}}
+				sorting={sorting}
+				pagination={pagination}
+				setSorting={(sorting) => {
+					// Update sorting and reset page
+					navigate({
+						params: (prev) => ({ ...prev }),
+						search: (search) => ({
+							...search,
+							sorting,
+							pagination: {
+								...search.pagination,
+								pageIndex: 0,
+							},
+						}),
+					});
+				}}
+				setPagination={(pagination) => {
+					// Update pagination
+					navigate({
+						params: (prev) => ({ ...prev }),
+						search: (search) => ({ ...search, pagination }),
 					});
 				}}
 			/>
