@@ -103,6 +103,19 @@ function Home() {
 					>
 						<queryForm.Field
 							name="query"
+							listeners={{
+								onChange: ({ value }) => {
+									navigate({
+										search: (prev) => ({
+											...prev,
+											query:
+												value !== ""
+													? value
+													: undefined,
+										}),
+									});
+								},
+							}}
 							children={(field) => (
 								<Input
 									type="text"
