@@ -1,6 +1,10 @@
 import { InferSelectModel, relations } from "drizzle-orm";
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
+const roleEnum = text("role", { enum: ["admin", "member"] })
+	.default("member")
+	.notNull();
+
 export const users = pgTable("users", {
 	id: text("id").primaryKey(),
 	email: text("email").notNull().unique(),
@@ -21,6 +25,7 @@ export const users = pgTable("users", {
 	})
 		.defaultNow()
 		.notNull(),
+	role: roleEnum,
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

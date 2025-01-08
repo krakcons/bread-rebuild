@@ -29,14 +29,17 @@ import {
 	Link,
 	Outlet,
 	redirect,
+	useRouteContext,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import {
+	AlertCircle,
 	BarChart,
 	Building,
 	ExternalLink,
 	LayoutDashboard,
 	UserMinus,
+	Users,
 	Utensils,
 	X,
 } from "lucide-react";
@@ -48,7 +51,7 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 	validateSearch: z.object({
 		editingLocale: LocaleSchema.optional(),
 	}),
-	beforeLoad: async ({ search, params, location }) => {
+	beforeLoad: async ({ search, params, location, context }) => {
 		if (!search.editingLocale) {
 			throw redirect({
 				to: location.pathname,
@@ -59,6 +62,13 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 				params,
 			});
 		}
+		if (!context.provider) {
+			throw redirect({
+				to: "/$locale/admin/onboarding",
+				params,
+			});
+		}
+		return { provider: context.provider };
 	},
 });
 
@@ -68,6 +78,10 @@ const AdminSidebar = () => {
 	const { locale } = Route.useParams();
 	const search = Route.useSearch();
 	const t = useTranslations(locale);
+	const { user } = useRouteContext({
+		from: "__root__",
+	});
+	const { provider } = Route.useRouteContext();
 
 	return (
 		<Sidebar>
@@ -100,7 +114,7 @@ const AdminSidebar = () => {
 				<SidebarGroup>
 					<SidebarGroupContent>
 						<SidebarGroupLabel>
-							{t.admin.nav.admin}
+							{t.admin.nav.manage}
 						</SidebarGroupLabel>
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
@@ -192,8 +206,47 @@ const AdminSidebar = () => {
 						</SidebarMenuItem>
 					</SidebarGroupContent>
 				</SidebarGroup>
+				{user?.role === "admin" && (
+					<SidebarGroup>
+						<SidebarGroupContent>
+							<SidebarGroupLabel>
+								{t.admin.nav.admin}
+							</SidebarGroupLabel>
+						</SidebarGroupContent>
+						<SidebarMenuItem>
+							<SidebarMenuButton asChild>
+								<Link
+									to="/$locale/admin/providers"
+									params={{
+										locale,
+									}}
+									search={search}
+									onClick={() => {
+										setOpenMobile(false);
+									}}
+								>
+									<Users />
+									{t.admin.nav.providers}
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					</SidebarGroup>
+				)}
 			</SidebarContent>
 			<SidebarFooter>
+				{provider.status === "pending" && (
+					<div className="flex flex-col gap-1 border p-2">
+						<div className="flex flex-row items-center gap-1">
+							<AlertCircle size={18} />
+							<p className="font-semibold">
+								{t.admin.verificationPending.title}
+							</p>
+						</div>
+						<p className="text-sm text-muted-foreground">
+							{t.admin.verificationPending.description}
+						</p>
+					</div>
+				)}
 				<Link
 					to="/$locale"
 					params={{
@@ -234,11 +287,11 @@ function RouteComponent() {
 								});
 							}}
 						>
-							<SelectTrigger className="gap-1">
+							<SelectTrigger>
 								<p className="text-sm text-muted-foreground">
 									{t.admin.editing}
 								</p>
-								<SelectValue placeholder="Select locale" />
+								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
 								{locales.map(({ label, value }) => (

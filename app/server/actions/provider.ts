@@ -16,7 +16,11 @@ import {
 	LocalizedQueryType,
 	ProviderType,
 } from "../db/types";
-import { localeMiddleware, protectedMiddleware } from "../middleware";
+import {
+	adminMiddleware,
+	localeMiddleware,
+	protectedMiddleware,
+} from "../middleware";
 import { ContactSchema } from "../types";
 
 export const ProviderFormSchema = z.object({
@@ -125,4 +129,40 @@ export const mutateProviderFn = createServerFn({
 				params: { locale: context.locale },
 			});
 		}
+	});
+
+export const getProvidersFn = createServerFn({
+	method: "GET",
+})
+	.middleware([adminMiddleware])
+	.validator(LocalizedQuerySchema)
+	.handler(async ({ context }) => {
+		const providerList = await db.query.providers.findMany({
+			with: {
+				translations: true,
+				user: true,
+			},
+		});
+		return providerList.map(
+			(provider) =>
+				flattenLocalizedObject(provider, {
+					locale: context.locale,
+					fallback: true,
+				})!,
+		);
+	});
+
+export const updateProviderStatusFn = createServerFn({
+	method: "POST",
+})
+	.middleware([adminMiddleware])
+	.validator(
+		z.object({
+			id: z.string(),
+			status: z.enum(["pending", "approved", "rejected"]),
+		}),
+	)
+	.handler(async ({ data }) => {
+		const { id, status } = data;
+		await db.update(providers).set({ status }).where(eq(providers.id, id));
 	});

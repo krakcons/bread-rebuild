@@ -49,6 +49,11 @@ export const dietaryOptionsEnum = text("dietary_options", {
 const dayEnum = text("day", {
 	enum: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
 });
+const providerStatusEnum = text("status", {
+	enum: ["pending", "approved", "rejected"],
+})
+	.default("pending")
+	.notNull();
 
 // Providers
 export const providers = pgTable("providers", {
@@ -58,7 +63,7 @@ export const providers = pgTable("providers", {
 	userId: text("user_id").references(() => users.id, {
 		onDelete: "cascade",
 	}),
-
+	status: providerStatusEnum,
 	// Timestamps
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),

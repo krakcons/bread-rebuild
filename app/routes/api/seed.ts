@@ -1,6 +1,7 @@
 import { json } from "@tanstack/start";
 import { createAPIFileRoute } from "@tanstack/start/api";
 
+import { english } from "@/lib/locale/messages";
 import { generateId } from "@/server/auth";
 import { db } from "@/server/db";
 import {
@@ -13,11 +14,7 @@ import {
 	resourceTranslations,
 } from "@/server/db/schema";
 import { BaseResourceType, ResourceTranslationType } from "@/server/db/types";
-import {
-	DietaryOptionType,
-	OfferingSchema,
-	OfferingType,
-} from "@/server/types";
+import { DietaryOptionType, OfferingType } from "@/server/types";
 import { and, eq } from "drizzle-orm";
 
 type LocalizedFieldType = {
@@ -165,17 +162,16 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 					dietary.attributes.name.toLowerCase().replace(" ", "-"),
 				) as DietaryOptionType[];
 
-			let offering: OfferingType;
-			const offeringParsed = OfferingSchema.safeParse(
-				drupalData.attributes.field_service_type.toLowerCase(),
-			);
-			if (offeringParsed.success) {
-				offering = offeringParsed.data;
-			} else {
-				offering = "meal";
-			}
-
-			console.log(dietaryOptions);
+			let offerings: OfferingType[] = [];
+			Object.keys(english.offeringTypes).forEach((key) => {
+				if (
+					drupalData.attributes.field_service_type
+						.toLowerCase()
+						.includes(key)
+				) {
+					offerings.push(key as OfferingType);
+				}
+			});
 
 			const resource: Omit<BaseResourceType, "createdAt" | "updatedAt"> =
 				{
@@ -197,7 +193,7 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 						drupalData.attributes.field__near_transit_bool || false,
 					registration:
 						drupalData.attributes.field_registration_bool || false,
-					offerings: [offering],
+					offerings: offerings,
 					street1:
 						drupalData.attributes.field_pickup_address
 							.address_line1,

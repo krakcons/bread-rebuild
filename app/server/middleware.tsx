@@ -23,7 +23,7 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 			context: {
 				session: null,
 				user: null,
-				providerId: null,
+				provider: null,
 			},
 		});
 	}
@@ -43,6 +43,7 @@ export const protectedMiddleware = createMiddleware()
 			context: {
 				session: context.session,
 				user: context.user,
+				provider: context.provider,
 			},
 		});
 	});
@@ -66,4 +67,13 @@ export const providerMiddleware = createMiddleware()
 				provider,
 			},
 		});
+	});
+
+export const adminMiddleware = createMiddleware()
+	.middleware([localeMiddleware, protectedMiddleware])
+	.server(async ({ next, context }) => {
+		if (context.user.role !== "admin") {
+			throw new Error("Unauthorized");
+		}
+		return next({ context });
 	});

@@ -26,6 +26,7 @@ import { Route as LocaleAppTermsImport } from './routes/$locale/_app/terms'
 import { Route as LocaleAppSavedImport } from './routes/$locale/_app/saved'
 import { Route as LocaleAppPrivacyPolicyImport } from './routes/$locale/_app/privacy-policy'
 import { Route as LocaleAdminAdminIndexImport } from './routes/$locale/admin/_admin/index'
+import { Route as LocaleAdminAdminProvidersImport } from './routes/$locale/admin/_admin/providers'
 import { Route as LocaleAdminAdminProviderImport } from './routes/$locale/admin/_admin/provider'
 import { Route as LocaleAdminAdminAnalyticsImport } from './routes/$locale/admin/_admin/analytics'
 import { Route as LocaleAppResourcesIdImport } from './routes/$locale/_app/resources/$id'
@@ -118,6 +119,12 @@ const LocaleAppPrivacyPolicyRoute = LocaleAppPrivacyPolicyImport.update({
 const LocaleAdminAdminIndexRoute = LocaleAdminAdminIndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => LocaleAdminAdminRoute,
+} as any)
+
+const LocaleAdminAdminProvidersRoute = LocaleAdminAdminProvidersImport.update({
+  id: '/providers',
+  path: '/providers',
   getParentRoute: () => LocaleAdminAdminRoute,
 } as any)
 
@@ -277,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleAdminAdminProviderImport
       parentRoute: typeof LocaleAdminAdminImport
     }
+    '/$locale/admin/_admin/providers': {
+      id: '/$locale/admin/_admin/providers'
+      path: '/providers'
+      fullPath: '/$locale/admin/providers'
+      preLoaderRoute: typeof LocaleAdminAdminProvidersImport
+      parentRoute: typeof LocaleAdminAdminImport
+    }
     '/$locale/admin/_admin/': {
       id: '/$locale/admin/_admin/'
       path: '/'
@@ -333,6 +347,7 @@ const LocaleAppRouteWithChildren = LocaleAppRoute._addFileChildren(
 interface LocaleAdminAdminRouteChildren {
   LocaleAdminAdminAnalyticsRoute: typeof LocaleAdminAdminAnalyticsRoute
   LocaleAdminAdminProviderRoute: typeof LocaleAdminAdminProviderRoute
+  LocaleAdminAdminProvidersRoute: typeof LocaleAdminAdminProvidersRoute
   LocaleAdminAdminIndexRoute: typeof LocaleAdminAdminIndexRoute
   LocaleAdminAdminListingsIdRoute: typeof LocaleAdminAdminListingsIdRoute
   LocaleAdminAdminListingsListRoute: typeof LocaleAdminAdminListingsListRoute
@@ -342,6 +357,7 @@ interface LocaleAdminAdminRouteChildren {
 const LocaleAdminAdminRouteChildren: LocaleAdminAdminRouteChildren = {
   LocaleAdminAdminAnalyticsRoute: LocaleAdminAdminAnalyticsRoute,
   LocaleAdminAdminProviderRoute: LocaleAdminAdminProviderRoute,
+  LocaleAdminAdminProvidersRoute: LocaleAdminAdminProvidersRoute,
   LocaleAdminAdminIndexRoute: LocaleAdminAdminIndexRoute,
   LocaleAdminAdminListingsIdRoute: LocaleAdminAdminListingsIdRoute,
   LocaleAdminAdminListingsListRoute: LocaleAdminAdminListingsListRoute,
@@ -401,6 +417,7 @@ export interface FileRoutesByFullPath {
   '/$locale/resources/$id': typeof LocaleAppResourcesIdRoute
   '/$locale/admin/analytics': typeof LocaleAdminAdminAnalyticsRoute
   '/$locale/admin/provider': typeof LocaleAdminAdminProviderRoute
+  '/$locale/admin/providers': typeof LocaleAdminAdminProvidersRoute
   '/$locale/admin/': typeof LocaleAdminAdminIndexRoute
   '/$locale/admin/listings/$id': typeof LocaleAdminAdminListingsIdRoute
   '/$locale/admin/listings/list': typeof LocaleAdminAdminListingsListRoute
@@ -421,6 +438,7 @@ export interface FileRoutesByTo {
   '/$locale/resources/$id': typeof LocaleAppResourcesIdRoute
   '/$locale/admin/analytics': typeof LocaleAdminAdminAnalyticsRoute
   '/$locale/admin/provider': typeof LocaleAdminAdminProviderRoute
+  '/$locale/admin/providers': typeof LocaleAdminAdminProvidersRoute
   '/$locale/admin/listings/$id': typeof LocaleAdminAdminListingsIdRoute
   '/$locale/admin/listings/list': typeof LocaleAdminAdminListingsListRoute
   '/$locale/admin/listings/new': typeof LocaleAdminAdminListingsNewRoute
@@ -444,6 +462,7 @@ export interface FileRoutesById {
   '/$locale/_app/resources/$id': typeof LocaleAppResourcesIdRoute
   '/$locale/admin/_admin/analytics': typeof LocaleAdminAdminAnalyticsRoute
   '/$locale/admin/_admin/provider': typeof LocaleAdminAdminProviderRoute
+  '/$locale/admin/_admin/providers': typeof LocaleAdminAdminProvidersRoute
   '/$locale/admin/_admin/': typeof LocaleAdminAdminIndexRoute
   '/$locale/admin/_admin/listings/$id': typeof LocaleAdminAdminListingsIdRoute
   '/$locale/admin/_admin/listings/list': typeof LocaleAdminAdminListingsListRoute
@@ -467,6 +486,7 @@ export interface FileRouteTypes {
     | '/$locale/resources/$id'
     | '/$locale/admin/analytics'
     | '/$locale/admin/provider'
+    | '/$locale/admin/providers'
     | '/$locale/admin/'
     | '/$locale/admin/listings/$id'
     | '/$locale/admin/listings/list'
@@ -486,6 +506,7 @@ export interface FileRouteTypes {
     | '/$locale/resources/$id'
     | '/$locale/admin/analytics'
     | '/$locale/admin/provider'
+    | '/$locale/admin/providers'
     | '/$locale/admin/listings/$id'
     | '/$locale/admin/listings/list'
     | '/$locale/admin/listings/new'
@@ -507,6 +528,7 @@ export interface FileRouteTypes {
     | '/$locale/_app/resources/$id'
     | '/$locale/admin/_admin/analytics'
     | '/$locale/admin/_admin/provider'
+    | '/$locale/admin/_admin/providers'
     | '/$locale/admin/_admin/'
     | '/$locale/admin/_admin/listings/$id'
     | '/$locale/admin/_admin/listings/list'
@@ -583,6 +605,7 @@ export const routeTree = rootRoute
       "children": [
         "/$locale/admin/_admin/analytics",
         "/$locale/admin/_admin/provider",
+        "/$locale/admin/_admin/providers",
         "/$locale/admin/_admin/",
         "/$locale/admin/_admin/listings/$id",
         "/$locale/admin/_admin/listings/list",
@@ -623,6 +646,10 @@ export const routeTree = rootRoute
     },
     "/$locale/admin/_admin/provider": {
       "filePath": "$locale/admin/_admin/provider.tsx",
+      "parent": "/$locale/admin/_admin"
+    },
+    "/$locale/admin/_admin/providers": {
+      "filePath": "$locale/admin/_admin/providers.tsx",
       "parent": "/$locale/admin/_admin"
     },
     "/$locale/admin/_admin/": {

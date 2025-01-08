@@ -113,16 +113,38 @@ export const english = {
 			cancel: "Cancel",
 		},
 		nav: {
+			manage: "Manage",
 			admin: "Admin",
 			dashboard: "Dashboard",
 			listings: "Listings",
 			provider: "Provider",
+			providers: "Providers",
 			analytics: "Analytics",
 			settings: "Settings",
 			localeToggle: "Français",
 			account: "Account",
 			logout: "Logout",
 			exit: "Exit to Bread",
+		},
+		verificationPending: {
+			title: "Verification Pending",
+			description:
+				"Until verified your listings will not be public. This may take a few days.",
+		},
+		providers: {
+			title: "Providers",
+			description:
+				"Manage your providers here. Verify and approve providers to allow them to create listings.",
+			status: {
+				pending: "Pending",
+				approved: "Approved",
+				rejected: "Rejected",
+			},
+			table: {
+				name: "Name",
+				email: "Email",
+				status: "Status",
+			},
 		},
 		onboarding: {
 			title: "Create Your Provider",
@@ -446,6 +468,11 @@ export const french: typeof english = {
 		},
 	},
 	admin: {
+		verificationPending: {
+			title: "Verification en attente",
+			description:
+				"Jusqu'à ce que votre fournisseur soit vérifié, vos annonces ne seront pas publiques. Cela peut prendre quelques jours.",
+		},
 		dashboard: {
 			title: "Tableau de bord",
 			explanation:
@@ -461,16 +488,32 @@ export const french: typeof english = {
 			cancel: "Annuler",
 		},
 		nav: {
+			manage: "Gérer",
 			admin: "Admin",
 			dashboard: "Tableau de bord",
 			listings: "Annonces",
-			provider: "Fournisseurs",
+			provider: "Fournisseur",
+			providers: "Fournisseurs",
 			analytics: "Analytiques",
 			settings: "Paramètres",
 			localeToggle: "Anglais",
 			account: "Compte",
 			logout: "Déconnexion",
 			exit: "Quitter Bread",
+		},
+		providers: {
+			title: "Fournisseurs",
+			description: "Gérer vos fournisseurs ici.",
+			status: {
+				pending: "En attente",
+				approved: "Approuvé",
+				rejected: "Rejeté",
+			},
+			table: {
+				name: "Nom",
+				email: "Courriel",
+				status: "Statut",
+			},
 		},
 		onboarding: {
 			title: "Créer Votre Fournisseur",

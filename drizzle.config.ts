@@ -7,10 +7,10 @@ if (!process.env.TENANT_STAGE_NAME) {
 
 export default defineConfig({
 	dialect: "postgresql",
-	schema: ["./app/server/db/**/*.ts"],
+	schema: ["./app/server/db/schema/index.ts"],
 	out: "./migrations",
 	dbCredentials: {
-		database: process.env.TENANT_STAGE_NAME!,
+		database: process.env.TENANT_STAGE_NAME,
 		host: Resource.Aurora.host,
 		port: Resource.Aurora.port,
 		user: Resource.Aurora.username,

@@ -9,6 +9,7 @@ import {
 
 import { relations } from "drizzle-orm";
 
+import { users } from "./auth";
 import { anonymousSessionsToResources, resources } from "./tables";
 
 // Relations
@@ -33,10 +34,14 @@ export const anonymousSessionsRelations = relations(
 	}),
 );
 
-export const providerRelations = relations(providers, ({ many }) => ({
+export const providerRelations = relations(providers, ({ many, one }) => ({
 	resources: many(resources),
 	translations: many(providerTranslations),
 	phoneNumbers: many(providerPhoneNumbers),
+	user: one(users, {
+		fields: [providers.userId],
+		references: [users.id],
+	}),
 }));
 
 export const providerTranslationsRelations = relations(
