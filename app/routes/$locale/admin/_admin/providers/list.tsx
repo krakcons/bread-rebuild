@@ -9,9 +9,21 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/$locale/admin/_admin/providers/list")({
 	component: RouteComponent,
+	validateSearch: z.object({
+		pagination: z
+			.object({
+				pageIndex: z.number().default(0),
+				pageSize: z.number().default(10),
+			})
+			.optional(),
+		sorting: z
+			.array(z.object({ id: z.string(), desc: z.boolean() }))
+			.optional(),
+	}),
 	loader: async ({ params }) => {
 		const providers = await getProvidersFn({
 			data: { locale: params.locale as Locale },
@@ -98,7 +110,9 @@ function RouteComponent() {
 				data={providers.map((provider) => ({
 					id: provider.id,
 					name: provider.name,
-					email: provider.user?.email ?? provider.email,
+					email: Array.from(
+						new Set([provider.email, provider.user?.email]),
+					).join(", "),
 					status: provider.status,
 				}))}
 				onRowClick={(row) => {

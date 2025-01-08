@@ -3,7 +3,6 @@ import { drizzle } from "drizzle-orm/aws-data-api/pg";
 import { Resource } from "sst";
 
 if (!process.env.TENANT_STAGE_NAME) {
-	console.log(process.env.TENANT_STAGE_NAME);
 	throw new Error("TENANT_STAGE_NAME is not set");
 }
 

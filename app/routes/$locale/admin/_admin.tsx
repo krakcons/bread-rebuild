@@ -50,15 +50,6 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 	errorComponent: ErrorComponent,
 	validateSearch: z.object({
 		editingLocale: LocaleSchema.optional(),
-		pagination: z
-			.object({
-				pageIndex: z.number().default(0),
-				pageSize: z.number().default(10),
-			})
-			.optional(),
-		sorting: z
-			.array(z.object({ id: z.string(), desc: z.boolean() }))
-			.optional(),
 	}),
 	beforeLoad: async ({ search, params, location, context }) => {
 		if (!search.editingLocale) {

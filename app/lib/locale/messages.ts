@@ -29,6 +29,7 @@ export const english = {
 	additionalInfo: "Additional Information",
 	contact: "Contact",
 	email: "Email",
+	userEmail: "User Email",
 	website: "Website",
 	hours: "Hours",
 	saved: {
@@ -380,6 +381,7 @@ export const french: typeof english = {
 		bread: "Bread",
 		submit: "Soumettre",
 	},
+	userEmail: "Courriel de l'utilisateur",
 	search: "Rechercher",
 	free: "Gratuit",
 	list: "Liste",

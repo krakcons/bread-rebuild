@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { generateId } from "../auth";
 import { db } from "../db";
-import { users } from "../db/schema";
+import { resources, users, UserType } from "../db/schema";
 import {
 	providerPhoneNumbers,
 	providers,
@@ -16,6 +16,7 @@ import {
 	LocalizedQuerySchema,
 	LocalizedQueryType,
 	ProviderType,
+	ResourceType,
 } from "../db/types";
 import { sendEmail } from "../email";
 import {
@@ -44,7 +45,6 @@ export const getMyProviderFn = createServerFn({
 			locale: data?.locale ?? context.locale,
 			fallback: data?.fallback ?? true,
 		};
-		console.log(process.env);
 		const provider = await db.query.providers.findFirst({
 			where: eq(providers.userId, context.user.id),
 			with: {
@@ -59,6 +59,10 @@ export const getMyProviderFn = createServerFn({
 				phoneNumbers: true,
 			},
 		});
+
+		if (!provider) {
+			throw new Error("Provider not found");
+		}
 
 		return flattenLocalizedObject(provider, localeOpts);
 	});
@@ -189,19 +193,67 @@ export const getProviderFn = createServerFn({
 })
 	.middleware([adminMiddleware])
 	.validator(z.object({ id: z.string() }))
-	.handler(async ({ data, context }) => {
-		const provider = await db.query.providers.findFirst({
-			where: eq(providers.id, data.id),
+	.handler(
+		async ({
+			data,
+			context,
+		}): Promise<
+			ProviderType & {
+				user: UserType;
+			}
+		> => {
+			const provider = await db.query.providers.findFirst({
+				where: eq(providers.id, data.id),
+				with: {
+					translations: true,
+					user: true,
+					phoneNumbers: true,
+				},
+			});
+			if (!provider) {
+				throw new Error("Provider not found");
+			}
+			return flattenLocalizedObject(provider, {
+				locale: context.locale,
+				fallback: true,
+			})!;
+		},
+	);
+
+export const getProviderListingsFn = createServerFn({
+	method: "GET",
+})
+	.middleware([adminMiddleware])
+	.validator(z.object({ id: z.string() }))
+	.handler(async ({ data, context }): Promise<ResourceType[]> => {
+		const listings = await db.query.resources.findMany({
+			where: eq(resources.providerId, data.id),
 			with: {
 				translations: true,
-				user: true,
 				phoneNumbers: true,
+				provider: {
+					with: {
+						translations: true,
+					},
+				},
 			},
 		});
-		return flattenLocalizedObject(provider, {
-			locale: context.locale,
-			fallback: true,
-		});
+		return listings.map(
+			(listing) =>
+				flattenLocalizedObject(
+					{
+						...listing,
+						provider: flattenLocalizedObject(listing.provider, {
+							locale: context.locale,
+							fallback: true,
+						}),
+					},
+					{
+						locale: context.locale,
+						fallback: true,
+					},
+				)!,
+		);
 	});
 
 export const updateProviderStatusFn = createServerFn({

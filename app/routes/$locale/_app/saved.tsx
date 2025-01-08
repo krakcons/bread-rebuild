@@ -53,7 +53,6 @@ export const Route = createFileRoute("/$locale/_app/saved")({
 			queryKey: ["saved"],
 			queryFn: () => getSavedFn(),
 		});
-		console.log(saved);
 		const resources = await getResourcesFn({
 			data: {
 				ids: saved.map((savedResource) => savedResource.resourceId),

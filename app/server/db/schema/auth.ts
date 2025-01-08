@@ -99,5 +99,5 @@ export const passwordResetsRelations = relations(passwordResets, ({ one }) => ({
 	}),
 }));
 
-export type User = InferSelectModel<typeof users>;
-export type Session = InferSelectModel<typeof sessions>;
+export type UserType = InferSelectModel<typeof users>;
+export type SessionType = InferSelectModel<typeof sessions>;
