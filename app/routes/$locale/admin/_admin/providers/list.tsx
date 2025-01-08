@@ -14,6 +14,7 @@ import { z } from "zod";
 export const Route = createFileRoute("/$locale/admin/_admin/providers/list")({
 	component: RouteComponent,
 	validateSearch: z.object({
+		globalFilter: z.string().optional(),
 		pagination: z
 			.object({
 				pageIndex: z.number().default(0),
@@ -96,8 +97,11 @@ function RouteComponent() {
 	const t = useTranslations(locale);
 	const columns = useColumns();
 	const navigate = Route.useNavigate();
-	const { pagination = { pageIndex: 0, pageSize: 10 }, sorting = [] } =
-		Route.useSearch();
+	const {
+		pagination = { pageIndex: 0, pageSize: 10 },
+		sorting = [],
+		globalFilter = "",
+	} = Route.useSearch();
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -112,7 +116,9 @@ function RouteComponent() {
 					name: provider.name,
 					email: Array.from(
 						new Set([provider.email, provider.user?.email]),
-					).join(", "),
+					)
+						.filter(Boolean)
+						.join(", "),
 					status: provider.status,
 				}))}
 				onRowClick={(row) => {
@@ -127,6 +133,12 @@ function RouteComponent() {
 				}}
 				sorting={sorting}
 				pagination={pagination}
+				globalFilter={globalFilter}
+				setGlobalFilter={(globalFilter) => {
+					navigate({
+						search: (search) => ({ ...search, globalFilter }),
+					});
+				}}
 				setSorting={(sorting) => {
 					// Update sorting and reset page
 					navigate({

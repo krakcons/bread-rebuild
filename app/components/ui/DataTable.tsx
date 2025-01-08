@@ -4,6 +4,7 @@ import {
 	ColumnDef,
 	flexRender,
 	getCoreRowModel,
+	getFilteredRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
 	PaginationState,
@@ -19,8 +20,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/Table";
+import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+import { useParams } from "@tanstack/react-router";
 import { DataTablePagination } from "./DataTablePagination";
+import { Input } from "./Input";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -30,6 +34,8 @@ interface DataTableProps<TData, TValue> {
 	pagination: PaginationState;
 	setSorting: (sorting: SortingState) => void;
 	setPagination: (pagination: PaginationState) => void;
+	globalFilter: string;
+	setGlobalFilter: (globalFilter: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -40,6 +46,8 @@ export function DataTable<TData, TValue>({
 	pagination,
 	setSorting,
 	setPagination,
+	globalFilter,
+	setGlobalFilter,
 }: DataTableProps<TData, TValue>) {
 	const table = useReactTable({
 		data,
@@ -69,16 +77,36 @@ export function DataTable<TData, TValue>({
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
+		onGlobalFilterChange: (updater) => {
+			const newGlobalFilter =
+				typeof updater === "function" ? updater(globalFilter) : updater;
+			setGlobalFilter(newGlobalFilter);
+		},
+		getFilteredRowModel: getFilteredRowModel(),
 		autoResetPageIndex: false,
 		state: {
 			sorting,
 			pagination,
+			globalFilter,
 		},
 	});
 
+	const { locale } = useParams({
+		from: "/$locale",
+	});
+	const t = useTranslations(locale);
+
 	return (
-		<div className="rounded-md border">
-			<Table>
+		<div className="rounded-md">
+			<div className="flex items-center py-4">
+				<Input
+					placeholder={t.admin.providers.table.filter}
+					defaultValue={globalFilter}
+					onChange={(event) => setGlobalFilter(event.target.value)}
+					className="max-w-sm"
+				/>
+			</div>
+			<Table className="border">
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id} className="p-4">
@@ -127,7 +155,7 @@ export function DataTable<TData, TValue>({
 								colSpan={columns.length}
 								className="h-24 text-center"
 							>
-								No results.
+								{t.admin.providers.table.empty}
 							</TableCell>
 						</TableRow>
 					)}

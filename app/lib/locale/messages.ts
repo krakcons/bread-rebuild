@@ -145,6 +145,8 @@ export const english = {
 				name: "Name",
 				email: "Email",
 				status: "Status",
+				empty: "No results.",
+				filter: "Filter results...",
 			},
 		},
 		onboarding: {
@@ -515,6 +517,8 @@ export const french: typeof english = {
 				name: "Nom",
 				email: "Courriel",
 				status: "Statut",
+				empty: "Aucun résultat.",
+				filter: "Filtrer les résultats...",
 			},
 		},
 		onboarding: {
