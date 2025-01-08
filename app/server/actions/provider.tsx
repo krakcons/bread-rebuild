@@ -295,7 +295,8 @@ export const updateProviderStatusFn = createServerFn({
 								{provider.translations[0].name}
 							</b>{" "}
 							has been approved. Your listing will now be visible
-							to the public.
+							to the public. View your dashboard{" "}
+							<a href={`${process.env.SITE_URL}/admin`}>here</a>.
 						</p>
 					</div>
 				),
