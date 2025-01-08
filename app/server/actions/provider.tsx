@@ -268,5 +268,37 @@ export const updateProviderStatusFn = createServerFn({
 	)
 	.handler(async ({ data }) => {
 		const { id, status } = data;
+		const provider = await db.query.providers.findFirst({
+			where: eq(providers.id, id),
+			with: {
+				user: true,
+				translations: true,
+			},
+		});
+
+		if (!provider || !provider.user) {
+			throw new Error("Provider not found");
+		}
+
 		await db.update(providers).set({ status }).where(eq(providers.id, id));
+
+		if (status === "approved") {
+			await sendEmail({
+				to: [provider.user.email],
+				subject: "Provider Approved",
+				content: (
+					<div>
+						<h1>Provider Approved</h1>
+						<p>
+							Your provider{" "}
+							<b className="font-semibold">
+								{provider.translations[0].name}
+							</b>{" "}
+							has been approved. Your listing will now be visible
+							to the public.
+						</p>
+					</div>
+				),
+			});
+		}
 	});
