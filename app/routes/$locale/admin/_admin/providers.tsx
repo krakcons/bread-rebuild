@@ -1,4 +1,5 @@
 import { DataTable } from "@/components/ui/DataTable";
+import { DataTableColumnHeader } from "@/components/ui/DataTableColumnHeader";
 import {
 	Select,
 	SelectContent,
@@ -36,15 +37,30 @@ const useColumns = () => {
 	}>[] = useMemo(
 		() => [
 			{
-				header: t.admin.providers.table.name,
+				header: ({ column }) => (
+					<DataTableColumnHeader
+						column={column}
+						title={t.admin.providers.table.name}
+					/>
+				),
 				accessorKey: "name",
 			},
 			{
-				header: t.admin.providers.table.email,
+				header: ({ column }) => (
+					<DataTableColumnHeader
+						column={column}
+						title={t.admin.providers.table.email}
+					/>
+				),
 				accessorKey: "email",
 			},
 			{
-				header: t.admin.providers.table.status,
+				header: ({ column }) => (
+					<DataTableColumnHeader
+						column={column}
+						title={t.admin.providers.table.status}
+					/>
+				),
 				accessorKey: "status",
 				cell: ({ row }) => {
 					return (
@@ -93,8 +109,8 @@ function RouteComponent() {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="mb-4 flex flex-col gap-2 border-b border-gray-200 pb-4">
-				<h1>{t.admin.analytics.title}</h1>
-				<p>{t.admin.analytics.description}</p>
+				<h1>{t.admin.providers.title}</h1>
+				<p>{t.admin.providers.description}</p>
 			</div>
 			<DataTable
 				columns={columns}
