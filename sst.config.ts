@@ -12,7 +12,7 @@ const stageMap = new Map<
 		{
 			name: `${tenant}-prod`,
 			domain: `${tenant}-prod.nuonn.com`,
-			siteUrl: "https://${tenant}-prod.nuonn.com",
+			siteUrl: `https://${tenant}-prod.nuonn.com`,
 		},
 	],
 	[
@@ -20,7 +20,7 @@ const stageMap = new Map<
 		{
 			name: `${tenant}-dev`,
 			domain: `${tenant}-dev.nuonn.com`,
-			siteUrl: "https://${tenant}-dev.nuonn.com",
+			siteUrl: `https://${tenant}-dev.nuonn.com`,
 		},
 	],
 	[
