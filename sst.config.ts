@@ -3,14 +3,32 @@
 const tenant = "bread";
 const profile = "krak";
 
-const stageMap = new Map<string, { name: string; domain: string }>([
-	["prod", { name: `${tenant}-prod`, domain: `${tenant}-prod.nuonn.com` }],
-	["dev", { name: `${tenant}-dev`, domain: `${tenant}-dev.nuonn.com` }],
+const stageMap = new Map<
+	string,
+	{ name: string; domain: string; siteUrl: string }
+>([
+	[
+		"prod",
+		{
+			name: `${tenant}-prod`,
+			domain: `${tenant}-prod.nuonn.com`,
+			siteUrl: "https://${tenant}-prod.nuonn.com",
+		},
+	],
+	[
+		"dev",
+		{
+			name: `${tenant}-dev`,
+			domain: `${tenant}-dev.nuonn.com`,
+			siteUrl: "https://${tenant}-dev.nuonn.com",
+		},
+	],
 	[
 		"billyhawkes",
 		{
 			name: `${tenant}-billyhawkes`,
 			domain: `${tenant}-billyhawkes.nuonn.com`,
+			siteUrl: "http://localhost:3000",
 		},
 	],
 ]);
@@ -37,7 +55,7 @@ export default $config({
 		if (!stage) {
 			throw new Error(`Stage ${$app.stage} not found`);
 		}
-		const { name, domain } = stage;
+		const { name, domain, siteUrl } = stage;
 
 		// Multi-tenant resources
 		const vpc = sst.aws.Vpc.get("Vpc", "vpc-08c28b23ee20f3975");
@@ -45,6 +63,7 @@ export default $config({
 
 		const environment = {
 			TENANT_STAGE_NAME: name,
+			SITE_URL: siteUrl,
 		};
 
 		const dns = sst.cloudflare.dns({

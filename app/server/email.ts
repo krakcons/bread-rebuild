@@ -7,11 +7,15 @@ export const ses = new SESv2Client({
 	region: process.env.AWS_REGION,
 });
 
-export async function sendEmail(
-	to: string[],
-	subject: string,
-	content: ReactElement,
-): Promise<void> {
+export async function sendEmail({
+	to,
+	subject,
+	content,
+}: {
+	to: string[];
+	subject: string;
+	content: ReactElement;
+}): Promise<void> {
 	const html = await render(content);
 	const command = new SendEmailCommand({
 		FromEmailAddress: `Bread <noreply@${Resource.Email.sender}>`,

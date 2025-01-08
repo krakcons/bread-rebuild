@@ -1,7 +1,7 @@
 import { ListingForm } from "@/components/forms/Listing";
 import { Locale, useTranslations } from "@/lib/locale";
 import { mutateListingFn } from "@/server/actions/listings";
-import { getProviderFn } from "@/server/actions/provider";
+import { getMyProviderFn } from "@/server/actions/provider";
 import {
 	createFileRoute,
 	ErrorComponent,
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
 	loader: async ({ params }) => {
-		const provider = await getProviderFn({
+		const provider = await getMyProviderFn({
 			data: {
 				locale: params.locale as Locale,
 			},

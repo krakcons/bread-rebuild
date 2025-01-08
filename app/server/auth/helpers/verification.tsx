@@ -25,14 +25,16 @@ export const createAndSendEmailVerification = async (
 		})
 		.returning();
 	// Send verification email
-	await sendEmail(
-		[email],
-		"Verify your email",
-		<div>
-			Here is your one time email verification code for Bread:{" "}
-			<b>{emailVerification.code}</b>
-		</div>,
-	);
+	await sendEmail({
+		to: [email],
+		subject: "Verify your email",
+		content: (
+			<div>
+				Here is your one time email verification code for Bread:{" "}
+				<b>{emailVerification.code}</b>
+			</div>
+		),
+	});
 	// Set email verification cookie
 	setCookie("email_verification", emailVerification.id, {
 		httpOnly: true,
@@ -59,14 +61,16 @@ export const createAndSendPasswordReset = async (
 		})
 		.returning();
 	// Send password reset email
-	await sendEmail(
-		[email],
-		"Reset your password",
-		<div>
-			Here is your one time password reset code for Bread:{" "}
-			<b>{passwordReset.code}</b>
-		</div>,
-	);
+	await sendEmail({
+		to: [email],
+		subject: "Reset your password",
+		content: (
+			<div>
+				Here is your one time password reset code for Bread:{" "}
+				<b>{passwordReset.code}</b>
+			</div>
+		),
+	});
 	// Set password reset cookie
 	setCookie("password_reset", passwordReset.id, {
 		httpOnly: true,

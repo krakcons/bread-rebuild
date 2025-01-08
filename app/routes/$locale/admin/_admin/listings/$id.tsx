@@ -37,7 +37,6 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/$id")({
 				fallback: false,
 			},
 		});
-		console.log("listing", listing);
 		if (!listing) {
 			throw notFound();
 		}

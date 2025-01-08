@@ -1,15 +1,15 @@
 import { ProviderForm } from "@/components/forms/Provider";
 import { useTranslations } from "@/lib/locale";
-import { getProviderFn, mutateProviderFn } from "@/server/actions/provider";
+import { getMyProviderFn, mutateProviderFn } from "@/server/actions/provider";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/$locale/admin/_admin/provider")({
+export const Route = createFileRoute("/$locale/admin/_admin/providers/me")({
 	component: RouteComponent,
 	loaderDeps: ({ search }) => search,
 	loader: async ({ deps: { editingLocale } }) => {
-		const provider = await getProviderFn({
+		const provider = await getMyProviderFn({
 			data: {
 				locale: editingLocale,
 				fallback: false,

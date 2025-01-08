@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { generateId } from "../auth";
 import { db } from "../db";
+import { users } from "../db/schema";
 import {
 	providerPhoneNumbers,
 	providers,
@@ -16,6 +17,7 @@ import {
 	LocalizedQueryType,
 	ProviderType,
 } from "../db/types";
+import { sendEmail } from "../email";
 import {
 	adminMiddleware,
 	localeMiddleware,
@@ -32,7 +34,7 @@ export const ProviderFormSchema = z.object({
 });
 export type ProviderFormSchema = z.infer<typeof ProviderFormSchema>;
 
-export const getProviderFn = createServerFn({
+export const getMyProviderFn = createServerFn({
 	method: "GET",
 })
 	.middleware([localeMiddleware, protectedMiddleware])
@@ -42,6 +44,7 @@ export const getProviderFn = createServerFn({
 			locale: data?.locale ?? context.locale,
 			fallback: data?.fallback ?? true,
 		};
+		console.log(process.env);
 		const provider = await db.query.providers.findFirst({
 			where: eq(providers.userId, context.user.id),
 			with: {
@@ -72,6 +75,8 @@ export const mutateProviderFn = createServerFn({
 	)
 	.handler(async ({ data, context }) => {
 		const { name, email, website, description, phoneNumbers } = data;
+
+		const isOnboarding = data.id === undefined;
 
 		const providerId = data.id ?? generateId(16);
 		await db.transaction(async (tx) => {
@@ -123,6 +128,33 @@ export const mutateProviderFn = createServerFn({
 				);
 			}
 		});
+		if (isOnboarding) {
+			const admins = await db.query.users.findMany({
+				where: eq(users.role, "admin"),
+			});
+			await sendEmail({
+				to: admins.map((admin) => admin.email),
+				subject: "Verification Required",
+				content: (
+					<div>
+						<h1>Verification Required</h1>
+						<p>
+							A new provider has been onboarded, please review the
+							provider details within the link below and approve
+							or reject the provider.
+						</p>
+						<p>
+							You can view the provider{" "}
+							<a
+								href={`${process.env.SITE_URL}/admin/providers/${providerId}`}
+							>
+								here
+							</a>
+						</p>
+					</div>
+				),
+			});
+		}
 		if (data.redirect) {
 			throw redirect({
 				to: "/$locale/admin",
@@ -150,6 +182,26 @@ export const getProvidersFn = createServerFn({
 					fallback: true,
 				})!,
 		);
+	});
+
+export const getProviderFn = createServerFn({
+	method: "GET",
+})
+	.middleware([adminMiddleware])
+	.validator(z.object({ id: z.string() }))
+	.handler(async ({ data, context }) => {
+		const provider = await db.query.providers.findFirst({
+			where: eq(providers.id, data.id),
+			with: {
+				translations: true,
+				user: true,
+				phoneNumbers: true,
+			},
+		});
+		return flattenLocalizedObject(provider, {
+			locale: context.locale,
+			fallback: true,
+		});
 	});
 
 export const updateProviderStatusFn = createServerFn({

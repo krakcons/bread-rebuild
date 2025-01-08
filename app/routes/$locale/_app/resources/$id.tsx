@@ -1,3 +1,4 @@
+import { Contact } from "@/components/Contact";
 import { NotFound } from "@/components/NotFound";
 import { ResourceActions } from "@/components/Resource/Actions";
 import { Badge } from "@/components/ui/Badge";
@@ -61,40 +62,6 @@ export const Route = createFileRoute("/$locale/_app/resources/$id")({
 		};
 	},
 });
-
-const Contact = ({
-	label,
-	value,
-	icon,
-	link,
-}: {
-	label: string;
-	value: string | null;
-	link?: string;
-	icon: React.ReactNode;
-}) => {
-	return (
-		<div className="flex items-center gap-3">
-			<div className="flex min-w-8 items-center justify-center">
-				{icon}
-			</div>
-			<div>
-				<p className="mb-1 font-medium">{label}</p>
-				{link ? (
-					<a
-						href={link}
-						target="_blank"
-						className="text-muted-foreground hover:underline"
-					>
-						{value || "-"}
-					</a>
-				) : (
-					<p className="text-muted-foreground">{value || "-"}</p>
-				)}
-			</div>
-		</div>
-	);
-};
 
 function ResourceDetail() {
 	const { locale } = Route.useParams();
@@ -211,34 +178,27 @@ function ResourceDetail() {
 					/>
 
 					{/* Email */}
-					{contactInfo.email && (
-						<Contact
-							label={t.email}
-							value={contactInfo.email}
-							link={`mailto:${contactInfo.email}`}
-							icon={
-								<Mail
-									size={20}
-									className="text-muted-foreground"
-								/>
-							}
-						/>
-					)}
+					<Contact
+						label={t.email}
+						value={contactInfo.email}
+						link={`mailto:${contactInfo.email}`}
+						icon={
+							<Mail size={20} className="text-muted-foreground" />
+						}
+					/>
 
 					{/* Website */}
-					{contactInfo.website && (
-						<Contact
-							label={t.website}
-							value={contactInfo.website}
-							link={contactInfo.website}
-							icon={
-								<Globe
-									size={20}
-									className="text-muted-foreground"
-								/>
-							}
-						/>
-					)}
+					<Contact
+						label={t.website}
+						value={contactInfo.website}
+						link={contactInfo.website}
+						icon={
+							<Globe
+								size={20}
+								className="text-muted-foreground"
+							/>
+						}
+					/>
 
 					{/* Phone Numbers */}
 					{contactInfo.phoneNumbers.length > 0 &&
@@ -271,124 +231,106 @@ function ResourceDetail() {
 							{t.additionalInfo}
 						</h2>
 						{/* Eligibility */}
-						{resource.eligibility && (
-							<Contact
-								label={t.eligibility}
-								value={resource.eligibility}
-								icon={<BadgeCheck size={20} />}
-							/>
-						)}
+						<Contact
+							label={t.eligibility}
+							value={resource.eligibility}
+							icon={<BadgeCheck size={20} />}
+						/>
 
 						{/* Capacity */}
-						{resource.capacity && (
-							<Contact
-								label={t.form.listing.capacity.title}
-								value={resource.capacity}
-								icon={<Users size={20} />}
-							/>
-						)}
+						<Contact
+							label={t.form.listing.capacity.title}
+							value={resource.capacity}
+							icon={<Users size={20} />}
+						/>
 
 						{/* Fees */}
-						{resource.fees && (
-							<Contact
-								label={t.fees}
-								value={resource.fees}
-								icon={
-									<DollarSign
-										size={20}
-										className="text-muted-foreground"
-									/>
-								}
-							/>
-						)}
+						<Contact
+							label={t.fees}
+							value={resource.fees}
+							icon={
+								<DollarSign
+									size={20}
+									className="text-muted-foreground"
+								/>
+							}
+						/>
 						{/* Dietary Options */}
-						{resource.dietaryOptions.length > 0 && (
-							<Contact
-								label={t.dietaryOptions}
-								value={
-									resource.dietaryOptions
-										.map((option) =>
-											option === "other" &&
-											resource.dietaryOptionsOther
-												? resource.dietaryOptionsOther
-												: t.dietaryOptionTypes[option],
-										)
-										.filter(Boolean)
-										.join(", ") || ""
-								}
-								icon={
-									<Utensils
-										size={20}
-										className="text-muted-foreground"
-									/>
-								}
-							/>
-						)}
+						<Contact
+							label={t.dietaryOptions}
+							value={
+								resource.dietaryOptions
+									.map((option) =>
+										option === "other" &&
+										resource.dietaryOptionsOther
+											? resource.dietaryOptionsOther
+											: t.dietaryOptionTypes[option],
+									)
+									.filter(Boolean)
+									.join(", ") || undefined
+							}
+							icon={
+								<Utensils
+									size={20}
+									className="text-muted-foreground"
+								/>
+							}
+						/>
 						{/* Wheelchair Accessible */}
-						{resource.wheelchairNotes && (
-							<Contact
-								label={t.wheelchair}
-								value={resource.wheelchairNotes}
-								icon={
-									<Accessibility
-										size={20}
-										className="text-muted-foreground"
-									/>
-								}
-							/>
-						)}
+						<Contact
+							label={t.wheelchair}
+							value={resource.wheelchairNotes}
+							icon={
+								<Accessibility
+									size={20}
+									className="text-muted-foreground"
+								/>
+							}
+						/>
 						{/* Application Process */}
-						{resource.registrationNotes && (
-							<Contact
-								label={t.applicationProcess}
-								value={resource.registrationNotes}
-								icon={
-									<File
-										size={20}
-										className="text-muted-foreground"
-									/>
-								}
-							/>
-						)}
+						<Contact
+							label={t.applicationProcess}
+							value={resource.registrationNotes}
+							icon={
+								<File
+									size={20}
+									className="text-muted-foreground"
+								/>
+							}
+						/>
 						{/* Parking */}
-						{resource.parkingNotes && (
-							<Contact
-								label={t.parking}
-								value={resource.parkingNotes}
-								icon={
-									<Car
-										size={20}
-										className="text-muted-foreground"
-									/>
-								}
-							/>
-						)}
+						<Contact
+							label={t.parking}
+							value={resource.parkingNotes}
+							icon={
+								<Car
+									size={20}
+									className="text-muted-foreground"
+								/>
+							}
+						/>
 						{/* Preparation Required */}
-						{resource.preparationNotes && (
-							<Contact
-								label={t.preparation}
-								value={resource.preparationNotes}
-								icon={
-									<UtensilsCrossed
-										size={20}
-										className="text-muted-foreground"
-									/>
-								}
-							/>
-						)}
+						<Contact
+							label={t.preparation}
+							value={resource.preparationNotes}
+							icon={
+								<UtensilsCrossed
+									size={20}
+									className="text-muted-foreground"
+								/>
+							}
+						/>
 						{/* Transit */}
-						{resource.transitNotes && (
-							<Contact
-								label={t.transit}
-								value={resource.transitNotes}
-								icon={
-									<Bus
-										size={20}
-										className="text-muted-foreground"
-									/>
-								}
-							/>
-						)}
+						<Contact
+							label={t.transit}
+							value={resource.transitNotes}
+							icon={
+								<Bus
+									size={20}
+									className="text-muted-foreground"
+								/>
+							}
+						/>
 					</div>
 				)}
 				{hours.length > 0 && (

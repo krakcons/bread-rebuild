@@ -1,12 +1,6 @@
+import { StatusSelect } from "@/components/Provider/StatusSelect";
 import { DataTable } from "@/components/ui/DataTable";
 import { DataTableColumnHeader } from "@/components/ui/DataTableColumnHeader";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/Select";
 import { Locale, useTranslations } from "@/lib/locale";
 import {
 	getProvidersFn,
@@ -16,7 +10,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 
-export const Route = createFileRoute("/$locale/admin/_admin/providers")({
+export const Route = createFileRoute("/$locale/admin/_admin/providers/list")({
 	component: RouteComponent,
 	loader: async ({ params }) => {
 		const providers = await getProvidersFn({
@@ -64,33 +58,17 @@ const useColumns = () => {
 				accessorKey: "status",
 				cell: ({ row }) => {
 					return (
-						<Select
+						<StatusSelect
 							defaultValue={row.original.status}
-							onValueChange={(value) => {
+							onChange={(status) => {
 								updateProviderStatusFn({
 									data: {
 										id: row.original.id,
-										status: value as
-											| "pending"
-											| "approved"
-											| "rejected",
+										status,
 									},
 								});
 							}}
-						>
-							<SelectTrigger>
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="pending">Pending</SelectItem>
-								<SelectItem value="approved">
-									Approved
-								</SelectItem>
-								<SelectItem value="rejected">
-									Rejected
-								</SelectItem>
-							</SelectContent>
-						</Select>
+						/>
 					);
 				},
 			},
@@ -105,6 +83,7 @@ function RouteComponent() {
 	const { locale } = Route.useParams();
 	const t = useTranslations(locale);
 	const columns = useColumns();
+	const navigate = Route.useNavigate();
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -120,6 +99,16 @@ function RouteComponent() {
 					email: provider.user?.email ?? provider.email,
 					status: provider.status,
 				}))}
+				onRowClick={(row) => {
+					navigate({
+						to: "/$locale/admin/providers/$id",
+						params: (prev) => ({
+							...prev,
+							id: row.id,
+						}),
+						search: (prev) => prev,
+					});
+				}}
 			/>
 		</div>
 	);
