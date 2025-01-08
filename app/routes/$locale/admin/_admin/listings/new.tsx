@@ -1,11 +1,10 @@
 import { ListingForm } from "@/components/forms/Listing";
-import { Locale, useTranslations } from "@/lib/locale";
+import { useTranslations } from "@/lib/locale";
 import { mutateListingFn } from "@/server/actions/listings";
-import { getMyProviderFn } from "@/server/actions/provider";
 import {
 	createFileRoute,
 	ErrorComponent,
-	notFound,
+	useRouteContext,
 	useRouter,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
@@ -14,19 +13,6 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
-	loader: async ({ params }) => {
-		const provider = await getMyProviderFn({
-			data: {
-				locale: params.locale as Locale,
-			},
-		});
-		if (!provider) {
-			throw notFound();
-		}
-		return {
-			provider,
-		};
-	},
 });
 
 function RouteComponent() {
@@ -34,7 +20,9 @@ function RouteComponent() {
 	const createListing = useServerFn(mutateListingFn);
 	const { locale } = Route.useParams();
 	const t = useTranslations(locale);
-	const { provider } = Route.useLoaderData();
+	const { provider } = useRouteContext({
+		from: "/$locale/admin/_admin",
+	});
 	const { editingLocale } = Route.useSearch();
 
 	return (

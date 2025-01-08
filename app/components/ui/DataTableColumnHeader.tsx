@@ -9,7 +9,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
+import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+import { useParams } from "@tanstack/react-router";
 
 interface DataTableColumnHeaderProps<TData, TValue>
 	extends React.HTMLAttributes<HTMLDivElement> {
@@ -25,6 +27,8 @@ export function DataTableColumnHeader<TData, TValue>({
 	if (!column.getCanSort()) {
 		return <div className={cn(className)}>{title}</div>;
 	}
+	const { locale } = useParams({ from: "/$locale" });
+	const t = useTranslations(locale);
 
 	return (
 		<div className={cn("flex items-center space-x-2", className)}>
@@ -50,20 +54,20 @@ export function DataTableColumnHeader<TData, TValue>({
 						onClick={() => column.toggleSorting(false)}
 					>
 						<ArrowUp className="h-3.5 w-3.5 text-muted-foreground/70" />
-						Asc
+						{t.admin.providers.table.sort.asc}
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						onClick={() => column.toggleSorting(true)}
 					>
 						<ArrowDown className="h-3.5 w-3.5 text-muted-foreground/70" />
-						Desc
+						{t.admin.providers.table.sort.desc}
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem
 						onClick={() => column.toggleVisibility(false)}
 					>
 						<EyeOff className="h-3.5 w-3.5 text-muted-foreground/70" />
-						Hide
+						{t.admin.providers.table.sort.hide}
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

@@ -98,7 +98,7 @@ export function DataTable<TData, TValue>({
 
 	return (
 		<div className="rounded-md">
-			<div className="flex items-center py-4">
+			<div className="flex items-center pb-4">
 				<Input
 					placeholder={t.admin.providers.table.filter}
 					defaultValue={globalFilter}

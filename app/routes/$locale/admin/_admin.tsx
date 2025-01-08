@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/SideBar";
 import { Toaster } from "@/components/ui/Sonner";
 import { Locale, locales, LocaleSchema, useTranslations } from "@/lib/locale";
+import { getMyProviderFn } from "@/server/actions/provider";
 import { logoutFn } from "@/server/auth/actions";
 import {
 	createFileRoute,
@@ -62,13 +63,14 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 				params,
 			});
 		}
-		if (!context.provider) {
+		const provider = await getMyProviderFn();
+		if (!provider) {
 			throw redirect({
 				to: "/$locale/admin/onboarding",
 				params,
 			});
 		}
-		return { provider: context.provider };
+		return { provider };
 	},
 });
 
@@ -85,7 +87,7 @@ const AdminSidebar = () => {
 
 	return (
 		<Sidebar>
-			<SidebarHeader className="flex-row items-center justify-between">
+			<SidebarHeader className="border-b">
 				<Link
 					to="/$locale"
 					params={{
@@ -234,6 +236,12 @@ const AdminSidebar = () => {
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
+				<div className="flex flex-col gap-1">
+					<p className="text-sm font-semibold">{provider.name}</p>
+					<p className="text-xs text-muted-foreground">
+						{user?.email}
+					</p>
+				</div>
 				{provider.status === "pending" && (
 					<div className="flex flex-col gap-1 border p-2">
 						<div className="flex flex-row items-center gap-1">

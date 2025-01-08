@@ -6,7 +6,7 @@ import {
 } from "@oslojs/encoding";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { sessions, users, type Session, type User } from "../db/schema/auth";
+import { sessions, SessionType, users, UserType } from "../db/schema/auth";
 import { providers } from "../db/schema/tables";
 import { BaseProviderType } from "../db/types";
 
@@ -26,11 +26,11 @@ export function generateSessionToken(): string {
 export async function createSession(
 	token: string,
 	userId: string,
-): Promise<Session> {
+): Promise<SessionType> {
 	const sessionId = encodeHexLowerCase(
 		sha256(new TextEncoder().encode(token)),
 	);
-	const session: Session = {
+	const session: SessionType = {
 		id: sessionId,
 		userId,
 		expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
@@ -78,8 +78,8 @@ export async function invalidateSession(sessionId: string): Promise<void> {
 
 export type SessionValidationResult =
 	| {
-			session: Session;
-			user: Omit<User, "passwordHash">;
+			session: SessionType;
+			user: Omit<UserType, "passwordHash">;
 			provider: BaseProviderType | null;
 	  }
 	| { session: null; user: null; provider: null };

@@ -147,6 +147,11 @@ export const english = {
 				status: "Status",
 				empty: "No results.",
 				filter: "Filter results...",
+				sort: {
+					asc: "Asc",
+					desc: "Desc",
+					hide: "Hide",
+				},
 			},
 		},
 		onboarding: {
@@ -519,6 +524,11 @@ export const french: typeof english = {
 				status: "Statut",
 				empty: "Aucun résultat.",
 				filter: "Filtrer les résultats...",
+				sort: {
+					asc: "Croissant",
+					desc: "Décroissant",
+					hide: "Masquer",
+				},
 			},
 		},
 		onboarding: {
