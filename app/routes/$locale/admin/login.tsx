@@ -114,7 +114,7 @@ function RouteComponent() {
 						name="email"
 						children={(field) => (
 							<Label>
-								{t.form.common.email}
+								{t.common.email}
 								<Input
 									name={field.name}
 									value={field.state.value}

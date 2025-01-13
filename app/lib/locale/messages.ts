@@ -4,6 +4,7 @@ export const english = {
 		"Bread is a directory of food resources in the greater Calgary area.",
 	common: {
 		name: "Name",
+		email: "Email",
 		optional: "Optional",
 		back: "Back",
 		to: "to",
@@ -28,7 +29,6 @@ export const english = {
 	applicationProcess: "Application Process",
 	additionalInfo: "Additional Information",
 	contact: "Contact",
-	email: "Email",
 	userEmail: "User Email",
 	website: "Website",
 	hours: "Hours",
@@ -205,6 +205,11 @@ export const english = {
 		provider: {
 			title: "Provider",
 			description: "Manage your provider information here.",
+			sections: {
+				provider: "Information",
+				owner: "Owner Information",
+				listings: "Listings",
+			},
 		},
 		analytics: {
 			title: "Analytics",
@@ -233,7 +238,6 @@ export const english = {
 			submit: "Submit",
 			description: "Description",
 			optional: "Optional",
-			email: "Email",
 		},
 		auth: {
 			password: "Password",
@@ -371,7 +375,6 @@ export const english = {
 			hide: "Hide",
 		},
 		name: "Name",
-		email: "Email",
 		status: "Status",
 		rowsPerPage: "Rows per page",
 		page: "Page",
@@ -391,6 +394,7 @@ export const french: Translations = {
 		"Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
 	common: {
 		name: "Nom",
+		email: "Courriel",
 		optional: "Optionnel",
 		back: "Retour",
 		to: "à",
@@ -417,7 +421,6 @@ export const french: Translations = {
 	applicationProcess: "Processus d'application",
 	additionalInfo: "Informations supplémentaires",
 	contact: "Contact",
-	email: "Courriel",
 	website: "Site Web",
 	hours: "Horaires",
 	saved: {
@@ -592,6 +595,11 @@ export const french: Translations = {
 		provider: {
 			title: "Fournisseur",
 			description: "Gérer vos informations de fournisseur ici.",
+			sections: {
+				provider: "Fournisseur",
+				owner: "Propriétaire",
+				listings: "Listes",
+			},
 		},
 		analytics: {
 			title: "Statistiques",
@@ -620,7 +628,6 @@ export const french: Translations = {
 			submit: "Soumettre",
 			description: "Description",
 			optional: "Optionnel",
-			email: "Courriel",
 		},
 		auth: {
 			password: "Mot de passe",
@@ -753,7 +760,6 @@ export const french: Translations = {
 	},
 	table: {
 		name: "Nom",
-		email: "Courriel",
 		status: "Statut",
 		empty: "Aucun résultat.",
 		filter: "Filtrer les résultats...",

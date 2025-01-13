@@ -181,7 +181,7 @@ function ResourceDetail() {
 
 					{/* Email */}
 					<Contact
-						label={t.email}
+						label={t.common.email}
 						value={contactInfo.email}
 						link={`mailto:${contactInfo.email}`}
 						icon={

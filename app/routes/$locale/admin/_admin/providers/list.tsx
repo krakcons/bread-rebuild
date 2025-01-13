@@ -56,7 +56,7 @@ const useColumns = () => {
 				header: ({ column }) => (
 					<DataTableColumnHeader
 						column={column}
-						title={t.table.email}
+						title={t.common.email}
 					/>
 				),
 				accessorKey: "email",

@@ -854,7 +854,7 @@ export const ListingForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.form.common.email}
+									{t.common.email}
 									<span className="text-xs text-muted-foreground">
 										({t.common.optional})
 									</span>
