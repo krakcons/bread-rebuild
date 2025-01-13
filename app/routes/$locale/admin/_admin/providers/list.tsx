@@ -48,6 +48,7 @@ const useColumns = () => {
 					<DataTableColumnHeader
 						column={column}
 						title={t.admin.providers.table.name}
+						className="min-w-[200px]"
 					/>
 				),
 				accessorKey: "name",

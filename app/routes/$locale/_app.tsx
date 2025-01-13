@@ -34,8 +34,8 @@ function LayoutComponent() {
 
 	return (
 		<div>
-			<div className="flex items-center justify-center border-b">
-				<header className="flex w-full max-w-screen-md items-center justify-between gap-4 px-4 py-3">
+			<div className="flex items-center justify-center">
+				<header className="flex w-full max-w-screen-md items-center justify-between gap-4 pb-3">
 					<Link
 						to="/$locale"
 						params={{ locale }}
@@ -133,7 +133,7 @@ function LayoutComponent() {
 					</div>
 				</header>
 			</div>
-			<div className="mx-auto max-w-screen-md p-4">
+			<div className="mx-auto max-w-screen-md">
 				<Outlet />
 			</div>
 		</div>

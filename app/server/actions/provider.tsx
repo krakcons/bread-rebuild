@@ -276,13 +276,13 @@ export const updateProviderStatusFn = createServerFn({
 			},
 		});
 
-		if (!provider || !provider.user) {
+		if (!provider) {
 			throw new Error("Provider not found");
 		}
 
 		await db.update(providers).set({ status }).where(eq(providers.id, id));
 
-		if (status === "approved") {
+		if (status === "approved" && provider.user) {
 			await sendEmail({
 				to: [provider.user.email],
 				subject: "Provider Approved",

@@ -12,6 +12,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 
+import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea";
 import {
 	Table,
 	TableBody,
@@ -97,7 +98,7 @@ export function DataTable<TData, TValue>({
 	const t = useTranslations(locale);
 
 	return (
-		<div className="rounded-md">
+		<div className="w-[calc(100vw-32px)] rounded-md sm:w-full">
 			<div className="flex items-center pb-4">
 				<Input
 					placeholder={t.admin.providers.table.filter}
@@ -106,61 +107,68 @@ export function DataTable<TData, TValue>({
 					className="max-w-sm"
 				/>
 			</div>
-			<Table className="border">
-				<TableHeader>
-					{table.getHeaderGroups().map((headerGroup) => (
-						<TableRow key={headerGroup.id} className="p-4">
-							{headerGroup.headers.map((header) => {
-								return (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef
-														.header,
-													header.getContext(),
-												)}
-									</TableHead>
-								);
-							})}
-						</TableRow>
-					))}
-				</TableHeader>
-				<TableBody className="px-2">
-					{table.getRowModel().rows?.length ? (
-						table.getRowModel().rows.map((row) => (
-							<TableRow
-								key={row.id}
-								data-state={row.getIsSelected() && "selected"}
-								onClick={() => {
-									if (onRowClick) {
-										onRowClick(row.original);
-									}
-								}}
-								className={cn(onRowClick && "cursor-pointer")}
-							>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id}>
-										{flexRender(
-											cell.column.columnDef.cell,
-											cell.getContext(),
-										)}
-									</TableCell>
-								))}
+			<ScrollArea>
+				<Table>
+					<TableHeader>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow key={headerGroup.id} className="p-4">
+								{headerGroup.headers.map((header) => {
+									return (
+										<TableHead key={header.id}>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef
+															.header,
+														header.getContext(),
+													)}
+										</TableHead>
+									);
+								})}
 							</TableRow>
-						))
-					) : (
-						<TableRow>
-							<TableCell
-								colSpan={columns.length}
-								className="h-24 text-center"
-							>
-								{t.admin.providers.table.empty}
-							</TableCell>
-						</TableRow>
-					)}
-				</TableBody>
-			</Table>
+						))}
+					</TableHeader>
+					<TableBody className="px-2">
+						{table.getRowModel().rows?.length ? (
+							table.getRowModel().rows.map((row) => (
+								<TableRow
+									key={row.id}
+									data-state={
+										row.getIsSelected() && "selected"
+									}
+									onClick={() => {
+										if (onRowClick) {
+											onRowClick(row.original);
+										}
+									}}
+									className={cn(
+										onRowClick && "cursor-pointer",
+									)}
+								>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</TableCell>
+									))}
+								</TableRow>
+							))
+						) : (
+							<TableRow>
+								<TableCell
+									colSpan={columns.length}
+									className="h-24 text-center"
+								>
+									{t.admin.providers.table.empty}
+								</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
+				</Table>
+				<ScrollBar orientation="horizontal" />
+			</ScrollArea>
 			<div className="p-2">
 				<DataTablePagination table={table} />
 			</div>

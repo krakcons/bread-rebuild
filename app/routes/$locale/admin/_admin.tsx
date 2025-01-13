@@ -87,7 +87,7 @@ const AdminSidebar = () => {
 
 	return (
 		<Sidebar>
-			<SidebarHeader className="border-b">
+			<SidebarHeader className="flex flex-row items-center justify-between border-b">
 				<Link
 					to="/$locale"
 					params={{
@@ -279,7 +279,7 @@ function RouteComponent() {
 	return (
 		<SidebarProvider>
 			<AdminSidebar />
-			<main className="flex-1 p-4">
+			<main className="flex-1">
 				<div className="flex flex-row items-center justify-between">
 					<SidebarTrigger />
 					<div className="flex flex-row items-center gap-2">
