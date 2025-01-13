@@ -71,17 +71,22 @@ const useColumns = () => {
 				accessorKey: "status",
 				cell: ({ row }) => {
 					return (
-						<StatusSelect
-							defaultValue={row.original.status}
-							onChange={(status) => {
-								updateProviderStatusFn({
-									data: {
-										id: row.original.id,
-										status,
-									},
-								});
-							}}
-						/>
+						<div
+							className="-m-2 p-2"
+							onClick={(e) => e.stopPropagation()}
+						>
+							<StatusSelect
+								defaultValue={row.original.status}
+								onChange={(status) => {
+									updateProviderStatusFn({
+										data: {
+											id: row.original.id,
+											status,
+										},
+									});
+								}}
+							/>
+						</div>
 					);
 				},
 			},
