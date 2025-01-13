@@ -17,9 +17,8 @@ import { and, eq, exists, ilike, inArray, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { DietaryOptionSchema } from "../types";
 
-export const SearchParamsSchema = z.object({
+export const SearchFormSchema = z.object({
 	query: z.string().optional(),
-	tab: z.enum(["map", "list"]).optional(),
 	free: z.boolean().optional(),
 	preparation: z.boolean().optional(),
 	parking: z.boolean().optional(),
@@ -32,7 +31,7 @@ export const searchFn = createServerFn({
 	method: "GET",
 })
 	.middleware([localeMiddleware])
-	.validator(SearchParamsSchema.and(LocalizedQuerySchema))
+	.validator(SearchFormSchema.and(LocalizedQuerySchema))
 	.handler(async ({ context, data }): Promise<ResourceType[]> => {
 		const localeOpts: Required<LocalizedQueryType> = {
 			locale: data?.locale ?? context.locale,

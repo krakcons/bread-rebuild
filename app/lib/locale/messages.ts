@@ -62,6 +62,7 @@ export const english = {
 	terms: "Terms of Use",
 	privacy: "Privacy Policy",
 	dietaryOptions: "Dietary Options",
+	poweredBy: "Powered by",
 	dietaryOptionTypes: {
 		vegetarian: "Vegetarian",
 		vegan: "Vegan",
@@ -403,6 +404,7 @@ export const french: Translations = {
 	},
 	userEmail: "Courriel de l'utilisateur",
 	search: "Rechercher",
+	poweredBy: "Propulsé par",
 	free: "Gratuit",
 	list: "Liste",
 	map: "Carte",

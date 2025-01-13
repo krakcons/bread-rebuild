@@ -14,7 +14,7 @@ import {
 	Link,
 	Outlet,
 } from "@tanstack/react-router";
-import { Bookmark, Menu, Printer } from "lucide-react";
+import { Bookmark, Menu, Printer, Search } from "lucide-react";
 
 export const Route = createFileRoute("/$locale/_app")({
 	component: LayoutComponent,
@@ -50,6 +50,14 @@ function LayoutComponent() {
 					</Link>
 					<div className="no-print flex items-center gap-2">
 						<Link
+							to="/$locale/search"
+							params={{ locale }}
+							className={cn(buttonVariants(), "relative")}
+						>
+							<Search size={20} />
+							<p className="hidden sm:block">{t.search}</p>
+						</Link>
+						<Link
 							to="/$locale/saved"
 							params={{ locale }}
 							className={cn(buttonVariants(), "relative")}
@@ -58,7 +66,7 @@ function LayoutComponent() {
 							<p className="hidden sm:block">{t.saved.title}</p>
 							{saved &&
 								saved.filter((s) => !s.seen).length > 0 && (
-									<span className="absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-secondary text-xs text-white">
+									<span className="bg-primary-red absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white text-xs text-white">
 										{saved.filter((s) => !s.seen).length}
 									</span>
 								)}

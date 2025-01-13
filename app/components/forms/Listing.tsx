@@ -263,6 +263,8 @@ export const ListingForm = ({
 			place.address_components?.find((c) => c.types.includes(type))
 				?.long_name;
 
+		console.log(place.address_components);
+
 		const street =
 			findByType("street_number") &&
 			findByType("route") &&
