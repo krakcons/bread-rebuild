@@ -1,8 +1,7 @@
 import { Resource } from "@/components/Resource";
 import { buttonVariants } from "@/components/ui/Button";
-import { useTranslations } from "@/lib/locale";
 import { getListingsFn } from "@/server/actions/listings";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouteContext } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/$locale/admin/_admin/listings/list")({
@@ -18,8 +17,9 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/list")({
 
 function RouteComponent() {
 	const data = Route.useLoaderData();
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t } = useRouteContext({
+		from: "__root__",
+	});
 
 	return (
 		<div className="flex flex-col gap-4">

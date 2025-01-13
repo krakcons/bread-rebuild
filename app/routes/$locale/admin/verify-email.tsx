@@ -7,7 +7,6 @@ import {
 	InputOTPSlot,
 } from "@/components/ui/InputOTP";
 import { Label } from "@/components/ui/Label";
-import { useTranslations } from "@/lib/locale";
 import {
 	resendEmailVerification,
 	resendPasswordResetVerification,
@@ -19,6 +18,7 @@ import { useForm, useStore } from "@tanstack/react-form";
 import {
 	createFileRoute,
 	ErrorComponent,
+	useRouteContext,
 	useRouter,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
@@ -50,8 +50,9 @@ function RouteComponent() {
 		resendPasswordResetVerification,
 	);
 	const [resendCodeSent, setResendCodeSent] = useState(false);
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t, locale } = useRouteContext({
+		from: "__root__",
+	});
 	const form = useForm({
 		defaultValues: {
 			code: "",

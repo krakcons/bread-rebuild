@@ -3,11 +3,15 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { FieldError } from "@/components/ui/FieldError";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { login, LoginSchema } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	Link,
+	useRouteContext,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -19,8 +23,9 @@ export const Route = createFileRoute("/$locale/admin/login")({
 function RouteComponent() {
 	const navigate = Route.useNavigate();
 	const loginMutation = useServerFn(login);
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t, locale } = useRouteContext({
+		from: "__root__",
+	});
 	const form = useForm({
 		defaultValues: {
 			email: "",

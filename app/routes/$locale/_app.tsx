@@ -5,7 +5,6 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/Popover";
-import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { getSavedFn } from "@/server/actions/saved";
 import { useQuery } from "@tanstack/react-query";
@@ -24,9 +23,8 @@ export const Route = createFileRoute("/$locale/_app")({
 });
 
 function LayoutComponent() {
-	const { locale } = Route.useParams();
+	const { t, locale } = Route.useRouteContext();
 	const navigate = Route.useNavigate();
-	const translations = useTranslations(locale);
 	const { data: saved } = useQuery({
 		queryKey: ["saved"],
 		queryFn: () => getSavedFn(),
@@ -57,9 +55,7 @@ function LayoutComponent() {
 							className={cn(buttonVariants(), "relative")}
 						>
 							<Bookmark size={20} />
-							<p className="hidden sm:block">
-								{translations.saved.title}
-							</p>
+							<p className="hidden sm:block">{t.saved.title}</p>
 							{saved &&
 								saved.filter((s) => !s.seen).length > 0 && (
 									<span className="absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-secondary text-xs text-white">
@@ -73,9 +69,7 @@ function LayoutComponent() {
 							}}
 						>
 							<Printer size={20} />
-							<p className="hidden sm:block">
-								{translations.print}
-							</p>
+							<p className="hidden sm:block">{t.print}</p>
 						</Button>
 						<Button
 							onClick={() => {
@@ -112,21 +106,21 @@ function LayoutComponent() {
 									params={{ locale }}
 									className="text-center"
 								>
-									{translations.terms}
+									{t.terms}
 								</Link>
 								<Link
 									to="/$locale/privacy-policy"
 									params={{ locale }}
 									className="text-center"
 								>
-									{translations.privacy}
+									{t.privacy}
 								</Link>
 								<Link
 									to="/$locale/admin"
 									params={{ locale }}
 									className="text-center"
 								>
-									{translations.admin.title}
+									{t.admin.title}
 								</Link>
 							</PopoverContent>
 						</Popover>

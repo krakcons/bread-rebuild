@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-// import { useTranslation } from "react-i18next";
 
 export const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 

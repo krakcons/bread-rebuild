@@ -1,5 +1,5 @@
-import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+import { useRouteContext } from "@tanstack/react-router";
 import zxcvbn from "zxcvbn";
 
 export const PasswordStrength = ({
@@ -10,7 +10,9 @@ export const PasswordStrength = ({
 	locale: string;
 }) => {
 	const strength = zxcvbn(password);
-	const t = useTranslations(locale);
+	const { t } = useRouteContext({
+		from: "__root__",
+	});
 
 	const strengthColors = [
 		"bg-red-400",

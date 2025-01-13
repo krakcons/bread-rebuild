@@ -21,9 +21,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/Table";
-import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
-import { useParams } from "@tanstack/react-router";
+import { useRouteContext } from "@tanstack/react-router";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./Input";
 
@@ -92,16 +91,15 @@ export function DataTable<TData, TValue>({
 		},
 	});
 
-	const { locale } = useParams({
-		from: "/$locale",
+	const { t } = useRouteContext({
+		from: "__root__",
 	});
-	const t = useTranslations(locale);
 
 	return (
 		<div className="w-[calc(100vw-32px)] rounded-md sm:w-full">
 			<div className="flex items-center pb-4">
 				<Input
-					placeholder={t.admin.providers.table.filter}
+					placeholder={t.table.filter}
 					defaultValue={globalFilter}
 					onChange={(event) => setGlobalFilter(event.target.value)}
 					className="max-w-sm"
@@ -161,7 +159,7 @@ export function DataTable<TData, TValue>({
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									{t.admin.providers.table.empty}
+									{t.table.empty}
 								</TableCell>
 							</TableRow>
 						)}

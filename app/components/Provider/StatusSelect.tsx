@@ -1,5 +1,4 @@
-import { useTranslations } from "@/lib/locale";
-import { useParams } from "@tanstack/react-router";
+import { useRouteContext } from "@tanstack/react-router";
 import {
 	Select,
 	SelectContent,
@@ -15,10 +14,9 @@ export const StatusSelect = ({
 	onChange: (status: "pending" | "approved" | "rejected") => void;
 	defaultValue?: "pending" | "approved" | "rejected";
 }) => {
-	const { locale } = useParams({
-		from: "/$locale",
+	const { t } = useRouteContext({
+		from: "__root__",
 	});
-	const t = useTranslations(locale);
 
 	return (
 		<Select

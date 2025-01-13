@@ -1,15 +1,19 @@
-import { getTranslations, useTranslations } from "@/lib/locale";
-import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
+import { getTranslations } from "@/lib/locale";
+import {
+	createFileRoute,
+	ErrorComponent,
+	useRouteContext,
+} from "@tanstack/react-router";
 
 export const Route = createFileRoute("/$locale/_app/terms")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
 	head: ({ params: { locale } }) => {
-		const translations = getTranslations(locale);
+		const t = getTranslations(locale);
 		return {
 			meta: [
 				{
-					title: translations.terms,
+					title: t.terms,
 				},
 			],
 		};
@@ -17,11 +21,12 @@ export const Route = createFileRoute("/$locale/_app/terms")({
 });
 
 function RouteComponent() {
-	const { locale } = Route.useParams();
-	const translations = useTranslations(locale);
+	const { t } = useRouteContext({
+		from: "__root__",
+	});
 	return (
 		<div className="flex flex-col gap-4">
-			<h1 className="text-3xl font-semibold">{translations.terms}</h1>
+			<h1 className="text-3xl font-semibold">{t.terms}</h1>
 			<p>
 				Lorem ipsum dolor sit amet consectetur adipisicing elit.
 				Excepturi perferendis, modi consequuntur aspernatur rerum autem

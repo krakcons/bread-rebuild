@@ -4,7 +4,6 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { FieldError } from "@/components/ui/FieldError";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { useTranslations } from "@/lib/locale";
 import {
 	isPasswordResetVerified,
 	resetPassword,
@@ -13,7 +12,12 @@ import {
 	ResetPasswordSchema,
 } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	Link,
+	useRouteContext,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -32,8 +36,9 @@ export const Route = createFileRoute("/$locale/admin/reset-password")({
 const EmailForm = () => {
 	const resetPasswordFromEmailMutation = useServerFn(resetPasswordFromEmail);
 	const navigate = Route.useNavigate();
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t, locale } = useRouteContext({
+		from: "__root__",
+	});
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -144,8 +149,9 @@ const EmailForm = () => {
 
 const PasswordForm = () => {
 	const resetPasswordMutation = useServerFn(resetPassword);
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t, locale } = useRouteContext({
+		from: "__root__",
+	});
 	const form = useForm({
 		defaultValues: {
 			password: "",
@@ -268,8 +274,6 @@ const PasswordForm = () => {
 
 function RouteComponent() {
 	const { verified } = Route.useLoaderData();
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
 
 	if (verified) return <PasswordForm />;
 	else return <EmailForm />;

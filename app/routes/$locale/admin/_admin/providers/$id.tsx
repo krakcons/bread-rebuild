@@ -2,14 +2,17 @@ import { Contact } from "@/components/Contact";
 import { NotFound } from "@/components/NotFound";
 import { StatusSelect } from "@/components/Provider/StatusSelect";
 import { Resource } from "@/components/Resource";
-import { useTranslations } from "@/lib/locale";
 import { formatPhoneNumber } from "@/lib/phone";
 import {
 	getProviderFn,
 	getProviderListingsFn,
 	updateProviderStatusFn,
 } from "@/server/actions/provider";
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	notFound,
+	useRouteContext,
+} from "@tanstack/react-router";
 import {
 	CircleCheck,
 	CircleEllipsis,
@@ -37,8 +40,9 @@ export const Route = createFileRoute("/$locale/admin/_admin/providers/$id")({
 
 function RouteComponent() {
 	const { provider, listings } = Route.useLoaderData();
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t } = useRouteContext({
+		from: "__root__",
+	});
 	const [status, setStatus] = useState(provider.status);
 
 	const emails = Array.from(new Set([provider.email, provider.user?.email]));
@@ -49,7 +53,7 @@ function RouteComponent() {
 				<h1>{provider.name}</h1>
 			</div>
 			<Contact
-				label={t.admin.providers.table.status}
+				label={t.table.status}
 				value={
 					<StatusSelect
 						defaultValue={provider.status}

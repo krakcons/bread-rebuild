@@ -141,18 +141,6 @@ export const english = {
 				approved: "Approved",
 				rejected: "Rejected",
 			},
-			table: {
-				name: "Name",
-				email: "Email",
-				status: "Status",
-				empty: "No results.",
-				filter: "Filter results...",
-				sort: {
-					asc: "Asc",
-					desc: "Desc",
-					hide: "Hide",
-				},
-			},
 		},
 		onboarding: {
 			title: "Create Your Provider",
@@ -374,9 +362,30 @@ export const english = {
 			notes: "Notes",
 		},
 	},
+	table: {
+		empty: "No results.",
+		filter: "Filter results...",
+		sort: {
+			asc: "Asc",
+			desc: "Desc",
+			hide: "Hide",
+		},
+		name: "Name",
+		email: "Email",
+		status: "Status",
+		rowsPerPage: "Rows per page",
+		page: "Page",
+		of: "of",
+		goToFirstPage: "Go to first page",
+		goToPreviousPage: "Go to previous page",
+		goToNextPage: "Go to next page",
+		goToLastPage: "Go to last page",
+	},
 };
 
-export const french: typeof english = {
+export type Translations = typeof english;
+
+export const french: Translations = {
 	title: "Bread: Banques alimentaires à Calgary",
 	description:
 		"Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
@@ -517,18 +526,6 @@ export const french: typeof english = {
 				pending: "En attente",
 				approved: "Approuvé",
 				rejected: "Rejeté",
-			},
-			table: {
-				name: "Nom",
-				email: "Courriel",
-				status: "Statut",
-				empty: "Aucun résultat.",
-				filter: "Filtrer les résultats...",
-				sort: {
-					asc: "Croissant",
-					desc: "Décroissant",
-					hide: "Masquer",
-				},
 			},
 		},
 		onboarding: {
@@ -753,5 +750,24 @@ export const french: typeof english = {
 			},
 			notes: "Notes",
 		},
+	},
+	table: {
+		name: "Nom",
+		email: "Courriel",
+		status: "Statut",
+		empty: "Aucun résultat.",
+		filter: "Filtrer les résultats...",
+		sort: {
+			asc: "Croissant",
+			desc: "Décroissant",
+			hide: "Masquer",
+		},
+		rowsPerPage: "Lignes par page",
+		page: "Page",
+		of: "de",
+		goToFirstPage: "Aller à la première page",
+		goToPreviousPage: "Aller à la page précédente",
+		goToNextPage: "Aller à la page suivante",
+		goToLastPage: "Aller à la dernière page",
 	},
 };

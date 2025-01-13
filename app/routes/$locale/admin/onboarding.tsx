@@ -1,12 +1,12 @@
 import { ProviderForm } from "@/components/forms/Provider";
 import { Button, buttonVariants } from "@/components/ui/Button";
-import { Locale, useTranslations } from "@/lib/locale";
 import { mutateProviderFn } from "@/server/actions/provider";
 import {
 	createFileRoute,
 	ErrorComponent,
 	Link,
 	redirect,
+	useRouteContext,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft } from "lucide-react";
@@ -30,8 +30,9 @@ export const Route = createFileRoute("/$locale/admin/onboarding")({
 
 function RouteComponent() {
 	const createProvider = useServerFn(mutateProviderFn);
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t, locale } = useRouteContext({
+		from: "__root__",
+	});
 	const navigate = Route.useNavigate();
 
 	return (
@@ -72,7 +73,7 @@ function RouteComponent() {
 					await createProvider({
 						data: {
 							...data,
-							locale: locale as Locale,
+							locale,
 							redirect: true,
 						},
 					});

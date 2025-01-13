@@ -12,13 +12,17 @@ import {
 } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { useDebounce } from "@/lib/debounce";
-import { getTranslations, useTranslations } from "@/lib/locale";
+import { getTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { searchFn, SearchParamsSchema } from "@/server/actions/resource";
 import { DietaryOptionType } from "@/server/types";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	useRouteContext,
+} from "@tanstack/react-router";
 import {
 	Accessibility,
 	Bus,
@@ -46,15 +50,15 @@ export const Route = createFileRoute("/$locale/_app/")({
 	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
 	head: ({ params: { locale } }) => {
-		const translations = getTranslations(locale);
+		const t = getTranslations(locale);
 		return {
 			meta: [
 				{
-					title: translations.title,
+					title: t.title,
 				},
 				{
 					name: "description",
-					content: translations.description,
+					content: t.description,
 				},
 			],
 		};
@@ -74,7 +78,9 @@ function Home() {
 		wheelchair = false,
 		dietaryOptions = [],
 	} = searchParams;
-	const translations = useTranslations(locale);
+	const { t } = useRouteContext({
+		from: "__root__",
+	});
 
 	const queryForm = useForm({
 		defaultValues: {
@@ -119,7 +125,7 @@ function Home() {
 							children={(field) => (
 								<Input
 									type="text"
-									placeholder={translations.search}
+									placeholder={t.search}
 									value={field.state.value}
 									onChange={(e) =>
 										field.handleChange(e.target.value)
@@ -147,7 +153,7 @@ function Home() {
 						active={tab === "list"}
 					>
 						<List size={18} />
-						<p className="hidden sm:block">{translations.list}</p>
+						<p className="hidden sm:block">{t.list}</p>
 					</Button>
 					<Button
 						onClick={() =>
@@ -159,7 +165,7 @@ function Home() {
 						active={tab === "map"}
 					>
 						<MapIcon size={18} />
-						<p className="hidden sm:block">{translations.map}</p>
+						<p className="hidden sm:block">{t.map}</p>
 					</Button>
 					<div className="h-6 w-px bg-gray-300" />
 					<Dialog>
@@ -177,17 +183,15 @@ function Home() {
 							>
 								<Filter size={18} />
 								<p className="hidden sm:block">
-									{translations.filters.title}
+									{t.filters.title}
 								</p>
 							</Button>
 						</DialogTrigger>
 						<DialogContent className="flex max-h-screen flex-col gap-2 overflow-y-auto sm:max-w-lg">
 							<DialogHeader className="flex flex-col items-start text-left">
-								<DialogTitle>
-									{translations.filters.title}
-								</DialogTitle>
+								<DialogTitle>{t.filters.title}</DialogTitle>
 								<DialogDescription>
-									{translations.filters.description}
+									{t.filters.description}
 								</DialogDescription>
 							</DialogHeader>
 							{Object.keys(filterIcons).map((name) => (
@@ -211,54 +215,50 @@ function Home() {
 											name as keyof typeof filterIcons
 										]
 									}
-									{translations.filters[name]}
+									{t.filters[name]}
 								</Button>
 							))}
 							<p className="mt-2 text-lg font-semibold leading-none tracking-tight">
-								{translations.dietaryOptions}
+								{t.dietaryOptions}
 							</p>
 							<div className="flex flex-wrap gap-2">
-								{Object.keys(
-									translations.dietaryOptionTypes,
-								).map((option: DietaryOptionType) => (
-									<Button
-										key={option}
-										onClick={(e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											navigate({
-												search: (prev) => ({
-													...prev,
-													dietaryOptions:
-														prev.dietaryOptions?.includes(
-															option,
-														)
-															? prev.dietaryOptions?.filter(
-																	(id) =>
-																		id !==
+								{Object.keys(t.dietaryOptionTypes).map(
+									(option: DietaryOptionType) => (
+										<Button
+											key={option}
+											onClick={(e) => {
+												e.preventDefault();
+												e.stopPropagation();
+												navigate({
+													search: (prev) => ({
+														...prev,
+														dietaryOptions:
+															prev.dietaryOptions?.includes(
+																option,
+															)
+																? prev.dietaryOptions?.filter(
+																		(id) =>
+																			id !==
+																			option,
+																	)
+																: [
+																		...(prev.dietaryOptions ??
+																			[]),
 																		option,
-																)
-															: [
-																	...(prev.dietaryOptions ??
-																		[]),
-																	option,
-																],
-												}),
-											});
-										}}
-										active={searchParams.dietaryOptions?.includes(
-											option,
-										)}
-										className="flex-grow justify-start"
-									>
-										<Utensils size={18} />
-										{
-											translations.dietaryOptionTypes[
-												option
-											]
-										}
-									</Button>
-								))}
+																	],
+													}),
+												});
+											}}
+											active={searchParams.dietaryOptions?.includes(
+												option,
+											)}
+											className="flex-grow justify-start"
+										>
+											<Utensils size={18} />
+											{t.dietaryOptionTypes[option]}
+										</Button>
+									),
+								)}
 							</div>
 						</DialogContent>
 					</Dialog>

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/Accordion";
 import { Button } from "@/components/ui/Button";
 import { days } from "@/lib/hours";
-import { getTranslations, useTranslations } from "@/lib/locale";
+import { getTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { queryClient } from "@/router";
 import { getResourcesFn } from "@/server/actions/resource";
@@ -18,6 +18,7 @@ import {
 	createFileRoute,
 	ErrorComponent,
 	useNavigate,
+	useRouteContext,
 } from "@tanstack/react-router";
 import { CalendarDays, List, MapIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
@@ -69,14 +70,15 @@ function SavedPage() {
 		queryKey: ["saved"],
 		queryFn: () => getSavedFn(),
 	});
-	const { locale } = Route.useParams();
 	const { resources } = Route.useLoaderData();
 	const navigate = useNavigate({
 		from: Route.fullPath,
 	});
 	const { tab = "list", day = true } = Route.useSearch();
 
-	const translations = useTranslations(locale);
+	const { t } = useRouteContext({
+		from: "__root__",
+	});
 
 	const activeDays = useMemo(
 		() =>
@@ -98,11 +100,9 @@ function SavedPage() {
 		<div className="flex flex-col gap-4">
 			<div className="no-print flex items-center justify-between gap-4">
 				<div className="flex flex-col gap-2">
-					<h1 className="text-3xl font-semibold">
-						{translations.saved.title}
-					</h1>
+					<h1 className="text-3xl font-semibold">{t.saved.title}</h1>
 					<p className="text-muted-foreground">
-						{translations.saved.description}
+						{t.saved.description}
 					</p>
 				</div>
 			</div>
@@ -118,7 +118,7 @@ function SavedPage() {
 					size="lg"
 				>
 					<List size={18} />
-					<p className="hidden sm:block">{translations.list}</p>
+					<p className="hidden sm:block">{t.list}</p>
 				</Button>
 				<Button
 					onClick={() =>
@@ -130,7 +130,7 @@ function SavedPage() {
 					size="lg"
 				>
 					<MapIcon size={18} />
-					<p className="hidden sm:block">{translations.map}</p>
+					<p className="hidden sm:block">{t.map}</p>
 				</Button>
 				<div className="h-6 w-px bg-gray-300" />
 				<Button
@@ -146,7 +146,7 @@ function SavedPage() {
 					size="lg"
 				>
 					<CalendarDays size={18} />
-					<p className="hidden sm:block">{translations.day}</p>
+					<p className="hidden sm:block">{t.day}</p>
 				</Button>
 			</div>
 
@@ -173,11 +173,8 @@ function SavedPage() {
 									<AccordionItem key={day} value={day}>
 										<AccordionTrigger className="text-xl font-semibold">
 											{day === "unassigned"
-												? translations.daysOfWeek
-														.unassigned
-												: translations.daysOfWeek.long[
-														day
-													]}
+												? t.daysOfWeek.unassigned
+												: t.daysOfWeek.long[day]}
 										</AccordionTrigger>
 										<AccordionContent className="flex flex-col gap-3">
 											{resources

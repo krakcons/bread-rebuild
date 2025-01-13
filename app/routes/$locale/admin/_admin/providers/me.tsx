@@ -1,7 +1,10 @@
 import { ProviderForm } from "@/components/forms/Provider";
-import { useTranslations } from "@/lib/locale";
 import { getMyProviderFn, mutateProviderFn } from "@/server/actions/provider";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	useRouteContext,
+	useRouter,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { toast } from "sonner";
 
@@ -25,9 +28,10 @@ function RouteComponent() {
 	const router = useRouter();
 	const editProvider = useServerFn(mutateProviderFn);
 	const { provider } = Route.useLoaderData();
-	const { locale } = Route.useParams();
+	const { t, locale } = useRouteContext({
+		from: "__root__",
+	});
 	const { editingLocale } = Route.useSearch();
-	const t = useTranslations(locale);
 
 	return (
 		<div className="flex flex-col gap-4">

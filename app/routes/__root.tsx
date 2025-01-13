@@ -1,6 +1,7 @@
 import globalStyles from "@/index.css?url";
-import { Locale, locales } from "@/lib/locale";
+import { getTranslations, Locale, locales } from "@/lib/locale";
 import { getLocale, setLocale } from "@/lib/locale/actions";
+import { Translations } from "@/lib/locale/messages";
 import { SessionValidationResult } from "@/server/auth";
 import { getAuth } from "@/server/auth/actions";
 import {
@@ -13,7 +14,9 @@ import {
 import { Meta, Scripts } from "@tanstack/start";
 import * as React from "react";
 
-export const Route = createRootRouteWithContext<SessionValidationResult>()({
+export const Route = createRootRouteWithContext<
+	SessionValidationResult & { t: Translations; locale: Locale }
+>()({
 	head: () => ({
 		meta: [
 			{
@@ -66,9 +69,16 @@ export const Route = createRootRouteWithContext<SessionValidationResult>()({
 		} else {
 			await setLocale({ data: locale as Locale });
 		}
+
 		// Handle auth
 		const auth = await getAuth();
-		return auth;
+
+		// Return context
+		return {
+			...auth,
+			t: getTranslations(locale),
+			locale: locale as Locale,
+		};
 	},
 });
 

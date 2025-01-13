@@ -9,7 +9,6 @@ import {
 	SelectValue,
 } from "@/components/ui/Select";
 import { days } from "@/lib/hours";
-import { useTranslations } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { queryClient } from "@/router";
 import {
@@ -19,7 +18,7 @@ import {
 } from "@/server/actions/saved";
 import { ResourceType, SavedResourceType } from "@/server/db/types";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { Link, useParams, useRouteContext } from "@tanstack/react-router";
+import { Link, useRouteContext } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { Bookmark, CalendarDays, Edit } from "lucide-react";
 import { Button, buttonVariants } from "../ui/Button";
@@ -48,10 +47,9 @@ export const ResourceActions = ({
 		},
 	});
 
-	const { locale } = useParams({
-		from: "/$locale",
+	const { t, locale } = useRouteContext({
+		from: "__root__",
 	});
-	const translations = useTranslations(locale);
 	const savedResource = saved.find(
 		(savedResource) => savedResource.resourceId === resource.id,
 	);
@@ -85,7 +83,7 @@ export const ResourceActions = ({
 						isSaved ? "fill-primary text-primary" : "fill-none"
 					}
 				/>
-				{isSaved ? translations.saved.saved : translations.saved.save}
+				{isSaved ? t.saved.saved : t.saved.save}
 			</Button>
 			{isSaved && (
 				<Select
@@ -112,47 +110,33 @@ export const ResourceActions = ({
 						)}
 					>
 						<CalendarDays size={18} />
-						<SelectValue placeholder={translations.day} />
+						<SelectValue placeholder={t.day} />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value={"unassigned"}>
-							{translations.day}
-						</SelectItem>
+						<SelectItem value={"unassigned"}>{t.day}</SelectItem>
 						<SelectSeparator />
 						{availableDays.length > 0 && (
 							<SelectGroup>
-								<SelectLabel>
-									{translations.daysOfWeek.open}
-								</SelectLabel>
+								<SelectLabel>{t.daysOfWeek.open}</SelectLabel>
 								{availableDays.map((day) => (
 									<SelectItem
 										key={day}
 										value={day.toLowerCase()}
 									>
-										{
-											translations.daysOfWeek.short[
-												day.toLowerCase()
-											]
-										}
+										{t.daysOfWeek.short[day.toLowerCase()]}
 									</SelectItem>
 								))}
 							</SelectGroup>
 						)}
 						{unavailableDays.length > 0 && (
 							<SelectGroup>
-								<SelectLabel>
-									{translations.daysOfWeek.closed}
-								</SelectLabel>
+								<SelectLabel>{t.daysOfWeek.closed}</SelectLabel>
 								{unavailableDays.map((day) => (
 									<SelectItem
 										key={day}
 										value={day.toLowerCase()}
 									>
-										{
-											translations.daysOfWeek.short[
-												day.toLowerCase()
-											]
-										}
+										{t.daysOfWeek.short[day.toLowerCase()]}
 									</SelectItem>
 								))}
 							</SelectGroup>
@@ -176,7 +160,7 @@ export const ResourceActions = ({
 					className={buttonVariants()}
 				>
 					<Edit />
-					{translations.edit}
+					{t.edit}
 				</Link>
 			)}
 		</div>

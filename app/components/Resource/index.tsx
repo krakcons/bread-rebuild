@@ -1,18 +1,16 @@
 import { formatAddress } from "@/lib/address";
-import { useTranslations } from "@/lib/locale";
 import { formatPhoneNumber } from "@/lib/phone";
 import { ResourceType } from "@/server/db/types";
-import { Link, useParams } from "@tanstack/react-router";
+import { Link, useRouteContext } from "@tanstack/react-router";
 import { MapPin, PhoneCall } from "lucide-react";
 import { useMemo } from "react";
 import { Badge } from "../ui/Badge";
 import { ResourceActions } from "./Actions";
 
 export const Resource = ({ resource }: { resource: ResourceType }) => {
-	const { locale } = useParams({
-		from: "/$locale",
+	const { t, locale } = useRouteContext({
+		from: "__root__",
 	});
-	const t = useTranslations(locale);
 
 	const tags = useMemo(() => {
 		let tags: string[] = [

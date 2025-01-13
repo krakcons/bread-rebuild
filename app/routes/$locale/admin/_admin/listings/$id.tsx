@@ -11,7 +11,6 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/AlertDialog";
 import { Button } from "@/components/ui/Button";
-import { useTranslations } from "@/lib/locale";
 import { deleteListingFn, mutateListingFn } from "@/server/actions/listings";
 import { getResourceFn } from "@/server/actions/resource";
 import {
@@ -19,6 +18,7 @@ import {
 	ErrorComponent,
 	Link,
 	notFound,
+	useRouteContext,
 	useRouter,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
@@ -50,9 +50,10 @@ function RouteComponent() {
 	const { listing } = Route.useLoaderData();
 	const updateListing = useServerFn(mutateListingFn);
 	const deleteListing = useServerFn(deleteListingFn);
-	const { locale } = Route.useParams();
 	const { editingLocale } = Route.useSearch();
-	const t = useTranslations(locale);
+	const { t, locale } = useRouteContext({
+		from: "__root__",
+	});
 	const [deleting, setDeleting] = useState(false);
 
 	return (

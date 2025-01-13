@@ -21,7 +21,7 @@ import {
 	useSidebar,
 } from "@/components/ui/SideBar";
 import { Toaster } from "@/components/ui/Sonner";
-import { Locale, locales, LocaleSchema, useTranslations } from "@/lib/locale";
+import { Locale, locales, LocaleSchema } from "@/lib/locale";
 import { getMyProviderFn } from "@/server/actions/provider";
 import { logoutFn } from "@/server/auth/actions";
 import {
@@ -58,7 +58,7 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 				to: location.pathname,
 				search: (search) => ({
 					...search,
-					editingLocale: params.locale as Locale,
+					editingLocale: context.locale,
 				}),
 				params,
 			});
@@ -79,7 +79,7 @@ const AdminSidebar = () => {
 	const { setOpenMobile, isMobile } = useSidebar();
 	const { locale } = Route.useParams();
 	const search = Route.useSearch();
-	const t = useTranslations(locale);
+	const { t } = Route.useRouteContext();
 	const { user } = useRouteContext({
 		from: "__root__",
 	});
@@ -274,7 +274,7 @@ function RouteComponent() {
 	const { locale } = Route.useParams();
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
-	const t = useTranslations(locale);
+	const { t } = Route.useRouteContext();
 
 	return (
 		<SidebarProvider>

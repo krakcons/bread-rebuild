@@ -11,11 +11,11 @@ import {
 	SelectValue,
 } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/TextArea";
-import { useTranslations } from "@/lib/locale";
 import { formatPhoneNumber } from "@/lib/phone";
 import { ProviderFormSchema } from "@/server/actions/provider";
 import { ProviderPhoneNumberType, ProviderType } from "@/server/db/types";
 import { useForm, useStore } from "@tanstack/react-form";
+import { useRouteContext } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
 import { z } from "zod";
 import { BlockNavigation } from "./BlockNavigation";
@@ -29,7 +29,9 @@ export const ProviderForm = ({
 	defaultValues?: ProviderType;
 	onSubmit: (data: z.infer<typeof ProviderFormSchema>) => void;
 }) => {
-	const t = useTranslations(locale);
+	const { t } = useRouteContext({
+		from: "__root__",
+	});
 	const form = useForm({
 		defaultValues: {
 			name: defaultValues?.name ?? "",

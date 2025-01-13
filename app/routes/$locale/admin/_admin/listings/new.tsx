@@ -1,5 +1,4 @@
 import { ListingForm } from "@/components/forms/Listing";
-import { useTranslations } from "@/lib/locale";
 import { mutateListingFn } from "@/server/actions/listings";
 import {
 	createFileRoute,
@@ -18,8 +17,9 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 function RouteComponent() {
 	const router = useRouter();
 	const createListing = useServerFn(mutateListingFn);
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t, locale } = useRouteContext({
+		from: "__root__",
+	});
 	const { provider } = useRouteContext({
 		from: "/$locale/admin/_admin",
 	});

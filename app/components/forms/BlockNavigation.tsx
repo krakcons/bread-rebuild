@@ -1,6 +1,5 @@
-import { Block, useParams } from "@tanstack/react-router";
+import { Block, useRouteContext } from "@tanstack/react-router";
 
-import { useTranslations } from "@/lib/locale";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -17,10 +16,9 @@ export function BlockNavigation({
 }: {
 	shouldBlockFn: () => boolean;
 }) {
-	const { locale } = useParams({
-		from: "/$locale",
+	const { t, locale } = useRouteContext({
+		from: "__root__",
 	});
-	const t = useTranslations(locale);
 	return (
 		<Block shouldBlockFn={shouldBlockFn} withResolver>
 			{({ status, proceed, reset }) => (

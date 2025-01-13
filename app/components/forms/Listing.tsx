@@ -17,7 +17,6 @@ import {
 	formatScheduleToString,
 	parseSchedule,
 } from "@/lib/hours";
-import { useTranslations } from "@/lib/locale";
 import { ListingFormSchema } from "@/server/actions/listings";
 import {
 	ProviderPhoneNumberType,
@@ -26,7 +25,7 @@ import {
 } from "@/server/db/types";
 import { Libraries, useJsApiLoader } from "@react-google-maps/api";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
+import { useRouteContext } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
@@ -85,10 +84,9 @@ const HoursInput = ({
 	onChange: (value: string) => void;
 	value: string;
 }) => {
-	const { locale } = useParams({
-		from: "/$locale",
+	const { t, locale } = useRouteContext({
+		from: "__root__",
 	});
-	const t = useTranslations(locale);
 
 	const hours = useMemo(() => {
 		const baseHours = defaultHours();
@@ -187,7 +185,9 @@ export const ListingForm = ({
 	blockNavigation?: boolean;
 	provider: ProviderType;
 }) => {
-	const t = useTranslations(locale);
+	const { t } = useRouteContext({
+		from: "__root__",
+	});
 	const form = useForm({
 		defaultValues: {
 			name: defaultValues?.name ?? undefined,

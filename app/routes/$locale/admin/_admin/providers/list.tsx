@@ -1,7 +1,6 @@
 import { StatusSelect } from "@/components/Provider/StatusSelect";
 import { DataTable } from "@/components/ui/DataTable";
 import { DataTableColumnHeader } from "@/components/ui/DataTableColumnHeader";
-import { Locale, useTranslations } from "@/lib/locale";
 import {
 	getProvidersFn,
 	updateProviderStatusFn,
@@ -25,17 +24,17 @@ export const Route = createFileRoute("/$locale/admin/_admin/providers/list")({
 			.array(z.object({ id: z.string(), desc: z.boolean() }))
 			.optional(),
 	}),
-	loader: async ({ params }) => {
+	loader: async ({ context }) => {
 		const providers = await getProvidersFn({
-			data: { locale: params.locale as Locale },
+			data: { locale: context.locale },
 		});
 		return { providers };
 	},
 });
 
 const useColumns = () => {
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t, locale } = Route.useRouteContext();
+
 	const columns: ColumnDef<{
 		id: string;
 		name: string;
@@ -47,7 +46,7 @@ const useColumns = () => {
 				header: ({ column }) => (
 					<DataTableColumnHeader
 						column={column}
-						title={t.admin.providers.table.name}
+						title={t.table.name}
 						className="min-w-[200px]"
 					/>
 				),
@@ -57,7 +56,7 @@ const useColumns = () => {
 				header: ({ column }) => (
 					<DataTableColumnHeader
 						column={column}
-						title={t.admin.providers.table.email}
+						title={t.table.email}
 					/>
 				),
 				accessorKey: "email",
@@ -66,7 +65,7 @@ const useColumns = () => {
 				header: ({ column }) => (
 					<DataTableColumnHeader
 						column={column}
-						title={t.admin.providers.table.status}
+						title={t.table.status}
 					/>
 				),
 				accessorKey: "status",
@@ -99,8 +98,7 @@ const useColumns = () => {
 
 function RouteComponent() {
 	const { providers } = Route.useLoaderData();
-	const { locale } = Route.useParams();
-	const t = useTranslations(locale);
+	const { t } = Route.useRouteContext();
 	const columns = useColumns();
 	const navigate = Route.useNavigate();
 	const {
