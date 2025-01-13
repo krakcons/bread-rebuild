@@ -32,7 +32,7 @@ function RouteComponent() {
 					}}
 				/>
 			</div>
-			<div className="flex items-center gap-2">
+			<div className="flex flex-col items-center gap-2 sm:flex-row">
 				<div className="flex items-center gap-2">
 					<p className="text-sm">{t.poweredBy}</p>
 					<a
@@ -47,7 +47,7 @@ function RouteComponent() {
 						/>
 					</a>
 				</div>
-				<div className="h-4 w-px border-l border-border" />
+				<div className="h-[1px] w-4 bg-border sm:h-4 sm:w-px" />
 				<div className="flex items-center text-sm">
 					<Link
 						from={Route.fullPath}
