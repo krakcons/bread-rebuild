@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/server/db";
 import { anonymousSessionsToResources, resources } from "@/server/db/schema";
 import { providerMiddleware } from "@/server/middleware";
-import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { eq, inArray } from "drizzle-orm";
 import { Heart } from "lucide-react";
@@ -42,9 +42,7 @@ export const Route = createFileRoute("/$locale/admin/_admin/analytics")({
 
 function RouteComponent() {
 	const { analytics } = Route.useLoaderData();
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const { t } = Route.useRouteContext();
 
 	return (
 		<div className="flex flex-col gap-4">

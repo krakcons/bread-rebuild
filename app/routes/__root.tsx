@@ -15,7 +15,7 @@ import { Meta, Scripts } from "@tanstack/start";
 import * as React from "react";
 
 export const Route = createRootRouteWithContext<
-	SessionValidationResult & { t: Translations; locale: Locale }
+	SessionValidationResult & { t?: Translations; locale?: Locale }
 >()({
 	head: () => ({
 		meta: [

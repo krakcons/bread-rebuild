@@ -385,6 +385,84 @@ export const english = {
 		goToNextPage: "Go to next page",
 		goToLastPage: "Go to last page",
 	},
+	faq: {
+		title: "FAQ",
+		description: "Frequently asked questions about Bread.",
+		general: {
+			title: "General Questions",
+			list: [
+				{
+					question: "What is Bread?",
+					answer: "Bread is a free platform that connects people with food resources in Calgary. It allows food providers to list their services, ensuring individuals and families facing food insecurity can find reliable and up-to-date information on food assistance programs.",
+				},
+				{
+					question: "Who can use Bread?",
+					answer: "Bread is a tool for anyone who needs reliable, up-to-date information about food resources assistance – whether you’re looking for food resources, helping someone else find that support, or part of an organization providing food, Bread is here to help.",
+				},
+				{
+					question:
+						"How does Bread make it easier to find food assistance?",
+					answer: "Bread makes it easy by providing up-to-date and verified information, so you can trust that the details about food resources are accurate and safe.",
+				},
+				{
+					question: "Is Bread accessible on all devices?",
+					answer: "Yes, Bread is a web app, so you can access it on any device with a web browser—no downloads needed! It works seamlessly on desktop, mobile, and tablet.",
+				},
+			],
+		},
+		seekers: {
+			title: "Seeker Questions",
+			list: [
+				{
+					question: "How can I find food through Bread?",
+					answer: "Simply use the search and filter options on Bread to choose what you need based on your location, dietary needs, or other criteria. You’ll get an updated list of food resources with details like operating days, location and more. You can also save or print the list for easy access.",
+				},
+				{
+					question: "How does Bread make finding food easier for me?",
+					answer: "Bread provides up-to-date, reliable information of the food resources in Calgary, including service hours and accessibility details. This saves you time and effort, allowing you to find what you need quickly.",
+				},
+				{
+					question:
+						"What types of food resources are available on Bread?",
+					answer: "Bread connects you with various food providers, from community pantries to large organizations like the Calgary Food Bank. You can find emergency food assistance, meal programs, and special dietary options like Kosher, Halal, or vegetarian.",
+				},
+				{
+					question:
+						"How do I know if I'm eligible for the food programs listed?",
+					answer: "You can check the eligibility criteria listed for each program. Providers will indicate any requirements, such as income level, residency, or other factors.",
+				},
+				{
+					question:
+						"How do I know if the information on Bread is up to date?",
+					answer: "Bread regularly prompts providers to verify their program information, ensuring that details like hours of operation and food availability are accurate and up to date.",
+				},
+				{
+					question: "Do I need to download an app to use Bread?",
+					answer: "No, Bread is a web app, so you can access it directly on any device with a web browser—no downloads needed!",
+				},
+				{
+					question:
+						"What should I do if I can't find the type of food I need?",
+					answer: "Bread allows you to filter offerings based on dietary needs or specific types of food. If you don’t find what you’re looking for, try refining your search or reaching out to providers directly through the platform.",
+				},
+				{
+					question:
+						"Is Bread easy to use if I’m not very tech-savvy?",
+					answer: "Yes! It is designed to be simple and easy to navigate, so you can find food support even if you’re not very familiar with technology.",
+				},
+				{
+					question:
+						"Does Bread help me feel secure in where I go for food support?",
+					answer: "Yes, Bread carefully curates’ food resource information to guide you to safe and welcoming spaces, helping you feel more confident in your search.",
+				},
+				{
+					question:
+						"Can I use Bread to find food resources outside of Calgary?",
+					answer: "Bread currently focuses on helping you find food resources in Calgary. As we grow, we hope to add more regions in the future. Stay tuned for updates!",
+				},
+			],
+		},
+	},
 };
 
 export type Translations = typeof english;
@@ -457,9 +535,9 @@ export const french: Translations = {
 	dietaryOptions: "Options Diététiques",
 	dietaryOptionTypes: {
 		vegetarian: "Végétarien",
-		vegan: "Vegan",
+		vegan: "Végétalien",
 		halal: "Halal",
-		kosher: "Kosher",
+		kosher: "Cachère",
 		"renal-disease": "Maladie Rénale",
 		"gluten-free": "Sans gluten",
 		celiac: "Céliaque",
@@ -619,9 +697,9 @@ export const french: Translations = {
 		meal: "Repas",
 		groceries: "Légumes",
 		delivery: "Livraison",
-		hamper: "Hampers",
-		pantry: "Pantry",
-		"drop-in": "Drop-in",
+		hamper: "Paniers",
+		pantry: "Garde-manger",
+		"drop-in": "Entrée libre",
 		market: "Marché",
 		other: "Autre",
 	},
@@ -777,5 +855,87 @@ export const french: Translations = {
 		goToPreviousPage: "Aller à la page précédente",
 		goToNextPage: "Aller à la page suivante",
 		goToLastPage: "Aller à la dernière page",
+	},
+	faq: {
+		title: "FAQ",
+		description: "Questions fréquemment posées sur Bread.",
+		general: {
+			title: "Questions générales",
+			list: [
+				{
+					question: "Qu'est-ce que Bread ?",
+					answer: "Bread est une plateforme gratuite qui met en relation les personnes avec les ressources alimentaires à Calgary. Elle permet aux fournisseurs de nourriture de répertorier leurs services, garantissant ainsi aux individus et aux familles confrontés à l'insécurité alimentaire de trouver des informations fiables et à jour sur les programmes d'aide alimentaire.",
+				},
+				{
+					question: "Qui peut utiliser Bread ?",
+					answer: "Bread est un outil pour toute personne ayant besoin d'informations fiables et à jour sur l'aide alimentaire – que vous cherchiez des ressources alimentaires, que vous aidiez quelqu'un d'autre à trouver ce soutien, ou que vous fassiez partie d'une organisation fournissant de la nourriture, Bread est là pour vous aider.",
+				},
+				{
+					question:
+						"Comment Bread facilite-t-il la recherche d'aide alimentaire ?",
+					answer: "Bread simplifie la recherche en fournissant des informations à jour et vérifiées, vous pouvez donc être sûr que les détails sur les ressources alimentaires sont précis et fiables.",
+				},
+				{
+					question:
+						"Bread est-il accessible sur tous les appareils ?",
+					answer: "Oui, Bread est une application web, vous pouvez donc y accéder sur n'importe quel appareil avec un navigateur web—aucun téléchargement nécessaire ! Il fonctionne parfaitement sur ordinateur, mobile et tablette.",
+				},
+			],
+		},
+		seekers: {
+			title: "Questions pour les utilisateurs",
+			list: [
+				{
+					question:
+						"Comment puis-je trouver de la nourriture via Bread ?",
+					answer: "Utilisez simplement les options de recherche et de filtrage sur Bread pour choisir ce dont vous avez besoin en fonction de votre localisation, de vos besoins alimentaires ou d'autres critères. Vous obtiendrez une liste à jour des ressources alimentaires avec des détails comme les jours d'ouverture, l'emplacement et plus encore. Vous pouvez également sauvegarder ou imprimer la liste pour un accès facile.",
+				},
+				{
+					question:
+						"Comment Bread me facilite-t-il la recherche de nourriture ?",
+					answer: "Bread fournit des informations fiables et à jour sur les ressources alimentaires à Calgary, y compris les heures de service et les détails d'accessibilité. Cela vous fait gagner du temps et des efforts, vous permettant de trouver rapidement ce dont vous avez besoin.",
+				},
+				{
+					question:
+						"Quels types de ressources alimentaires sont disponibles sur Bread ?",
+					answer: "Bread vous met en relation avec divers fournisseurs alimentaires, des garde-manger communautaires aux grandes organisations comme la Banque alimentaire de Calgary. Vous pouvez trouver de l'aide alimentaire d'urgence, des programmes de repas et des options alimentaires spéciales comme Kasher, Halal ou végétarien.",
+				},
+				{
+					question:
+						"Comment savoir si je suis éligible aux programmes alimentaires répertoriés ?",
+					answer: "Vous pouvez vérifier les critères d'éligibilité indiqués pour chaque programme. Les fournisseurs indiqueront toutes les exigences, comme le niveau de revenu, la résidence ou d'autres facteurs.",
+				},
+				{
+					question:
+						"Comment savoir si les informations sur Bread sont à jour ?",
+					answer: "Bread invite régulièrement les fournisseurs à vérifier les informations de leur programme, garantissant ainsi que les détails comme les heures d'ouverture et la disponibilité des aliments sont précis et à jour.",
+				},
+				{
+					question:
+						"Dois-je télécharger une application pour utiliser Bread ?",
+					answer: "Non, Bread est une application web, vous pouvez donc y accéder directement sur n'importe quel appareil avec un navigateur web—aucun téléchargement nécessaire !",
+				},
+				{
+					question:
+						"Que dois-je faire si je ne trouve pas le type de nourriture dont j'ai besoin ?",
+					answer: "Bread vous permet de filtrer les offres en fonction des besoins alimentaires ou des types spécifiques de nourriture. Si vous ne trouvez pas ce que vous cherchez, essayez d'affiner votre recherche ou de contacter directement les fournisseurs via la plateforme.",
+				},
+				{
+					question:
+						"Bread est-il facile à utiliser si je ne suis pas très à l'aise avec la technologie ?",
+					answer: "Oui ! Il est conçu pour être simple et facile à naviguer, vous pouvez donc trouver une aide alimentaire même si vous n'êtes pas très familier avec la technologie.",
+				},
+				{
+					question:
+						"Bread m'aide-t-il à me sentir en sécurité là où je vais chercher de l'aide alimentaire ?",
+					answer: "Oui, Bread sélectionne soigneusement les informations sur les ressources alimentaires pour vous guider vers des espaces sûrs et accueillants, vous aidant à vous sentir plus confiant dans votre recherche.",
+				},
+				{
+					question:
+						"Puis-je utiliser Bread pour trouver des ressources alimentaires en dehors de Calgary ?",
+					answer: "Bread se concentre actuellement sur l'aide à la recherche de ressources alimentaires à Calgary. Au fur et à mesure de notre croissance, nous espérons ajouter plus de régions à l'avenir. Restez à l'écoute pour les mises à jour !",
+				},
+			],
+		},
 	},
 };

@@ -18,7 +18,6 @@ import {
 	createFileRoute,
 	ErrorComponent,
 	useNavigate,
-	useRouteContext,
 } from "@tanstack/react-router";
 import { CalendarDays, List, MapIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
@@ -75,10 +74,7 @@ function SavedPage() {
 	});
 	const { tab = "list", schedule = true } = Route.useSearch();
 
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
-
+	const { t } = Route.useRouteContext();
 	const activeDays = useMemo(
 		() =>
 			new Set(

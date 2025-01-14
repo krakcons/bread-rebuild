@@ -7,12 +7,7 @@ import { Label } from "@/components/ui/Label";
 import { cn } from "@/lib/utils";
 import { signup, SignupSchema } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import {
-	createFileRoute,
-	ErrorComponent,
-	Link,
-	useRouteContext,
-} from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -24,9 +19,7 @@ export const Route = createFileRoute("/$locale/admin/signup")({
 function RouteComponent() {
 	const navigate = Route.useNavigate();
 	const signupMutation = useServerFn(signup);
-	const { t, locale } = useRouteContext({
-		from: "__root__",
-	});
+	const { t, locale } = Route.useRouteContext();
 	const form = useForm({
 		defaultValues: {
 			email: "",

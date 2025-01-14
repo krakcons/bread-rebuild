@@ -66,7 +66,7 @@ function LayoutComponent() {
 							<p className="hidden sm:block">{t.saved.title}</p>
 							{saved &&
 								saved.filter((s) => !s.seen).length > 0 && (
-									<span className="bg-primary-red absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white text-xs text-white">
+									<span className="absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-primary-red text-xs text-white">
 										{saved.filter((s) => !s.seen).length}
 									</span>
 								)}
@@ -122,6 +122,13 @@ function LayoutComponent() {
 									className="text-center"
 								>
 									{t.privacy}
+								</Link>
+								<Link
+									to="/$locale/faq"
+									params={{ locale }}
+									className="text-center"
+								>
+									{t.faq.title}
 								</Link>
 								<Link
 									to="/$locale/admin"

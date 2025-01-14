@@ -12,12 +12,7 @@ import {
 	ResetPasswordSchema,
 } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import {
-	createFileRoute,
-	ErrorComponent,
-	Link,
-	useRouteContext,
-} from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -36,9 +31,7 @@ export const Route = createFileRoute("/$locale/admin/reset-password")({
 const EmailForm = () => {
 	const resetPasswordFromEmailMutation = useServerFn(resetPasswordFromEmail);
 	const navigate = Route.useNavigate();
-	const { t, locale } = useRouteContext({
-		from: "__root__",
-	});
+	const { t, locale } = Route.useRouteContext();
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -149,9 +142,7 @@ const EmailForm = () => {
 
 const PasswordForm = () => {
 	const resetPasswordMutation = useServerFn(resetPassword);
-	const { t, locale } = useRouteContext({
-		from: "__root__",
-	});
+	const { t, locale } = Route.useRouteContext();
 	const form = useForm({
 		defaultValues: {
 			password: "",

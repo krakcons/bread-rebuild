@@ -18,7 +18,6 @@ import {
 	ErrorComponent,
 	Link,
 	notFound,
-	useRouteContext,
 	useRouter,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
@@ -51,9 +50,7 @@ function RouteComponent() {
 	const updateListing = useServerFn(mutateListingFn);
 	const deleteListing = useServerFn(deleteListingFn);
 	const { editingLocale } = Route.useSearch();
-	const { t, locale } = useRouteContext({
-		from: "__root__",
-	});
+	const { t, locale } = Route.useRouteContext();
 	const [deleting, setDeleting] = useState(false);
 
 	return (

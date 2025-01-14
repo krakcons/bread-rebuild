@@ -1,9 +1,5 @@
 import { getTranslations } from "@/lib/locale";
-import {
-	createFileRoute,
-	ErrorComponent,
-	useRouteContext,
-} from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/$locale/_app/terms")({
 	component: RouteComponent,
@@ -21,9 +17,7 @@ export const Route = createFileRoute("/$locale/_app/terms")({
 });
 
 function RouteComponent() {
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const { t } = Route.useRouteContext();
 	return (
 		<div className="flex flex-col gap-4">
 			<h1 className="text-3xl font-semibold">{t.terms}</h1>

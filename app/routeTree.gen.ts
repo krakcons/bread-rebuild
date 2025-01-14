@@ -26,6 +26,7 @@ import { Route as LocaleAppTermsImport } from './routes/$locale/_app/terms'
 import { Route as LocaleAppSearchImport } from './routes/$locale/_app/search'
 import { Route as LocaleAppSavedImport } from './routes/$locale/_app/saved'
 import { Route as LocaleAppPrivacyPolicyImport } from './routes/$locale/_app/privacy-policy'
+import { Route as LocaleAppFaqImport } from './routes/$locale/_app/faq'
 import { Route as LocaleAdminAdminIndexImport } from './routes/$locale/admin/_admin/index'
 import { Route as LocaleAdminAdminAnalyticsImport } from './routes/$locale/admin/_admin/analytics'
 import { Route as LocaleAppResourcesIdImport } from './routes/$locale/_app/resources/$id'
@@ -124,6 +125,12 @@ const LocaleAppPrivacyPolicyRoute = LocaleAppPrivacyPolicyImport.update({
   getParentRoute: () => LocaleAppRoute,
 } as any)
 
+const LocaleAppFaqRoute = LocaleAppFaqImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => LocaleAppRoute,
+} as any)
+
 const LocaleAdminAdminIndexRoute = LocaleAdminAdminIndexImport.update({
   id: '/',
   path: '/',
@@ -209,6 +216,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$locale/admin'
       preLoaderRoute: typeof LocaleAdminImport
       parentRoute: typeof LocaleImport
+    }
+    '/$locale/_app/faq': {
+      id: '/$locale/_app/faq'
+      path: '/faq'
+      fullPath: '/$locale/faq'
+      preLoaderRoute: typeof LocaleAppFaqImport
+      parentRoute: typeof LocaleAppImport
     }
     '/$locale/_app/privacy-policy': {
       id: '/$locale/_app/privacy-policy'
@@ -356,6 +370,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface LocaleAppRouteChildren {
+  LocaleAppFaqRoute: typeof LocaleAppFaqRoute
   LocaleAppPrivacyPolicyRoute: typeof LocaleAppPrivacyPolicyRoute
   LocaleAppSavedRoute: typeof LocaleAppSavedRoute
   LocaleAppSearchRoute: typeof LocaleAppSearchRoute
@@ -365,6 +380,7 @@ interface LocaleAppRouteChildren {
 }
 
 const LocaleAppRouteChildren: LocaleAppRouteChildren = {
+  LocaleAppFaqRoute: LocaleAppFaqRoute,
   LocaleAppPrivacyPolicyRoute: LocaleAppPrivacyPolicyRoute,
   LocaleAppSavedRoute: LocaleAppSavedRoute,
   LocaleAppSearchRoute: LocaleAppSearchRoute,
@@ -440,6 +456,7 @@ const LocaleRouteWithChildren =
 export interface FileRoutesByFullPath {
   '/$locale': typeof LocaleAppRouteWithChildren
   '/$locale/admin': typeof LocaleAdminAdminRouteWithChildren
+  '/$locale/faq': typeof LocaleAppFaqRoute
   '/$locale/privacy-policy': typeof LocaleAppPrivacyPolicyRoute
   '/$locale/saved': typeof LocaleAppSavedRoute
   '/$locale/search': typeof LocaleAppSearchRoute
@@ -464,6 +481,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/$locale': typeof LocaleAppIndexRoute
   '/$locale/admin': typeof LocaleAdminAdminIndexRoute
+  '/$locale/faq': typeof LocaleAppFaqRoute
   '/$locale/privacy-policy': typeof LocaleAppPrivacyPolicyRoute
   '/$locale/saved': typeof LocaleAppSavedRoute
   '/$locale/search': typeof LocaleAppSearchRoute
@@ -488,6 +506,7 @@ export interface FileRoutesById {
   '/$locale': typeof LocaleRouteWithChildren
   '/$locale/_app': typeof LocaleAppRouteWithChildren
   '/$locale/admin': typeof LocaleAdminRouteWithChildren
+  '/$locale/_app/faq': typeof LocaleAppFaqRoute
   '/$locale/_app/privacy-policy': typeof LocaleAppPrivacyPolicyRoute
   '/$locale/_app/saved': typeof LocaleAppSavedRoute
   '/$locale/_app/search': typeof LocaleAppSearchRoute
@@ -515,6 +534,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/$locale'
     | '/$locale/admin'
+    | '/$locale/faq'
     | '/$locale/privacy-policy'
     | '/$locale/saved'
     | '/$locale/search'
@@ -538,6 +558,7 @@ export interface FileRouteTypes {
   to:
     | '/$locale'
     | '/$locale/admin'
+    | '/$locale/faq'
     | '/$locale/privacy-policy'
     | '/$locale/saved'
     | '/$locale/search'
@@ -560,6 +581,7 @@ export interface FileRouteTypes {
     | '/$locale'
     | '/$locale/_app'
     | '/$locale/admin'
+    | '/$locale/_app/faq'
     | '/$locale/_app/privacy-policy'
     | '/$locale/_app/saved'
     | '/$locale/_app/search'
@@ -615,6 +637,7 @@ export const routeTree = rootRoute
       "filePath": "$locale/_app.tsx",
       "parent": "/$locale",
       "children": [
+        "/$locale/_app/faq",
         "/$locale/_app/privacy-policy",
         "/$locale/_app/saved",
         "/$locale/_app/search",
@@ -634,6 +657,10 @@ export const routeTree = rootRoute
         "/$locale/admin/signup",
         "/$locale/admin/verify-email"
       ]
+    },
+    "/$locale/_app/faq": {
+      "filePath": "$locale/_app/faq.tsx",
+      "parent": "/$locale/_app"
     },
     "/$locale/_app/privacy-policy": {
       "filePath": "$locale/_app/privacy-policy.tsx",

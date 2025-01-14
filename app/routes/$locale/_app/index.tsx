@@ -1,16 +1,14 @@
 import SearchForm from "@/components/forms/Search";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { createFileRoute, Link, useRouteContext } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/$locale/_app/")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const { t } = Route.useRouteContext();
 	const navigate = Route.useNavigate();
 
 	return (

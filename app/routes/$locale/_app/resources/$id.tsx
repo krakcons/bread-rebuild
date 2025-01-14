@@ -12,7 +12,6 @@ import {
 	createFileRoute,
 	ErrorComponent,
 	notFound,
-	useRouteContext,
 } from "@tanstack/react-router";
 import {
 	Accessibility,
@@ -66,9 +65,7 @@ export const Route = createFileRoute("/$locale/_app/resources/$id")({
 function ResourceDetail() {
 	const { locale } = Route.useParams();
 	const resource = Route.useLoaderData();
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const { t } = Route.useRouteContext();
 
 	const hours = useHours(resource.hours || "", locale);
 

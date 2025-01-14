@@ -8,11 +8,7 @@ import {
 	getProviderListingsFn,
 	updateProviderStatusFn,
 } from "@/server/actions/provider";
-import {
-	createFileRoute,
-	notFound,
-	useRouteContext,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import {
 	CircleCheck,
 	CircleEllipsis,
@@ -40,9 +36,7 @@ export const Route = createFileRoute("/$locale/admin/_admin/providers/$id")({
 
 function RouteComponent() {
 	const { provider, listings } = Route.useLoaderData();
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const { t } = Route.useRouteContext();
 	const [status, setStatus] = useState(provider.status);
 
 	return (

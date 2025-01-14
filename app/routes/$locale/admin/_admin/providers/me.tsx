@@ -1,10 +1,6 @@
 import { ProviderForm } from "@/components/forms/Provider";
 import { getMyProviderFn, mutateProviderFn } from "@/server/actions/provider";
-import {
-	createFileRoute,
-	useRouteContext,
-	useRouter,
-} from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { toast } from "sonner";
 
@@ -28,9 +24,7 @@ function RouteComponent() {
 	const router = useRouter();
 	const editProvider = useServerFn(mutateProviderFn);
 	const { provider } = Route.useLoaderData();
-	const { t, locale } = useRouteContext({
-		from: "__root__",
-	});
+	const { t, locale } = Route.useRouteContext();
 	const { editingLocale } = Route.useSearch();
 
 	return (

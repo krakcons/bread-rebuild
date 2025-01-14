@@ -30,7 +30,6 @@ import {
 	Link,
 	Outlet,
 	redirect,
-	useRouteContext,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import {
@@ -77,13 +76,8 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 const AdminSidebar = () => {
 	const logout = useServerFn(logoutFn);
 	const { setOpenMobile, isMobile } = useSidebar();
-	const { locale } = Route.useParams();
 	const search = Route.useSearch();
-	const { t } = Route.useRouteContext();
-	const { user } = useRouteContext({
-		from: "__root__",
-	});
-	const { provider } = Route.useRouteContext();
+	const { t, locale, user, provider } = Route.useRouteContext();
 
 	return (
 		<Sidebar>

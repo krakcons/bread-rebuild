@@ -9,11 +9,7 @@ import { STYLE } from "@/lib/map";
 import { searchFn, SearchFormSchema } from "@/server/actions/resource";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
-import {
-	createFileRoute,
-	ErrorComponent,
-	useRouteContext,
-} from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import { List, MapIcon } from "lucide-react";
 import { Map } from "react-map-gl/maplibre";
 import { z } from "zod";
@@ -43,18 +39,8 @@ export const Route = createFileRoute("/$locale/_app/search")({
 function Home() {
 	const navigate = Route.useNavigate();
 	const searchParams = Route.useSearch();
-	const {
-		tab = "list",
-		free = false,
-		preparation = false,
-		parking = false,
-		transit = false,
-		wheelchair = false,
-		dietaryOptions = [],
-	} = searchParams;
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const { tab = "list" } = searchParams;
+	const { t } = Route.useRouteContext();
 
 	const queryForm = useForm({
 		defaultValues: {

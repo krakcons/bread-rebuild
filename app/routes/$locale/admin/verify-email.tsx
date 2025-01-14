@@ -18,7 +18,6 @@ import { useForm, useStore } from "@tanstack/react-form";
 import {
 	createFileRoute,
 	ErrorComponent,
-	useRouteContext,
 	useRouter,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
@@ -50,9 +49,7 @@ function RouteComponent() {
 		resendPasswordResetVerification,
 	);
 	const [resendCodeSent, setResendCodeSent] = useState(false);
-	const { t, locale } = useRouteContext({
-		from: "__root__",
-	});
+	const { t, locale } = Route.useRouteContext();
 	const form = useForm({
 		defaultValues: {
 			code: "",

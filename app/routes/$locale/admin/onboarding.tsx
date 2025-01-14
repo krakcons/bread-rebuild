@@ -6,7 +6,6 @@ import {
 	ErrorComponent,
 	Link,
 	redirect,
-	useRouteContext,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft } from "lucide-react";
@@ -30,9 +29,7 @@ export const Route = createFileRoute("/$locale/admin/onboarding")({
 
 function RouteComponent() {
 	const createProvider = useServerFn(mutateProviderFn);
-	const { t, locale } = useRouteContext({
-		from: "__root__",
-	});
+	const { t, locale } = Route.useRouteContext();
 	const navigate = Route.useNavigate();
 
 	return (

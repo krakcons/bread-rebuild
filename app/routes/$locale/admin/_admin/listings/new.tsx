@@ -3,7 +3,6 @@ import { mutateListingFn } from "@/server/actions/listings";
 import {
 	createFileRoute,
 	ErrorComponent,
-	useRouteContext,
 	useRouter,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
@@ -17,12 +16,7 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 function RouteComponent() {
 	const router = useRouter();
 	const createListing = useServerFn(mutateListingFn);
-	const { t, locale } = useRouteContext({
-		from: "__root__",
-	});
-	const { provider } = useRouteContext({
-		from: "/$locale/admin/_admin",
-	});
+	const { t, locale, provider } = Route.useRouteContext();
 	const { editingLocale } = Route.useSearch();
 
 	return (
