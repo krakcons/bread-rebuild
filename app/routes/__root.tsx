@@ -41,13 +41,6 @@ export const Route = createRootRouteWithContext<
 			},
 		],
 		links: [
-			{
-				rel: "preload",
-				href: "/fonts/Inter-Variable.ttf",
-				as: "font",
-				type: "font/ttf",
-				crossOrigin: "anonymous",
-			},
 			{ rel: "stylesheet", href: globalStyles },
 			{
 				rel: "stylesheet",
