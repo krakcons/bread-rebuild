@@ -14,7 +14,7 @@ function RouteComponent() {
 	const navigate = Route.useNavigate();
 
 	return (
-		<div className="mt-32 flex flex-col items-center justify-center gap-4">
+		<div className="my-[5vh] flex flex-col items-center justify-center gap-4 sm:my-[10vh]">
 			<div className="flex items-center gap-2">
 				<img src="/logo.png" alt="BREAD" className="h-20 w-20" />
 				<h1 className="text-6xl font-medium tracking-wide text-primary">
