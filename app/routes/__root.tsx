@@ -50,7 +50,7 @@ export const Route = createRootRouteWithContext<
 	}),
 	component: RootComponent,
 	errorComponent: ErrorComponent,
-	beforeLoad: async ({ location }) => {
+	beforeLoad: async ({ location, context }) => {
 		// Handle locale
 		let locale = location.pathname.split("/")[1];
 		if (!locales.some(({ value }) => value === locale)) {
@@ -67,6 +67,7 @@ export const Route = createRootRouteWithContext<
 
 		// Return context
 		return {
+			...context,
 			...auth,
 			t: getTranslations(locale),
 			locale: locale as Locale,

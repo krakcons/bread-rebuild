@@ -19,9 +19,9 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 export const Route = createFileRoute("/$locale/admin/reset-password")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
-	beforeLoad: async () => {
+	beforeLoad: async ({ context }) => {
 		const verified = await isPasswordResetVerified();
-		return { verified };
+		return { ...context, verified };
 	},
 	loader: async ({ context }) => {
 		return { verified: context.verified };

@@ -24,6 +24,7 @@ export const Route = createFileRoute("/$locale/admin/onboarding")({
 				},
 			});
 		}
+		return context;
 	},
 });
 

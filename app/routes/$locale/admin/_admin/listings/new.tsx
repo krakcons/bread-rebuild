@@ -1,5 +1,6 @@
 import { ListingForm } from "@/components/forms/Listing";
 import { mutateListingFn } from "@/server/actions/listings";
+import { getMyProviderFn } from "@/server/actions/provider";
 import {
 	createFileRoute,
 	ErrorComponent,
@@ -11,13 +12,21 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
+	loader: async () => {
+		const provider = await getMyProviderFn();
+		if (!provider) {
+			throw new Error("Provider not found");
+		}
+		return { provider };
+	},
 });
 
 function RouteComponent() {
 	const router = useRouter();
 	const createListing = useServerFn(mutateListingFn);
-	const { t, locale, provider } = Route.useRouteContext();
+	const { t, locale } = Route.useRouteContext();
 	const { editingLocale } = Route.useSearch();
+	const { provider } = Route.useLoaderData();
 
 	return (
 		<div className="flex flex-col gap-4">

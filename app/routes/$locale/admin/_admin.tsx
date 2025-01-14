@@ -62,12 +62,12 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 				params,
 			});
 		}
+		return context;
+	},
+	loader: async () => {
 		const provider = await getMyProviderFn();
 		if (!provider) {
-			throw redirect({
-				to: "/$locale/admin/onboarding",
-				params,
-			});
+			throw new Error("Provider not found");
 		}
 		return { provider };
 	},
@@ -77,7 +77,8 @@ const AdminSidebar = () => {
 	const logout = useServerFn(logoutFn);
 	const { setOpenMobile, isMobile } = useSidebar();
 	const search = Route.useSearch();
-	const { t, locale, user, provider } = Route.useRouteContext();
+	const { t, locale, user } = Route.useRouteContext();
+	const { provider } = Route.useLoaderData();
 
 	return (
 		<Sidebar>

@@ -10,7 +10,7 @@ const unauthenticatedPages = [
 
 export const Route = createFileRoute("/$locale/admin")({
 	component: RouteComponent,
-	beforeLoad: async ({ params, location }) => {
+	beforeLoad: async ({ params, location, context }) => {
 		const { user, session, provider } = await getAuth();
 
 		if (
@@ -50,7 +50,7 @@ export const Route = createFileRoute("/$locale/admin")({
 			});
 		}
 
-		return { user, session, provider };
+		return { ...context, user, session, provider };
 	},
 });
 
