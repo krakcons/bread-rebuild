@@ -18,6 +18,7 @@ import {
 	PhoneCall,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/admin/_admin/providers/$id")({
 	component: RouteComponent,
@@ -36,7 +37,7 @@ export const Route = createFileRoute("/$locale/admin/_admin/providers/$id")({
 
 function RouteComponent() {
 	const { provider, listings } = Route.useLoaderData();
-	const { t } = Route.useRouteContext();
+	const t = useTranslations();
 	const [status, setStatus] = useState(provider.status);
 
 	return (
@@ -46,11 +47,11 @@ function RouteComponent() {
 			</div>
 			<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 				<h2 className="mb-4 text-xl font-bold">
-					{t.admin.provider.sections.provider}
+					{t("admin.provider.sections.provider")}
 				</h2>
 
 				<Contact
-					label={t.table.status}
+					label={t("table.status")}
 					value={
 						<StatusSelect
 							defaultValue={provider.status}
@@ -86,7 +87,7 @@ function RouteComponent() {
 				/>
 
 				<Contact
-					label={t.form.common.description}
+					label={t("form.common.description")}
 					value={provider.description}
 					icon={
 						<CircleEllipsis
@@ -97,7 +98,7 @@ function RouteComponent() {
 				/>
 
 				<Contact
-					label={t.website}
+					label={t("form.contact.website")}
 					value={provider.website}
 					link={provider.website}
 					icon={<Globe size={20} className="text-muted-foreground" />}
@@ -105,7 +106,7 @@ function RouteComponent() {
 
 				{provider.email && (
 					<Contact
-						label={t.common.email}
+						label={t("common.email")}
 						value={provider.email}
 						link={`mailto:${provider.email}`}
 						icon={
@@ -118,7 +119,7 @@ function RouteComponent() {
 					provider.phoneNumbers.map((phone) => (
 						<Contact
 							key={phone.phone}
-							label={t.phoneTypes[phone.type]}
+							label={t(`phoneTypes.${phone.type}`)}
 							value={formatPhoneNumber(phone.phone)}
 							link={`tel:${phone.phone}`}
 							icon={
@@ -134,11 +135,11 @@ function RouteComponent() {
 			{provider.user && (
 				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 					<h2 className="mb-4 text-xl font-bold">
-						{t.admin.provider.sections.owner}
+						{t("admin.provider.sections.owner")}
 					</h2>
 
 					<Contact
-						label={t.common.email}
+						label={t("common.email")}
 						value={provider.user?.email}
 						link={`mailto:${provider.user?.email}`}
 						icon={
@@ -151,7 +152,7 @@ function RouteComponent() {
 			{listings.length > 0 && (
 				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 					<h2 className="mb-4 text-xl font-bold">
-						{t.admin.provider.sections.listings}
+						{t("admin.provider.sections.listings")}
 					</h2>
 					{listings.map((listing) => (
 						<div key={listing.id}>

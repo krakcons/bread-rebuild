@@ -2,7 +2,7 @@ import { defineConfig } from "drizzle-kit";
 import { Resource } from "sst";
 
 if (!process.env.TENANT_STAGE_NAME) {
-	throw new Error("TENANT_STAGE_NAME is not set");
+	throw new Error("TENANT_STAGE_NAME is not set: Drizzle Studio");
 }
 
 export default defineConfig({
@@ -10,7 +10,7 @@ export default defineConfig({
 	schema: ["./app/server/db/schema/index.ts"],
 	out: "./migrations",
 	dbCredentials: {
-		database: "bread-prod",
+		database: process.env.TENANT_STAGE_NAME,
 		host: Resource.Aurora.host,
 		port: Resource.Aurora.port,
 		user: Resource.Aurora.username,

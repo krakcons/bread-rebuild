@@ -3,8 +3,9 @@ import { getCookie } from "vinxi/http";
 import { getHeader } from "vinxi/http";
 
 import { createServerFn } from "@tanstack/start";
+import { IntlConfig } from "use-intl";
 import { setCookie } from "vinxi/http";
-import { LocaleSchema } from ".";
+import { Locale, LocaleSchema, Messages } from ".";
 
 export const getLocale = createServerFn({
 	method: "GET",
@@ -31,4 +32,18 @@ export const setLocale = createServerFn({
 	.validator(LocaleSchema)
 	.handler(({ data: locale }) => {
 		setCookie("locale", locale);
+	});
+
+export const getI18n = createServerFn({
+	method: "GET",
+})
+	.validator(LocaleSchema)
+	.handler(async ({ data: locale }) => {
+		const messages = await import(`../../messages/${locale}.ts`);
+
+		return {
+			locale: locale as Locale,
+			timeZone: "UTC",
+			messages: messages.default as Messages,
+		} as const satisfies IntlConfig;
 	});

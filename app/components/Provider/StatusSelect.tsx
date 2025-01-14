@@ -1,4 +1,4 @@
-import { useRouteContext } from "@tanstack/react-router";
+import { useTranslations } from "use-intl";
 import {
 	Select,
 	SelectContent,
@@ -14,9 +14,7 @@ export const StatusSelect = ({
 	onChange: (status: "pending" | "approved" | "rejected") => void;
 	defaultValue?: "pending" | "approved" | "rejected";
 }) => {
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const t = useTranslations();
 
 	return (
 		<Select
@@ -32,13 +30,13 @@ export const StatusSelect = ({
 			</SelectTrigger>
 			<SelectContent>
 				<SelectItem value="pending">
-					{t.admin.providers.status.pending}
+					{t("admin.providers.status.pending")}
 				</SelectItem>
 				<SelectItem value="approved">
-					{t.admin.providers.status.approved}
+					{t("admin.providers.status.approved")}
 				</SelectItem>
 				<SelectItem value="rejected">
-					{t.admin.providers.status.rejected}
+					{t("admin.providers.status.rejected")}
 				</SelectItem>
 			</SelectContent>
 		</Select>

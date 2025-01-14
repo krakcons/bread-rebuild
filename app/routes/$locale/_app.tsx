@@ -15,6 +15,7 @@ import {
 	Outlet,
 } from "@tanstack/react-router";
 import { Bookmark, Menu, Printer, Search } from "lucide-react";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/_app")({
 	component: LayoutComponent,
@@ -23,7 +24,8 @@ export const Route = createFileRoute("/$locale/_app")({
 });
 
 function LayoutComponent() {
-	const { t, locale } = Route.useRouteContext();
+	const { locale } = Route.useParams();
+	const t = useTranslations();
 	const navigate = Route.useNavigate();
 	const { data: saved } = useQuery({
 		queryKey: ["saved"],
@@ -55,7 +57,7 @@ function LayoutComponent() {
 							className={cn(buttonVariants(), "relative")}
 						>
 							<Search size={20} />
-							<p className="hidden sm:block">{t.search}</p>
+							<p className="hidden sm:block">{t("search")}</p>
 						</Link>
 						<Link
 							to="/$locale/saved"
@@ -63,7 +65,9 @@ function LayoutComponent() {
 							className={cn(buttonVariants(), "relative")}
 						>
 							<Bookmark size={20} />
-							<p className="hidden sm:block">{t.saved.title}</p>
+							<p className="hidden sm:block">
+								{t("saved.title")}
+							</p>
 							{saved &&
 								saved.filter((s) => !s.seen).length > 0 && (
 									<span className="absolute left-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-primary-red text-xs text-white">
@@ -77,7 +81,7 @@ function LayoutComponent() {
 							}}
 						>
 							<Printer size={20} />
-							<p className="hidden sm:block">{t.print}</p>
+							<p className="hidden sm:block">{t("print")}</p>
 						</Button>
 						<Button
 							onClick={() => {
@@ -114,28 +118,28 @@ function LayoutComponent() {
 									params={{ locale }}
 									className="text-center"
 								>
-									{t.terms}
+									{t("terms")}
 								</Link>
 								<Link
 									to="/$locale/privacy-policy"
 									params={{ locale }}
 									className="text-center"
 								>
-									{t.privacy}
+									{t("privacy")}
 								</Link>
 								<Link
 									to="/$locale/faq"
 									params={{ locale }}
 									className="text-center"
 								>
-									{t.faq.title}
+									{t("faq.title")}
 								</Link>
 								<Link
 									to="/$locale/admin"
 									params={{ locale }}
 									className="text-center"
 								>
-									{t.admin.title}
+									{t("admin.title")}
 								</Link>
 							</PopoverContent>
 						</Popover>

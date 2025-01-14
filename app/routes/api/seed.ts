@@ -1,7 +1,7 @@
 import { json } from "@tanstack/start";
 import { createAPIFileRoute } from "@tanstack/start/api";
 
-import { english } from "@/lib/locale/messages";
+import english from "@/messages/en";
 import { generateId } from "@/server/auth";
 import { db } from "@/server/db";
 import {
@@ -153,12 +153,12 @@ export const APIRoute = createAPIFileRoute("/api/seed")({
 			);
 			const hours = parseHours(drupalData);
 			const dietaryOptions = dietary.data
-				.filter((dietary) =>
+				.filter((dietary: any) =>
 					drupalData.relationships.field_dietary.data.some(
-						({ id }) => dietary.id === id,
+						({ id }: any) => dietary.id === id,
 					),
 				)
-				.map((dietary) =>
+				.map((dietary: any) =>
 					dietary.attributes.name.toLowerCase().replace(" ", "-"),
 				) as DietaryOptionType[];
 

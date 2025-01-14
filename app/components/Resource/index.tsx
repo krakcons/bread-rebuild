@@ -1,35 +1,39 @@
 import { formatAddress } from "@/lib/address";
 import { formatPhoneNumber } from "@/lib/phone";
 import { ResourceType } from "@/server/db/types";
-import { Link, useRouteContext } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import { MapPin, PhoneCall } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslations } from "use-intl";
 import { Badge } from "../ui/Badge";
 import { ResourceActions } from "./Actions";
 
 export const Resource = ({ resource }: { resource: ResourceType }) => {
-	const { t, locale } = useRouteContext({
-		from: "__root__",
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
 	});
 
 	const tags = useMemo(() => {
 		let tags: string[] = [
-			...resource.offerings.map((offering) => t.offeringTypes[offering]),
+			...resource.offerings.map((offering) =>
+				t(`offeringTypes.${offering}`),
+			),
 		];
 		if (resource.free) {
-			tags.push(t.free);
+			tags.push(t("free"));
 		}
 		if (resource.preparation) {
-			tags.push(t.preparation);
+			tags.push(t("preparation"));
 		}
 		if (resource.parking) {
-			tags.push(t.parking);
+			tags.push(t("parking"));
 		}
 		if (resource.transit) {
-			tags.push(t.transit);
+			tags.push(t("transit"));
 		}
 		if (resource.wheelchair) {
-			tags.push(t.wheelchair);
+			tags.push(t("wheelchair"));
 		}
 		return tags;
 	}, [resource, t]);

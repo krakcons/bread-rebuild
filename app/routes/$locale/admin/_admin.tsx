@@ -30,6 +30,7 @@ import {
 	Link,
 	Outlet,
 	redirect,
+	useParams,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import {
@@ -43,6 +44,7 @@ import {
 	Utensils,
 	X,
 } from "lucide-react";
+import { useTranslations } from "use-intl";
 import { z } from "zod";
 
 export const Route = createFileRoute("/$locale/admin/_admin")({
@@ -57,7 +59,7 @@ export const Route = createFileRoute("/$locale/admin/_admin")({
 				to: location.pathname,
 				search: (search) => ({
 					...search,
-					editingLocale: context.locale,
+					editingLocale: params.locale as Locale,
 				}),
 				params,
 			});
@@ -77,7 +79,11 @@ const AdminSidebar = () => {
 	const logout = useServerFn(logoutFn);
 	const { setOpenMobile, isMobile } = useSidebar();
 	const search = Route.useSearch();
-	const { t, locale, user } = Route.useRouteContext();
+	const { user } = Route.useRouteContext();
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
+	});
 	const { provider } = Route.useLoaderData();
 
 	return (
@@ -111,7 +117,7 @@ const AdminSidebar = () => {
 				<SidebarGroup>
 					<SidebarGroupContent>
 						<SidebarGroupLabel>
-							{t.admin.nav.manage}
+							{t("admin.nav.manage")}
 						</SidebarGroupLabel>
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
@@ -126,7 +132,7 @@ const AdminSidebar = () => {
 									}}
 								>
 									<LayoutDashboard />
-									{t.admin.nav.dashboard}
+									{t("admin.nav.dashboard")}
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -144,7 +150,7 @@ const AdminSidebar = () => {
 									}}
 								>
 									<Utensils />
-									{t.admin.nav.listings}
+									{t("admin.nav.listings")}
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -161,7 +167,7 @@ const AdminSidebar = () => {
 									}}
 								>
 									<Building />
-									{t.admin.nav.provider}
+									{t("admin.nav.provider")}
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -178,7 +184,7 @@ const AdminSidebar = () => {
 									}}
 								>
 									<BarChart />
-									{t.admin.nav.analytics}
+									{t("admin.nav.analytics")}
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -188,7 +194,7 @@ const AdminSidebar = () => {
 					<SidebarGroup>
 						<SidebarGroupContent>
 							<SidebarGroupLabel>
-								{t.admin.nav.admin}
+								{t("admin.nav.admin")}
 							</SidebarGroupLabel>
 						</SidebarGroupContent>
 						<SidebarMenuItem>
@@ -204,7 +210,7 @@ const AdminSidebar = () => {
 									}}
 								>
 									<Users />
-									{t.admin.nav.providers}
+									{t("admin.nav.providers")}
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -213,7 +219,7 @@ const AdminSidebar = () => {
 				<SidebarGroup>
 					<SidebarGroupContent>
 						<SidebarGroupLabel>
-							{t.admin.nav.account}
+							{t("admin.nav.account")}
 						</SidebarGroupLabel>
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
@@ -223,7 +229,7 @@ const AdminSidebar = () => {
 									}}
 								>
 									<UserMinus />
-									{t.admin.nav.logout}
+									{t("admin.nav.logout")}
 								</button>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -242,11 +248,11 @@ const AdminSidebar = () => {
 						<div className="flex flex-row items-center gap-1">
 							<AlertCircle size={18} />
 							<p className="font-semibold">
-								{t.admin.verificationPending.title}
+								{t("admin.verificationPending.title")}
 							</p>
 						</div>
 						<p className="text-sm text-muted-foreground">
-							{t.admin.verificationPending.description}
+							{t("admin.verificationPending.description")}
 						</p>
 					</div>
 				)}
@@ -258,7 +264,7 @@ const AdminSidebar = () => {
 					className={buttonVariants()}
 				>
 					<ExternalLink />
-					{t.admin.nav.exit}
+					{t("admin.nav.exit")}
 				</Link>
 			</SidebarFooter>
 		</Sidebar>
@@ -269,7 +275,7 @@ function RouteComponent() {
 	const { locale } = Route.useParams();
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
-	const { t } = Route.useRouteContext();
+	const t = useTranslations();
 
 	return (
 		<SidebarProvider>
@@ -292,7 +298,7 @@ function RouteComponent() {
 						>
 							<SelectTrigger>
 								<p className="text-sm text-muted-foreground">
-									{t.admin.editing}
+									{t("admin.editing")}
 								</p>
 								<SelectValue />
 							</SelectTrigger>

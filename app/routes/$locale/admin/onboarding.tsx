@@ -1,15 +1,18 @@
 import { ProviderForm } from "@/components/forms/Provider";
 import { Button, buttonVariants } from "@/components/ui/Button";
+import { Locale } from "@/lib/locale";
 import { mutateProviderFn } from "@/server/actions/provider";
 import {
 	createFileRoute,
 	ErrorComponent,
 	Link,
 	redirect,
+	useParams,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/admin/onboarding")({
 	component: RouteComponent,
@@ -30,7 +33,10 @@ export const Route = createFileRoute("/$locale/admin/onboarding")({
 
 function RouteComponent() {
 	const createProvider = useServerFn(mutateProviderFn);
-	const { t, locale } = Route.useRouteContext();
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
+	});
 	const navigate = Route.useNavigate();
 
 	return (
@@ -59,11 +65,11 @@ function RouteComponent() {
 				})}
 			>
 				<ArrowLeft size={20} />
-				{t.common.back} {t.common.to} {t.common.bread}
+				{t("common.back")} {t("common.to")} {t("common.bread")}
 			</Link>
-			<h1>{t.admin.onboarding.title}</h1>
+			<h1>{t("admin.onboarding.title")}</h1>
 			<p className="text-sm text-muted-foreground">
-				{t.admin.onboarding.description}
+				{t("admin.onboarding.description")}
 			</p>
 			<ProviderForm
 				locale={locale}
@@ -71,11 +77,11 @@ function RouteComponent() {
 					await createProvider({
 						data: {
 							...data,
-							locale,
+							locale: locale as Locale,
 							redirect: true,
 						},
 					});
-					await toast.success(t.form.provider.success.create);
+					await toast.success(t("form.provider.success.create"));
 				}}
 			/>
 		</div>

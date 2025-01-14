@@ -1,15 +1,15 @@
-import { FlattenedLocalized, LocaleSchema } from "@/lib/locale";
+import { LocaleSchema } from "@/lib/locale";
+import { FlattenedLocalized } from "@/lib/locale/helpers";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
+import { PhoneNumberType } from "../types";
 import {
 	anonymousSessionsToResources,
-	providerPhoneNumbers,
 	providers,
 	providerTranslations,
-	resourcePhoneNumbers,
 	resources,
 	resourceTranslations,
-} from "./schema/tables";
+} from "./schema";
 
 // Provider types
 
@@ -23,19 +23,10 @@ export type ProviderTranslationType = z.infer<typeof ProviderTranslationSchema>;
 export type ProviderType = FlattenedLocalized<
 	BaseProviderType & {
 		translations: ProviderTranslationType[];
-		phoneNumbers: ProviderPhoneNumberType[];
+		phoneNumbers: PhoneNumberType[];
 	},
 	ProviderTranslationType
 >;
-
-// Phone number types
-
-export const PhoneNumberSchema = createSelectSchema(resourcePhoneNumbers);
-export type PhoneNumberType = z.infer<typeof PhoneNumberSchema>;
-
-export const ProviderPhoneNumberSchema =
-	createSelectSchema(providerPhoneNumbers);
-export type ProviderPhoneNumberType = z.infer<typeof ProviderPhoneNumberSchema>;
 
 // Resource types
 

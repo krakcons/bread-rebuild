@@ -1,4 +1,4 @@
-import { flattenLocalizedObject } from "@/lib/locale";
+import { flattenLocalizedObject } from "@/lib/locale/helpers";
 import { db } from "@/server/db";
 import {
 	providers,

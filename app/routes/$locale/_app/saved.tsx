@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/Accordion";
 import { Button } from "@/components/ui/Button";
 import { days } from "@/lib/hours";
-import { getTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { queryClient } from "@/router";
 import { getResourcesFn } from "@/server/actions/resource";
@@ -22,6 +21,7 @@ import {
 import { CalendarDays, List, MapIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { Map } from "react-map-gl/maplibre";
+import { useTranslations } from "use-intl";
 import { z } from "zod";
 
 const SearchParamsSchema = z.object({
@@ -33,21 +33,7 @@ export const Route = createFileRoute("/$locale/_app/saved")({
 	component: SavedPage,
 	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
-	head: ({ params: { locale } }) => {
-		const translations = getTranslations(locale);
-		return {
-			meta: [
-				{
-					title: translations.saved.title,
-				},
-				{
-					name: "description",
-					content: translations.saved.description,
-				},
-			],
-		};
-	},
-	loader: async () => {
+	loader: async ({ context }) => {
 		const saved = await queryClient.ensureQueryData({
 			queryKey: ["saved"],
 			queryFn: () => getSavedFn(),
@@ -59,6 +45,21 @@ export const Route = createFileRoute("/$locale/_app/saved")({
 		});
 		return {
 			resources,
+			t: context.t,
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return {
+			meta: [
+				{
+					title: loaderData.t("saved.title"),
+				},
+				{
+					name: "description",
+					content: loaderData.t("saved.description"),
+				},
+			],
 		};
 	},
 });
@@ -73,8 +74,8 @@ function SavedPage() {
 		from: Route.fullPath,
 	});
 	const { tab = "list", schedule = true } = Route.useSearch();
+	const t = useTranslations();
 
-	const { t } = Route.useRouteContext();
 	const activeDays = useMemo(
 		() =>
 			new Set(
@@ -95,9 +96,11 @@ function SavedPage() {
 		<div className="flex flex-col gap-4">
 			<div className="no-print flex items-center justify-between gap-4">
 				<div className="flex flex-col gap-2">
-					<h1 className="text-3xl font-semibold">{t.saved.title}</h1>
+					<h1 className="text-3xl font-semibold">
+						{t("saved.title")}
+					</h1>
 					<p className="text-muted-foreground">
-						{t.saved.description}
+						{t("saved.description")}
 					</p>
 				</div>
 			</div>
@@ -113,7 +116,7 @@ function SavedPage() {
 					size="lg"
 				>
 					<List size={18} />
-					<p className="hidden sm:block">{t.list}</p>
+					<p className="hidden sm:block">{t("list")}</p>
 				</Button>
 				<Button
 					onClick={() =>
@@ -125,7 +128,7 @@ function SavedPage() {
 					size="lg"
 				>
 					<MapIcon size={18} />
-					<p className="hidden sm:block">{t.map}</p>
+					<p className="hidden sm:block">{t("map")}</p>
 				</Button>
 				{tab === "list" && (
 					<>
@@ -146,7 +149,7 @@ function SavedPage() {
 							size="lg"
 						>
 							<CalendarDays size={18} />
-							<p className="hidden sm:block">{t.day}</p>
+							<p className="hidden sm:block">{t("day")}</p>
 						</Button>
 					</>
 				)}
@@ -175,8 +178,8 @@ function SavedPage() {
 									<AccordionItem key={day} value={day}>
 										<AccordionTrigger className="text-xl font-semibold">
 											{day === "unassigned"
-												? t.daysOfWeek.unassigned
-												: t.daysOfWeek.long[day]}
+												? t("daysOfWeek.unassigned")
+												: t(`daysOfWeek.long.${day}`)}
 										</AccordionTrigger>
 										<AccordionContent className="flex flex-col gap-3">
 											{resources

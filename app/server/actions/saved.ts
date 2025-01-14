@@ -1,13 +1,13 @@
-import { createMiddleware, createServerFn } from "@tanstack/start";
-import { and, eq } from "drizzle-orm";
-import { getCookie, setCookie } from "vinxi/http";
-import { generateId } from "../auth";
-import { db } from "../db";
+import { generateId } from "@/server/auth";
+import { db } from "@/server/db";
 import {
 	anonymousSessions,
 	anonymousSessionsToResources,
-} from "../db/schema/tables";
-import { SavedResourceSchema } from "../db/types";
+} from "@/server/db/schema";
+import { SavedResourceSchema } from "@/server/db/types";
+import { createMiddleware, createServerFn } from "@tanstack/start";
+import { and, eq } from "drizzle-orm";
+import { getCookie, setCookie } from "vinxi/http";
 
 const createAnonymousSession = async () => {
 	const anonymousSessionId = generateId(16);

@@ -22,7 +22,7 @@ import {
 	TableRow,
 } from "@/components/ui/Table";
 import { cn } from "@/lib/utils";
-import { useRouteContext } from "@tanstack/react-router";
+import { useTranslations } from "use-intl";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./Input";
 
@@ -49,6 +49,7 @@ export function DataTable<TData, TValue>({
 	globalFilter,
 	setGlobalFilter,
 }: DataTableProps<TData, TValue>) {
+	const t = useTranslations();
 	const table = useReactTable({
 		data,
 		columns,
@@ -85,6 +86,9 @@ export function DataTable<TData, TValue>({
 		onGlobalFilterChange: (updater) => {
 			const newGlobalFilter =
 				typeof updater === "function" ? updater(globalFilter) : updater;
+			if (globalFilter === newGlobalFilter) {
+				return;
+			}
 			setGlobalFilter(newGlobalFilter);
 		},
 		getFilteredRowModel: getFilteredRowModel(),
@@ -96,15 +100,11 @@ export function DataTable<TData, TValue>({
 		},
 	});
 
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
-
 	return (
 		<div className="w-[calc(100vw-32px)] rounded-md sm:w-full">
 			<div className="flex items-center pb-4">
 				<Input
-					placeholder={t.table.filter}
+					placeholder={t("table.filter")}
 					defaultValue={globalFilter}
 					onChange={(event) => setGlobalFilter(event.target.value)}
 					className="max-w-sm"
@@ -164,7 +164,7 @@ export function DataTable<TData, TValue>({
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									{t.table.empty}
+									{t("table.empty")}
 								</TableCell>
 							</TableRow>
 						)}

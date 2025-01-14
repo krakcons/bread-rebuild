@@ -1,22 +1,24 @@
 import globalStyles from "@/index.css?url";
-import { getTranslations, Locale, locales } from "@/lib/locale";
+import { Locale, locales } from "@/lib/locale";
 import { getLocale, setLocale } from "@/lib/locale/actions";
-import { Translations } from "@/lib/locale/messages";
+import { i18nQueryOptions } from "@/lib/locale/query";
+import { queryClient } from "@/router";
 import { SessionValidationResult } from "@/server/auth";
 import { getAuth } from "@/server/auth/actions";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
 	ErrorComponent,
 	Outlet,
 	redirect,
 	ScrollRestoration,
+	useParams,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
 import * as React from "react";
+import { createTranslator, IntlProvider } from "use-intl";
 
-export const Route = createRootRouteWithContext<
-	SessionValidationResult & { t?: Translations; locale?: Locale }
->()({
+export const Route = createRootRouteWithContext<SessionValidationResult>()({
 	head: () => ({
 		meta: [
 			{
@@ -65,12 +67,16 @@ export const Route = createRootRouteWithContext<
 		// Handle auth
 		const auth = await getAuth();
 
+		const i18n = await queryClient.ensureQueryData(
+			i18nQueryOptions(locale as Locale),
+		);
+		const t = await createTranslator(i18n);
+
 		// Return context
 		return {
 			...context,
 			...auth,
-			t: getTranslations(locale),
-			locale: locale as Locale,
+			t,
 		};
 	},
 });
@@ -84,14 +90,23 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const { locale } = useParams({
+		from: "/$locale",
+	});
+	const { data: i18n } = useSuspenseQuery(i18nQueryOptions(locale as Locale));
+
 	return (
-		<html className="overflow-x-hidden">
+		<html
+			className="overflow-x-hidden"
+			lang={locale}
+			suppressHydrationWarning
+		>
 			<head>
 				<Meta />
 			</head>
 			<body>
 				<main className="w-screen p-2 font-[Inter,sans-serif] sm:p-4">
-					{children}
+					<IntlProvider {...i18n}>{children}</IntlProvider>
 				</main>
 				<ScrollRestoration getKey={(location) => location.pathname} />
 				{/* <ReactQueryDevtools initialIsOpen={false} />

@@ -1,4 +1,4 @@
-import { ResourceType } from "@/server/types";
+import { ResourceType } from "@/server/db/types";
 
 import { formatServiceAddress } from "@cords/sdk";
 

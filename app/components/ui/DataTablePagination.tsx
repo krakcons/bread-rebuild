@@ -14,7 +14,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/Select";
-import { useRouteContext } from "@tanstack/react-router";
+import { useTranslations } from "use-intl";
 
 interface DataTablePaginationProps<TData> {
 	table: Table<TData>;
@@ -23,9 +23,7 @@ interface DataTablePaginationProps<TData> {
 export function DataTablePagination<TData>({
 	table,
 }: DataTablePaginationProps<TData>) {
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const t = useTranslations();
 	return (
 		<div className="flex items-center justify-end px-2">
 			{/* <div className="flex-1 text-sm text-muted-foreground">
@@ -35,7 +33,7 @@ export function DataTablePagination<TData>({
 			<div className="flex items-center gap-4">
 				<div className="flex items-center gap-2">
 					<p className="hidden text-sm font-medium sm:block">
-						{t.table.rowsPerPage}
+						{t("table.rowsPerPage")}
 					</p>
 					<Select
 						value={`${table.getState().pagination.pageSize}`}
@@ -64,9 +62,7 @@ export function DataTablePagination<TData>({
 				</div>
 				<div className="flex items-center gap-2">
 					<div className="flex hidden items-center justify-center text-sm font-medium sm:block">
-						{t.table.page}{" "}
-						{table.getState().pagination.pageIndex + 1}
-						{t.table.of} {table.getPageCount()}
+						{`${t("table.page")} ${table.getState().pagination.pageIndex + 1} ${t("table.of")} ${table.getPageCount()}`}
 					</div>
 					<div className="flex items-center gap-1">
 						<Button
@@ -75,7 +71,7 @@ export function DataTablePagination<TData>({
 							disabled={!table.getCanPreviousPage()}
 						>
 							<span className="sr-only">
-								{t.table.goToFirstPage}
+								{t("table.goToFirstPage")}
 							</span>
 							<ChevronsLeft />
 						</Button>
@@ -85,7 +81,7 @@ export function DataTablePagination<TData>({
 							disabled={!table.getCanPreviousPage()}
 						>
 							<span className="sr-only">
-								{t.table.goToPreviousPage}
+								{t("table.goToPreviousPage")}
 							</span>
 							<ChevronLeft />
 						</Button>
@@ -95,7 +91,7 @@ export function DataTablePagination<TData>({
 							disabled={!table.getCanNextPage()}
 						>
 							<span className="sr-only">
-								{t.table.goToNextPage}
+								{t("table.goToNextPage")}
 							</span>
 							<ChevronRight />
 						</Button>
@@ -107,7 +103,7 @@ export function DataTablePagination<TData>({
 							disabled={!table.getCanNextPage()}
 						>
 							<span className="sr-only">
-								{t.table.goToLastPage}
+								{t("table.goToLastPage")}
 							</span>
 							<ChevronsRight />
 						</Button>

@@ -13,25 +13,22 @@ import {
 import { Textarea } from "@/components/ui/TextArea";
 import { formatPhoneNumber } from "@/lib/phone";
 import { ProviderFormSchema } from "@/server/actions/provider";
-import { ProviderPhoneNumberType, ProviderType } from "@/server/db/types";
+import type { ProviderType } from "@/server/db/types";
+import { PhoneNumberSchema, PhoneNumberType } from "@/server/types";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useRouteContext } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
+import { useTranslations } from "use-intl";
 import { z } from "zod";
 import { BlockNavigation } from "./BlockNavigation";
 
 export const ProviderForm = ({
-	locale,
 	defaultValues,
 	onSubmit,
 }: {
-	locale: string;
 	defaultValues?: ProviderType;
 	onSubmit: (data: z.infer<typeof ProviderFormSchema>) => void;
 }) => {
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const t = useTranslations();
 	const form = useForm({
 		defaultValues: {
 			name: defaultValues?.name ?? "",
@@ -93,7 +90,7 @@ export const ProviderForm = ({
 						name="name"
 						children={(field) => (
 							<Label>
-								{t.form.provider.name}
+								{t("form.provider.name")}
 								<Input
 									name={field.name}
 									value={field.state.value ?? ""}
@@ -111,9 +108,9 @@ export const ProviderForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.form.common.description}
+									{t("form.common.description")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								<Textarea
@@ -129,10 +126,10 @@ export const ProviderForm = ({
 					/>
 					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 						<p className="font-medium">
-							{t.admin.onboarding.contact.title}
+							{t("admin.onboarding.contact.title")}
 						</p>
 						<p className="text-sm text-muted-foreground">
-							{t.admin.onboarding.contact.description}
+							{t("admin.onboarding.contact.description")}
 						</p>
 					</div>
 					<form.Field
@@ -140,9 +137,9 @@ export const ProviderForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.common.email}
+									{t("common.email")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								<Input
@@ -162,9 +159,9 @@ export const ProviderForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.form.contact.website}
+									{t("form.contact.website")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								<Input
@@ -185,9 +182,9 @@ export const ProviderForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.form.contact.phoneNumbers}
+									{t("form.contact.phoneNumbers")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								{field.state.value?.map((_, i) => (
@@ -232,7 +229,7 @@ export const ProviderForm = ({
 															value,
 														) =>
 															field.handleChange(
-																value as ProviderPhoneNumberType["type"],
+																value as PhoneNumberType["type"],
 															)
 														}
 													>
@@ -240,21 +237,22 @@ export const ProviderForm = ({
 															<SelectValue placeholder="" />
 														</SelectTrigger>
 														<SelectContent>
-															{Object.keys(
-																t.phoneTypes,
-															).map((type) => (
-																<SelectItem
-																	value={type}
-																	key={type}
-																>
-																	{
-																		t
-																			.phoneTypes[
+															{PhoneNumberSchema.shape.type.options.map(
+																(type) => (
+																	<SelectItem
+																		value={
 																			type
-																		]
-																	}
-																</SelectItem>
-															))}
+																		}
+																		key={
+																			type
+																		}
+																	>
+																		{t(
+																			`phoneTypes.${type}`,
+																		)}
+																	</SelectItem>
+																),
+															)}
 														</SelectContent>
 													</Select>
 													<FieldError
@@ -286,7 +284,7 @@ export const ProviderForm = ({
 										});
 									}}
 								>
-									{t.form.contact.addPhoneNumber}
+									{t("form.contact.addPhoneNumber")}
 								</Button>
 							</Label>
 						)}
@@ -303,7 +301,7 @@ export const ProviderForm = ({
 								{isSubmitting && (
 									<Loader2 className="animate-spin" />
 								)}
-								{t.common.submit}
+								{t("common.submit")}
 							</Button>
 						)}
 					</form.Subscribe>

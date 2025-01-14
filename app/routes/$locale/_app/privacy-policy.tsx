@@ -1,15 +1,20 @@
-import { getTranslations } from "@/lib/locale";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/_app/privacy-policy")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
-	head: ({ params: { locale } }) => {
-		const t = getTranslations(locale);
+	loader: async ({ context }) => {
+		return {
+			t: context.t,
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
 		return {
 			meta: [
 				{
-					title: t.privacy,
+					title: loaderData.t("privacy"),
 				},
 			],
 		};
@@ -17,10 +22,10 @@ export const Route = createFileRoute("/$locale/_app/privacy-policy")({
 });
 
 function RouteComponent() {
-	const { t } = Route.useRouteContext();
+	const t = useTranslations();
 	return (
 		<div className="flex flex-col gap-4">
-			<h1 className="text-3xl font-semibold">{t.privacy}</h1>
+			<h1 className="text-3xl font-semibold">{t("privacy")}</h1>
 			<p>
 				Lorem ipsum dolor sit amet consectetur adipisicing elit.
 				Excepturi perferendis, modi consequuntur aspernatur rerum autem

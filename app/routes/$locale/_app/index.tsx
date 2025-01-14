@@ -2,13 +2,14 @@ import SearchForm from "@/components/forms/Search";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/_app/")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const { t } = Route.useRouteContext();
+	const t = useTranslations();
 	const navigate = Route.useNavigate();
 
 	return (
@@ -32,7 +33,7 @@ function RouteComponent() {
 			</div>
 			<div className="flex flex-col items-center gap-2 sm:flex-row">
 				<div className="flex items-center gap-2">
-					<p className="text-sm">{t.poweredBy}</p>
+					<p className="text-sm">{t("poweredBy")}</p>
 					<a
 						href="https://technologyhelps.org"
 						target="_blank"
@@ -57,7 +58,7 @@ function RouteComponent() {
 							"px-1",
 						)}
 					>
-						{t.privacy}
+						{t("privacy")}
 					</Link>
 					<Link
 						from={Route.fullPath}
@@ -69,7 +70,7 @@ function RouteComponent() {
 							"px-1",
 						)}
 					>
-						{t.terms}
+						{t("terms")}
 					</Link>
 				</div>
 			</div>

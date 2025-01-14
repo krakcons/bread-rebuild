@@ -1,17 +1,19 @@
 import { formatAddress } from "@/lib/address";
 import { formatPhoneNumber } from "@/lib/phone";
 import { ResourceType } from "@/server/db/types";
-import { Link, useRouteContext } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import { DollarSign, MapPin, PhoneCall, Utensils, X } from "lucide-react";
 import { useState } from "react";
 import { Marker, Popup } from "react-map-gl/maplibre";
+import { useTranslations } from "use-intl";
 import { Button, buttonVariants } from "../ui/Button";
 import { ResourceActions } from "./Actions";
 
 export const MapResource = ({ resource }: { resource: ResourceType }) => {
 	const [popupOpen, setPopupOpen] = useState<boolean>(false);
-	const { t, locale } = useRouteContext({
-		from: "__root__",
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
 	});
 
 	return (
@@ -93,7 +95,7 @@ export const MapResource = ({ resource }: { resource: ResourceType }) => {
 								}}
 								className={buttonVariants()}
 							>
-								{t.viewMore}
+								{t("viewMore")}
 							</Link>
 						</ResourceActions>
 					</div>

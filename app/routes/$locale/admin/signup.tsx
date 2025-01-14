@@ -7,9 +7,15 @@ import { Label } from "@/components/ui/Label";
 import { cn } from "@/lib/utils";
 import { signup, SignupSchema } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	Link,
+	useParams,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/admin/signup")({
 	component: RouteComponent,
@@ -19,7 +25,10 @@ export const Route = createFileRoute("/$locale/admin/signup")({
 function RouteComponent() {
 	const navigate = Route.useNavigate();
 	const signupMutation = useServerFn(signup);
-	const { t, locale } = Route.useRouteContext();
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
+	});
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -76,11 +85,11 @@ function RouteComponent() {
 				})}
 			>
 				<ArrowLeft size={20} />
-				{t.common.back} {t.common.to} {t.common.bread}
+				{t("common.back")} {t("common.to")} {t("common.bread")}
 			</Link>
-			<h1>{t.admin.auth.signup.title}</h1>
+			<h1>{t("admin.auth.signup.title")}</h1>
 			<p className="text-sm text-muted-foreground">
-				{t.admin.auth.signup.switch.preface}
+				{t("admin.auth.signup.switch.preface")}
 				<Link
 					to="/$locale/admin/login"
 					params={{ locale }}
@@ -91,7 +100,7 @@ function RouteComponent() {
 						"px-2",
 					)}
 				>
-					{t.admin.auth.signup.switch.link}
+					{t("admin.auth.signup.switch.link")}
 				</Link>
 			</p>
 			<form
@@ -109,7 +118,7 @@ function RouteComponent() {
 						name="email"
 						children={(field) => (
 							<Label>
-								{t.common.email}
+								{t("common.email")}
 								<Input
 									name={field.name}
 									value={field.state.value}
@@ -126,7 +135,7 @@ function RouteComponent() {
 						name="password"
 						children={(field) => (
 							<Label>
-								{t.form.auth.password}
+								{t("form.auth.password")}
 								<Input
 									name={field.name}
 									value={field.state.value}
@@ -149,7 +158,7 @@ function RouteComponent() {
 						name="passwordConfirmation"
 						children={(field) => (
 							<Label>
-								{t.form.auth.passwordConfirmation}
+								{t("form.auth.passwordConfirmation")}
 								<Input
 									name={field.name}
 									value={field.state.value}
@@ -173,7 +182,7 @@ function RouteComponent() {
 									{isSubmitting && (
 										<Loader2 className="animate-spin" />
 									)}
-									{t.common.submit}
+									{t("common.submit")}
 								</Button>
 							</div>
 						)}

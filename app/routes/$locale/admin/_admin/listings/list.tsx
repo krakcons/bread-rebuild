@@ -3,6 +3,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import { getListingsFn } from "@/server/actions/listings";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/admin/_admin/listings/list")({
 	component: RouteComponent,
@@ -17,14 +18,14 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/list")({
 
 function RouteComponent() {
 	const data = Route.useLoaderData();
-	const { t } = Route.useRouteContext();
+	const t = useTranslations();
 
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex items-end justify-between border-b border-gray-200 pb-4">
 				<div className="flex flex-col gap-2">
-					<h1>{t.admin.listings.title}</h1>
-					<p>{t.admin.listings.description}</p>
+					<h1>{t("admin.listings.title")}</h1>
+					<p>{t("admin.listings.description")}</p>
 				</div>
 				<Link
 					to="/$locale/admin/listings/new"
@@ -35,13 +36,13 @@ function RouteComponent() {
 					className={buttonVariants()}
 				>
 					<Plus />
-					{t.admin.listings.new.title}
+					{t("admin.listings.new.title")}
 				</Link>
 			</div>
 			<div className="flex flex-col gap-2">
 				{data.listings.length === 0 && (
 					<p className="text-muted-foreground">
-						{t.admin.listings.empty}
+						{t("admin.listings.empty")}
 					</p>
 				)}
 				{data.listings.map((listing) => (

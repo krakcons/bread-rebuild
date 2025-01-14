@@ -1,4 +1,4 @@
-import { flattenLocalizedObject } from "@/lib/locale";
+import { flattenLocalizedObject } from "@/lib/locale/helpers";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { and, eq } from "drizzle-orm";

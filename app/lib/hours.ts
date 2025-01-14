@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 export const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+export type DayOfWeek = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
 
 export type DaySchedule = {
 	day: string;

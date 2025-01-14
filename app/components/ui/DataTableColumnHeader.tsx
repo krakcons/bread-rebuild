@@ -10,7 +10,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
 import { cn } from "@/lib/utils";
-import { useRouteContext } from "@tanstack/react-router";
+import { useTranslations } from "use-intl";
 
 interface DataTableColumnHeaderProps<TData, TValue>
 	extends React.HTMLAttributes<HTMLDivElement> {
@@ -26,10 +26,7 @@ export function DataTableColumnHeader<TData, TValue>({
 	if (!column.getCanSort()) {
 		return <div className={cn(className)}>{title}</div>;
 	}
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
-	console.log(column.getIsSorted());
+	const t = useTranslations();
 
 	return (
 		<div className={cn("flex items-center space-x-2", className)}>
@@ -55,20 +52,20 @@ export function DataTableColumnHeader<TData, TValue>({
 						onClick={() => column.toggleSorting(false)}
 					>
 						<ArrowUp className="h-3.5 w-3.5 text-muted-foreground/70" />
-						{t.table.sort.asc}
+						{t("table.sort.asc")}
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						onClick={() => column.toggleSorting(true)}
 					>
 						<ArrowDown className="h-3.5 w-3.5 text-muted-foreground/70" />
-						{t.table.sort.desc}
+						{t("table.sort.desc")}
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem
 						onClick={() => column.toggleVisibility(false)}
 					>
 						<EyeOff className="h-3.5 w-3.5 text-muted-foreground/70" />
-						{t.table.sort.hide}
+						{t("table.sort.hide")}
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

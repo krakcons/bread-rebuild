@@ -1,5 +1,6 @@
-import { Block, useRouteContext } from "@tanstack/react-router";
+import { Block, useParams } from "@tanstack/react-router";
 
+import { useTranslations } from "use-intl";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -16,8 +17,9 @@ export function BlockNavigation({
 }: {
 	shouldBlockFn: () => boolean;
 }) {
-	const { t, locale } = useRouteContext({
-		from: "__root__",
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
 	});
 	return (
 		<Block shouldBlockFn={shouldBlockFn} withResolver>
@@ -26,18 +28,18 @@ export function BlockNavigation({
 					<AlertDialogContent>
 						<AlertDialogHeader>
 							<AlertDialogTitle>
-								{t.admin.confirm.title}
+								{t("admin.confirm.title")}
 							</AlertDialogTitle>
 							<AlertDialogDescription>
-								{t.admin.confirm.description}
+								{t("admin.confirm.description")}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
 							<AlertDialogCancel onClick={reset}>
-								{t.admin.confirm.cancel}
+								{t("admin.confirm.cancel")}
 							</AlertDialogCancel>
 							<AlertDialogAction onClick={proceed}>
-								{t.admin.confirm.confirm}
+								{t("admin.confirm.confirm")}
 							</AlertDialogAction>
 						</AlertDialogFooter>
 					</AlertDialogContent>

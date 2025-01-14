@@ -18,11 +18,13 @@ import {
 	ErrorComponent,
 	Link,
 	notFound,
+	useParams,
 	useRouter,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/admin/_admin/listings/$id")({
 	component: RouteComponent,
@@ -50,35 +52,38 @@ function RouteComponent() {
 	const updateListing = useServerFn(mutateListingFn);
 	const deleteListing = useServerFn(deleteListingFn);
 	const { editingLocale } = Route.useSearch();
-	const { t, locale } = Route.useRouteContext();
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
+	});
 	const [deleting, setDeleting] = useState(false);
 
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex items-end justify-between gap-4 border-b border-gray-200 pb-4">
 				<div className="flex flex-col gap-2">
-					<h1>{t.admin.listings.edit.title}</h1>
-					<p>{t.admin.listings.edit.description}</p>
+					<h1>{t("admin.listings.edit.title")}</h1>
+					<p>{t("admin.listings.edit.description")}</p>
 				</div>
 				<div className="flex items-center gap-2">
 					<AlertDialog open={deleting} onOpenChange={setDeleting}>
 						<AlertDialogTrigger asChild>
 							<Button variant="destructive">
-								{t.form.listing.delete.title}
+								{t("form.listing.delete.title")}
 							</Button>
 						</AlertDialogTrigger>
 						<AlertDialogContent>
 							<AlertDialogHeader>
 								<AlertDialogTitle>
-									{t.form.listing.delete.title}
+									{t("form.listing.delete.title")}
 								</AlertDialogTitle>
 								<AlertDialogDescription>
-									{t.form.listing.delete.description}
+									{t("form.listing.delete.description")}
 								</AlertDialogDescription>
 							</AlertDialogHeader>
 							<AlertDialogFooter>
 								<AlertDialogCancel>
-									{t.form.listing.delete.cancel}
+									{t("form.listing.delete.cancel")}
 								</AlertDialogCancel>
 								<AlertDialogAction
 									onClick={async () => {
@@ -87,7 +92,7 @@ function RouteComponent() {
 										});
 									}}
 								>
-									{t.form.listing.delete.confirm}
+									{t("form.listing.delete.confirm")}
 								</AlertDialogAction>
 							</AlertDialogFooter>
 						</AlertDialogContent>
@@ -97,7 +102,7 @@ function RouteComponent() {
 						params={{ id: listing?.id!, locale }}
 						className="flex items-center gap-2"
 					>
-						<Button>{t.preview}</Button>
+						<Button>{t("preview")}</Button>
 					</Link>
 				</div>
 			</div>
@@ -116,7 +121,7 @@ function RouteComponent() {
 								locale: editingLocale!,
 							},
 						});
-						await toast.success(t.form.listing.success.update);
+						await toast.success(t("form.listing.success.update"));
 						await router.invalidate();
 					}}
 					blockNavigation={!deleting}

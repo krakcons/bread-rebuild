@@ -4,7 +4,6 @@ import { Resource } from "@/components/Resource";
 import { MapResource } from "@/components/Resource/Map";
 import { Button } from "@/components/ui/Button";
 import { useDebounce } from "@/lib/debounce";
-import { getTranslations } from "@/lib/locale";
 import { STYLE } from "@/lib/map";
 import { searchFn, SearchFormSchema } from "@/server/actions/resource";
 import { useForm, useStore } from "@tanstack/react-form";
@@ -12,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import { List, MapIcon } from "lucide-react";
 import { Map } from "react-map-gl/maplibre";
+import { useTranslations } from "use-intl";
 import { z } from "zod";
 
 export const Route = createFileRoute("/$locale/_app/search")({
@@ -20,16 +20,21 @@ export const Route = createFileRoute("/$locale/_app/search")({
 	validateSearch: SearchFormSchema.extend({
 		tab: z.enum(["map", "list"]).optional(),
 	}),
-	head: ({ params: { locale } }) => {
-		const t = getTranslations(locale);
+	loader: async ({ context }) => {
+		return {
+			t: context.t,
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
 		return {
 			meta: [
 				{
-					title: t.title,
+					title: loaderData.t("title"),
 				},
 				{
 					name: "description",
-					content: t.description,
+					content: loaderData.t("description"),
 				},
 			],
 		};
@@ -40,7 +45,7 @@ function Home() {
 	const navigate = Route.useNavigate();
 	const searchParams = Route.useSearch();
 	const { tab = "list" } = searchParams;
-	const { t } = Route.useRouteContext();
+	const t = useTranslations();
 
 	const queryForm = useForm({
 		defaultValues: {
@@ -89,7 +94,7 @@ function Home() {
 					active={tab === "list"}
 				>
 					<List size={18} />
-					<p className="hidden sm:block">{t.list}</p>
+					<p className="hidden sm:block">{t("list")}</p>
 				</Button>
 				<Button
 					onClick={() =>
@@ -101,7 +106,7 @@ function Home() {
 					active={tab === "map"}
 				>
 					<MapIcon size={18} />
-					<p className="hidden sm:block">{t.map}</p>
+					<p className="hidden sm:block">{t("map")}</p>
 				</Button>
 			</div>
 			{isLoading || query !== debouncedQuery ? (

@@ -1,9 +1,9 @@
-import * as schema from "@/server/db/schema";
 import { drizzle } from "drizzle-orm/aws-data-api/pg";
 import { Resource } from "sst";
+import * as schema from "./schema";
 
 if (!process.env.TENANT_STAGE_NAME) {
-	throw new Error("TENANT_STAGE_NAME is not set");
+	throw new Error("TENANT_STAGE_NAME is not set: DB");
 }
 
 export const db = drizzle({

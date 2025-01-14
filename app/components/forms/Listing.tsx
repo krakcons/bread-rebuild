@@ -18,21 +18,24 @@ import {
 	parseSchedule,
 } from "@/lib/hours";
 import { ListingFormSchema } from "@/server/actions/listings";
-import {
-	ProviderPhoneNumberType,
-	ProviderType,
-	ResourceType,
-} from "@/server/db/types";
+import type { ProviderType, ResourceType } from "@/server/db/types";
+import { PhoneNumberSchema, PhoneNumberType } from "@/server/types";
 import { Libraries, useJsApiLoader } from "@react-google-maps/api";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useRouteContext } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 import { formatAddress } from "@/lib/address";
 import { formatPhoneNumber } from "@/lib/phone";
-import { DietaryOptionType, OfferingType } from "@/server/types";
+import {
+	DietaryOptionSchema,
+	DietaryOptionType,
+	OfferingSchema,
+	OfferingType,
+} from "@/server/types";
+import { useParams } from "@tanstack/react-router";
+import { useTranslations } from "use-intl";
 import { Checkbox } from "../ui/Checkbox";
 import { BlockNavigation } from "./BlockNavigation";
 
@@ -84,9 +87,8 @@ const HoursInput = ({
 	onChange: (value: string) => void;
 	value: string;
 }) => {
-	const { t, locale } = useRouteContext({
-		from: "__root__",
-	});
+	const { locale } = useParams({ from: "/$locale" });
+	const t = useTranslations();
 
 	const hours = useMemo(() => {
 		const baseHours = defaultHours();
@@ -130,7 +132,7 @@ const HoursInput = ({
 						<p className="w-[40px]">{day}</p>
 					</div>
 					<div className="flex items-center gap-2">
-						<p>{t.form.listing.hours.startTime}</p>
+						<p>{t("form.listing.hours.startTime")}</p>
 						<HourSelect
 							onChange={(value) =>
 								handleChange(
@@ -147,7 +149,7 @@ const HoursInput = ({
 						/>
 					</div>
 					<div className="flex items-center gap-2">
-						<p>{t.form.listing.hours.endTime}</p>
+						<p>{t("form.listing.hours.endTime")}</p>
 						<HourSelect
 							onChange={(value) =>
 								handleChange(
@@ -185,9 +187,7 @@ export const ListingForm = ({
 	blockNavigation?: boolean;
 	provider: ProviderType;
 }) => {
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const t = useTranslations();
 	const form = useForm({
 		defaultValues: {
 			name: defaultValues?.name ?? undefined,
@@ -345,9 +345,9 @@ export const ListingForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.common.name}
+									{t("common.name")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								<Input
@@ -360,7 +360,7 @@ export const ListingForm = ({
 								/>
 								{provider.name && (
 									<p className="text-xs text-muted-foreground">
-										{`${t.form.listing.fallback} ${provider.name}`}
+										{`${t("form.listing.fallback")} ${provider.name}`}
 									</p>
 								)}
 								<FieldError state={field.state} />
@@ -372,9 +372,9 @@ export const ListingForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.form.common.description}
+									{t("form.common.description")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								<Textarea
@@ -394,9 +394,9 @@ export const ListingForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.form.listing.eligibility.title}
+									{t("form.listing.eligibility.title")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								<Textarea
@@ -409,7 +409,7 @@ export const ListingForm = ({
 								/>
 								<p className="text-xs text-muted-foreground">
 									{"Ex: " +
-										t.form.listing.eligibility.example}
+										t("form.listing.eligibility.example")}
 								</p>
 								<FieldError state={field.state} />
 							</Label>
@@ -420,9 +420,9 @@ export const ListingForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.form.listing.capacity.title}
+									{t("form.listing.capacity.title")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								<Textarea
@@ -434,7 +434,7 @@ export const ListingForm = ({
 									}
 								/>
 								<p className="text-xs text-muted-foreground">
-									{t.form.listing.capacity.example}
+									{t("form.listing.capacity.example")}
 								</p>
 								<FieldError state={field.state} />
 							</Label>
@@ -442,17 +442,17 @@ export const ListingForm = ({
 					/>
 					<div className="flex flex-col gap-2 border-t border-border pt-4">
 						<p className="font-medium">
-							{t.form.listing.location.title}
+							{t("form.listing.location.title")}
 						</p>
 						<p className="text-sm text-muted-foreground">
-							{t.form.listing.location.description}
+							{t("form.listing.location.description")}
 						</p>
 					</div>
 					<Input
 						ref={inputRef}
 						onChange={(e) => setLocation(e.target.value)}
 						value={location}
-						placeholder={t.form.listing.location.placeholder}
+						placeholder={t("form.listing.location.placeholder")}
 					/>
 					<form.Subscribe
 						selector={(formState) => [
@@ -470,36 +470,30 @@ export const ListingForm = ({
 											<tr className="text-sm font-medium">
 												{street1 && (
 													<th className="text-left">
-														{
-															t.form.listing
-																.location.street
-														}
+														{t(
+															"form.listing.location.street",
+														)}
 													</th>
 												)}
 												{city && (
 													<th className="text-left">
-														{
-															t.form.listing
-																.location.city
-														}
+														{t(
+															"form.listing.location.city",
+														)}
 													</th>
 												)}
 												{province && (
 													<th className="text-left">
-														{
-															t.form.listing
-																.location
-																.province
-														}
+														{t(
+															"form.listing.location.province",
+														)}
 													</th>
 												)}
 												{postalCode && (
 													<th className="text-left">
-														{
-															t.form.listing
-																.location
-																.postalCode
-														}
+														{t(
+															"form.listing.location.postalCode",
+														)}
 													</th>
 												)}
 											</tr>
@@ -519,7 +513,7 @@ export const ListingForm = ({
 									</table>
 									<div>
 										<p className="text-sm font-medium">
-											{t.form.listing.location.full}
+											{t("form.listing.location.full")}
 										</p>
 										<p className="text-sm">
 											{formatAddress({
@@ -560,10 +554,10 @@ export const ListingForm = ({
 					/>
 					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 						<p className="font-medium">
-							{t.form.listing.toggles.title}
+							{t("form.listing.toggles.title")}
 						</p>
 						<p className="text-sm text-muted-foreground">
-							{t.form.listing.toggles.description}
+							{t("form.listing.toggles.description")}
 						</p>
 					</div>
 					<div className="flex flex-col gap-8">
@@ -590,17 +584,9 @@ export const ListingForm = ({
 													}
 												/>
 												<span className="text-sm font-medium">
-													{t.form.listing.toggles[
-														option as keyof typeof t.form.listing.toggles
-													].title + ": "}
-													<span className="text-sm text-muted-foreground">
-														{
-															t.form.listing
-																.toggles[
-																option as keyof typeof t.form.listing.toggles
-															].description
-														}
-													</span>
+													{t(
+														`form.listing.toggles.${option}.title`,
+													)}
 												</span>
 												<FieldError
 													state={field.state}
@@ -617,9 +603,9 @@ export const ListingForm = ({
 										children={(field) => (
 											<Label>
 												<span className="flex items-center gap-1">
-													{t.form.listing.notes}
+													{t("form.listing.notes")}
 													<span className="text-xs text-muted-foreground">
-														({t.common.optional})
+														({t("common.optional")})
 													</span>
 												</span>
 												<Textarea
@@ -636,9 +622,9 @@ export const ListingForm = ({
 												/>
 												<p className="text-xs text-muted-foreground">
 													{"Ex: " +
-														t.form.listing.toggles[
-															option as keyof typeof t.form.listing.toggles
-														].example}
+														t(
+															`form.listing.toggles.${option}.example`,
+														)}
 												</p>
 												<FieldError
 													state={field.state}
@@ -652,17 +638,17 @@ export const ListingForm = ({
 					</div>
 					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 						<p className="font-medium">
-							{t.form.listing.offerings.title}
+							{t("form.listing.offerings.title")}
 						</p>
 						<p className="text-sm text-muted-foreground">
-							{t.form.listing.offerings.description}
+							{t("form.listing.offerings.description")}
 						</p>
 					</div>
 					<form.Field
 						name="offerings"
 						children={(field) => (
 							<>
-								{Object.keys(t.offeringTypes).map(
+								{OfferingSchema.options.map(
 									(key: OfferingType) => (
 										<div
 											key={key}
@@ -693,7 +679,7 @@ export const ListingForm = ({
 													}
 												}}
 											/>
-											{t.offeringTypes[key]}
+											{t(`offeringTypes.${key}`)}
 										</div>
 									),
 								)}
@@ -734,10 +720,10 @@ export const ListingForm = ({
 					</form.Subscribe>
 					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 						<p className="font-medium">
-							{t.form.listing.dietaryOptions.title}
+							{t("form.listing.dietaryOptions.title")}
 						</p>
 						<p className="text-sm text-muted-foreground">
-							{t.form.listing.dietaryOptions.description}
+							{t("form.listing.dietaryOptions.description")}
 						</p>
 					</div>
 					<div className="flex flex-col gap-2">
@@ -745,7 +731,7 @@ export const ListingForm = ({
 							name="dietaryOptions"
 							children={(field) => (
 								<>
-									{Object.keys(t.dietaryOptionTypes).map(
+									{DietaryOptionSchema.options.map(
 										(key: DietaryOptionType) => (
 											<div
 												key={key}
@@ -781,7 +767,7 @@ export const ListingForm = ({
 														}
 													}}
 												/>
-												{t.dietaryOptionTypes[key]}
+												{t(`dietaryOptionTypes.${key}`)}
 											</div>
 										),
 									)}
@@ -823,10 +809,10 @@ export const ListingForm = ({
 					</form.Subscribe>
 					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 						<p className="font-medium">
-							{t.form.listing.hours.title}
+							{t("form.listing.hours.title")}
 						</p>
 						<p className="text-sm text-muted-foreground">
-							{t.form.listing.hours.description}
+							{t("form.listing.hours.description")}
 						</p>
 					</div>
 					<form.Field
@@ -845,10 +831,10 @@ export const ListingForm = ({
 					/>
 					<div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
 						<p className="font-medium">
-							{t.form.listing.contact.title}
+							{t("form.listing.contact.title")}
 						</p>
 						<p className="text-sm text-muted-foreground">
-							{t.form.listing.contact.description}
+							{t("form.listing.contact.description")}
 						</p>
 					</div>
 					<form.Field
@@ -856,9 +842,9 @@ export const ListingForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.common.email}
+									{t("common.email")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								<Input
@@ -871,7 +857,7 @@ export const ListingForm = ({
 								/>
 								{provider.email && (
 									<p className="text-xs text-muted-foreground">
-										{`${t.form.listing.fallback} ${provider.email}`}
+										{`${t("form.listing.fallback")} ${provider.email}`}
 									</p>
 								)}
 								<FieldError state={field.state} />
@@ -883,9 +869,9 @@ export const ListingForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.form.contact.website}
+									{t("form.contact.website")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								<Input
@@ -898,7 +884,7 @@ export const ListingForm = ({
 								/>
 								{provider.website && (
 									<p className="text-xs text-muted-foreground">
-										{`${t.form.listing.fallback} ${provider.website}`}
+										{`${t("form.listing.fallback")} ${provider.website}`}
 									</p>
 								)}
 								<FieldError state={field.state} />
@@ -911,9 +897,9 @@ export const ListingForm = ({
 						children={(field) => (
 							<Label>
 								<span className="flex items-center gap-1">
-									{t.form.contact.phoneNumbers}
+									{t("form.contact.phoneNumbers")}
 									<span className="text-xs text-muted-foreground">
-										({t.common.optional})
+										({t("common.optional")})
 									</span>
 								</span>
 								{field.state.value?.map((_, i) => (
@@ -958,7 +944,7 @@ export const ListingForm = ({
 															value,
 														) =>
 															field.handleChange(
-																value as ProviderPhoneNumberType["type"],
+																value as PhoneNumberType["type"],
 															)
 														}
 													>
@@ -966,21 +952,22 @@ export const ListingForm = ({
 															<SelectValue placeholder="" />
 														</SelectTrigger>
 														<SelectContent>
-															{Object.keys(
-																t.phoneTypes,
-															).map((type) => (
-																<SelectItem
-																	value={type}
-																	key={type}
-																>
-																	{
-																		t
-																			.phoneTypes[
+															{PhoneNumberSchema.shape.type.options.map(
+																(type) => (
+																	<SelectItem
+																		value={
 																			type
-																		]
-																	}
-																</SelectItem>
-															))}
+																		}
+																		key={
+																			type
+																		}
+																	>
+																		{t(
+																			`phoneTypes.${type}`,
+																		)}
+																	</SelectItem>
+																),
+															)}
 														</SelectContent>
 													</Select>
 													<FieldError
@@ -1012,12 +999,12 @@ export const ListingForm = ({
 										});
 									}}
 								>
-									{t.form.contact.addPhoneNumber}
+									{t("form.contact.addPhoneNumber")}
 								</Button>
 								{provider.phoneNumbers &&
 									provider.phoneNumbers.length > 0 && (
 										<p className="text-xs text-muted-foreground">
-											{`${t.form.listing.fallback} ${provider.phoneNumbers.map((phone) => formatPhoneNumber(phone.phone)).join(", ")}`}
+											{`${t("form.listing.fallback")} ${provider.phoneNumbers.map((phone) => formatPhoneNumber(phone.phone)).join(", ")}`}
 										</p>
 									)}
 								<FieldError state={field.state} />
@@ -1036,7 +1023,7 @@ export const ListingForm = ({
 								{isSubmitting && (
 									<Loader2 className="animate-spin" />
 								)}
-								{t.common.submit}
+								{t("common.submit")}
 							</Button>
 						)}
 					</form.Subscribe>

@@ -1,12 +1,13 @@
-import { flattenLocalizedObject } from "@/lib/locale";
+import { flattenLocalizedObject } from "@/lib/locale/helpers";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { generateId } from "../auth";
 import { db } from "../db";
 import { resources, users, UserType } from "../db/schema";
 import {
+	anonymousSessionsToResources,
 	providerPhoneNumbers,
 	providers,
 	providerTranslations,
@@ -23,6 +24,7 @@ import {
 	adminMiddleware,
 	localeMiddleware,
 	protectedMiddleware,
+	providerMiddleware,
 } from "../middleware";
 import { ContactSchema } from "../types";
 
@@ -179,6 +181,7 @@ export const getProvidersFn = createServerFn({
 				user: true,
 			},
 		});
+		console.log(providerList);
 		return providerList.map(
 			(provider) =>
 				flattenLocalizedObject(provider, {
@@ -302,4 +305,27 @@ export const updateProviderStatusFn = createServerFn({
 				),
 			});
 		}
+	});
+
+export const getAnalytics = createServerFn({
+	method: "GET",
+})
+	.middleware([providerMiddleware])
+	.handler(async ({ context }) => {
+		const providerResources = await db.query.resources.findMany({
+			where: eq(resources.providerId, context.provider.id),
+		});
+
+		const savedResources = (
+			await db.query.anonymousSessionsToResources.findMany({
+				where: inArray(
+					anonymousSessionsToResources.resourceId,
+					providerResources.map((r) => r.id),
+				),
+			})
+		).length;
+
+		return {
+			savedResources,
+		};
 	});

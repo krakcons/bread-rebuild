@@ -1,13 +1,15 @@
 import { StatusSelect } from "@/components/Provider/StatusSelect";
 import { DataTable } from "@/components/ui/DataTable";
 import { DataTableColumnHeader } from "@/components/ui/DataTableColumnHeader";
+import { Locale } from "@/lib/locale";
 import {
 	getProvidersFn,
 	updateProviderStatusFn,
 } from "@/server/actions/provider";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { useTranslations } from "use-intl";
 import { z } from "zod";
 
 export const Route = createFileRoute("/$locale/admin/_admin/providers/list")({
@@ -24,16 +26,19 @@ export const Route = createFileRoute("/$locale/admin/_admin/providers/list")({
 			.array(z.object({ id: z.string(), desc: z.boolean() }))
 			.optional(),
 	}),
-	loader: async ({ context }) => {
+	loader: async ({ params }) => {
 		const providers = await getProvidersFn({
-			data: { locale: context.locale },
+			data: { locale: params.locale as Locale },
 		});
 		return { providers };
 	},
 });
 
 const useColumns = () => {
-	const { t, locale } = Route.useRouteContext();
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
+	});
 
 	const columns: ColumnDef<{
 		id: string;
@@ -46,7 +51,7 @@ const useColumns = () => {
 				header: ({ column }) => (
 					<DataTableColumnHeader
 						column={column}
-						title={t.table.name}
+						title={t("table.name")}
 						className="min-w-[200px]"
 					/>
 				),
@@ -56,7 +61,7 @@ const useColumns = () => {
 				header: ({ column }) => (
 					<DataTableColumnHeader
 						column={column}
-						title={t.common.email}
+						title={t("common.email")}
 					/>
 				),
 				accessorKey: "email",
@@ -65,7 +70,7 @@ const useColumns = () => {
 				header: ({ column }) => (
 					<DataTableColumnHeader
 						column={column}
-						title={t.table.status}
+						title={t("table.status")}
 					/>
 				),
 				accessorKey: "status",
@@ -98,7 +103,7 @@ const useColumns = () => {
 
 function RouteComponent() {
 	const { providers } = Route.useLoaderData();
-	const { t } = Route.useRouteContext();
+	const t = useTranslations();
 	const columns = useColumns();
 	const navigate = Route.useNavigate();
 	const {
@@ -110,8 +115,8 @@ function RouteComponent() {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="mb-4 flex flex-col gap-2 border-b border-gray-200 pb-4">
-				<h1>{t.admin.providers.title}</h1>
-				<p>{t.admin.providers.description}</p>
+				<h1>{t("admin.providers.title")}</h1>
+				<p>{t("admin.providers.description")}</p>
 			</div>
 			<DataTable
 				columns={columns}

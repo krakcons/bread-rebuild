@@ -3,7 +3,7 @@ import { NotFound } from "@/components/NotFound";
 import { ResourceActions } from "@/components/Resource/Actions";
 import { Badge } from "@/components/ui/Badge";
 import { formatAddress } from "@/lib/address";
-import { formatTime, useHours } from "@/lib/hours";
+import { DayOfWeek, formatTime, useHours } from "@/lib/hours";
 import { STYLE } from "@/lib/map";
 import { formatPhoneNumber } from "@/lib/phone";
 import { cn } from "@/lib/utils";
@@ -30,28 +30,36 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { Map, Marker } from "react-map-gl/maplibre";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/_app/resources/$id")({
 	component: ResourceDetail,
 	notFoundComponent: NotFound,
 	errorComponent: ErrorComponent,
-	loader: async ({ params: { id } }) => {
+	loader: async ({ params: { id }, context }) => {
 		const resource = await getResourceFn({ data: { id } });
 		if (!resource) throw notFound();
-		return resource;
+		return {
+			resource,
+			t: context.t,
+		};
 	},
 	head: ({ loaderData }) => {
 		if (!loaderData) return {};
 		const description =
-			formatAddress(loaderData) +
+			formatAddress(loaderData.resource) +
 			", " +
-			loaderData.phoneNumbers.map((phone) => phone.phone).join(", ") +
+			loaderData.resource.phoneNumbers
+				.map((phone) => phone.phone)
+				.join(", ") +
 			", " +
 			Object.values(loaderData).join(", ").slice(0, 155);
 		return {
 			meta: [
 				{
-					title: loaderData.provider.name,
+					title:
+						loaderData.resource.name ??
+						loaderData.resource.provider.name,
 				},
 				{
 					name: "description",
@@ -64,8 +72,8 @@ export const Route = createFileRoute("/$locale/_app/resources/$id")({
 
 function ResourceDetail() {
 	const { locale } = Route.useParams();
-	const resource = Route.useLoaderData();
-	const { t } = Route.useRouteContext();
+	const { resource } = Route.useLoaderData();
+	const t = useTranslations();
 
 	const hours = useHours(resource.hours || "", locale);
 
@@ -78,23 +86,23 @@ function ResourceDetail() {
 			...resource.offerings.map((offering) =>
 				offering === "other" && resource.offeringsOther
 					? resource.offeringsOther
-					: t.offeringTypes[offering],
+					: t(`offeringTypes.${offering}`),
 			),
 		];
 		if (resource.free) {
-			tags.push(t.free);
+			tags.push(t("free"));
 		}
 		if (resource.preparation) {
-			tags.push(t.preparation);
+			tags.push(t("preparation"));
 		}
 		if (resource.parking) {
-			tags.push(t.parking);
+			tags.push(t("parking"));
 		}
 		if (resource.transit) {
-			tags.push(t.transit);
+			tags.push(t("transit"));
 		}
 		if (resource.wheelchair) {
-			tags.push(t.wheelchair);
+			tags.push(t("wheelchair"));
 		}
 		return tags;
 	}, [resource, t]);
@@ -152,7 +160,7 @@ function ResourceDetail() {
 				{resource.description && (
 					<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 						<h2 className="mb-4 text-xl font-bold">
-							{t.form.common.description}
+							{t("form.common.description")}
 						</h2>
 						<p className="text-muted-foreground">
 							{resource.description}
@@ -160,10 +168,10 @@ function ResourceDetail() {
 					</div>
 				)}
 				<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
-					<h2 className="mb-4 text-xl font-bold">{t.contact}</h2>
+					<h2 className="mb-4 text-xl font-bold">{t("contact")}</h2>
 					{/* Address */}
 					<Contact
-						label={t.address}
+						label={t("address")}
 						value={formatAddress(resource)}
 						link={`https://maps.google.com/?q=${formatAddress(
 							resource,
@@ -178,7 +186,7 @@ function ResourceDetail() {
 
 					{/* Email */}
 					<Contact
-						label={t.common.email}
+						label={t("common.email")}
 						value={contactInfo.email}
 						link={`mailto:${contactInfo.email}`}
 						icon={
@@ -188,7 +196,7 @@ function ResourceDetail() {
 
 					{/* Website */}
 					<Contact
-						label={t.website}
+						label={t("website")}
 						value={contactInfo.website}
 						link={contactInfo.website}
 						icon={
@@ -204,7 +212,7 @@ function ResourceDetail() {
 						contactInfo.phoneNumbers.map((phone) => (
 							<Contact
 								key={phone.phone}
-								label={t.phoneTypes[phone.type]}
+								label={t(`phoneTypes.${phone.type}`)}
 								value={formatPhoneNumber(phone.phone)}
 								link={`tel:${phone.phone}`}
 								icon={
@@ -227,25 +235,25 @@ function ResourceDetail() {
 					resource.dietaryOptions.length > 0) && (
 					<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
 						<h2 className="mb-4 text-xl font-bold">
-							{t.additionalInfo}
+							{t("additionalInfo")}
 						</h2>
 						{/* Eligibility */}
 						<Contact
-							label={t.eligibility}
+							label={t("eligibility")}
 							value={resource.eligibility}
 							icon={<BadgeCheck size={20} />}
 						/>
 
 						{/* Capacity */}
 						<Contact
-							label={t.form.listing.capacity.title}
+							label={t("form.listing.capacity.title")}
 							value={resource.capacity}
 							icon={<Users size={20} />}
 						/>
 
 						{/* Fees */}
 						<Contact
-							label={t.fees}
+							label={t("fees")}
 							value={resource.fees}
 							icon={
 								<DollarSign
@@ -256,14 +264,14 @@ function ResourceDetail() {
 						/>
 						{/* Dietary Options */}
 						<Contact
-							label={t.dietaryOptions}
+							label={t("dietaryOptions")}
 							value={
 								resource.dietaryOptions
 									.map((option) =>
 										option === "other" &&
 										resource.dietaryOptionsOther
 											? resource.dietaryOptionsOther
-											: t.dietaryOptionTypes[option],
+											: t(`dietaryOptionTypes.${option}`),
 									)
 									.filter(Boolean)
 									.join(", ") || undefined
@@ -277,7 +285,7 @@ function ResourceDetail() {
 						/>
 						{/* Wheelchair Accessible */}
 						<Contact
-							label={t.wheelchair}
+							label={t("wheelchair")}
 							value={resource.wheelchairNotes}
 							icon={
 								<Accessibility
@@ -288,7 +296,7 @@ function ResourceDetail() {
 						/>
 						{/* Application Process */}
 						<Contact
-							label={t.applicationProcess}
+							label={t("applicationProcess")}
 							value={resource.registrationNotes}
 							icon={
 								<File
@@ -299,7 +307,7 @@ function ResourceDetail() {
 						/>
 						{/* Parking */}
 						<Contact
-							label={t.parking}
+							label={t("parking")}
 							value={resource.parkingNotes}
 							icon={
 								<Car
@@ -310,7 +318,7 @@ function ResourceDetail() {
 						/>
 						{/* Preparation Required */}
 						<Contact
-							label={t.preparation}
+							label={t("preparation")}
 							value={resource.preparationNotes}
 							icon={
 								<UtensilsCrossed
@@ -321,7 +329,7 @@ function ResourceDetail() {
 						/>
 						{/* Transit */}
 						<Contact
-							label={t.transit}
+							label={t("transit")}
 							value={resource.transitNotes}
 							icon={
 								<Bus
@@ -334,7 +342,7 @@ function ResourceDetail() {
 				)}
 				{hours.length > 0 && (
 					<div className="flex flex-col gap-2 rounded-lg border bg-white p-4">
-						<h2 className="mb-4 text-xl font-bold">{t.hours}</h2>
+						<h2 className="mb-4 text-xl font-bold">{t("hours")}</h2>
 						{/* Hours */}
 						{hours &&
 							hours.map((hour) => (
@@ -351,11 +359,9 @@ function ResourceDetail() {
 												"font-bold",
 										)}
 									>
-										{
-											t.daysOfWeek.long[
-												hour.day.toLowerCase()
-											]
-										}
+										{t(
+											`daysOfWeek.long.${hour.day.toLowerCase() as DayOfWeek}`,
+										)}
 									</p>
 									<p
 										className={cn(

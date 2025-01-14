@@ -12,9 +12,15 @@ import {
 	ResetPasswordSchema,
 } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	ErrorComponent,
+	Link,
+	useParams,
+} from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/admin/reset-password")({
 	component: RouteComponent,
@@ -31,7 +37,10 @@ export const Route = createFileRoute("/$locale/admin/reset-password")({
 const EmailForm = () => {
 	const resetPasswordFromEmailMutation = useServerFn(resetPasswordFromEmail);
 	const navigate = Route.useNavigate();
-	const { t, locale } = Route.useRouteContext();
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
+	});
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -86,11 +95,12 @@ const EmailForm = () => {
 				})}
 			>
 				<ArrowLeft size={20} />
-				{t.common.back} {t.common.to} {t.admin.auth.login.title}
+				{t("common.back")} {t("common.to")}{" "}
+				{t("admin.auth.login.title")}
 			</Link>
-			<h1>{t.admin.auth.resetPassword.title}</h1>
+			<h1>{t("admin.auth.resetPassword.title")}</h1>
 			<p className="text-sm text-muted-foreground">
-				{t.admin.auth.resetPassword.emailDescription}
+				{t("admin.auth.resetPassword.emailDescription")}
 			</p>
 			<form
 				onSubmit={(e) => {
@@ -107,7 +117,7 @@ const EmailForm = () => {
 						name="email"
 						children={(field) => (
 							<Label>
-								{t.common.email}
+								{t("common.email")}
 								<Input
 									name={field.name}
 									value={field.state.value}
@@ -129,7 +139,7 @@ const EmailForm = () => {
 									{isSubmitting && (
 										<Loader2 className="animate-spin" />
 									)}
-									{t.common.submit}
+									{t("common.submit")}
 								</Button>
 							</div>
 						)}
@@ -142,7 +152,10 @@ const EmailForm = () => {
 
 const PasswordForm = () => {
 	const resetPasswordMutation = useServerFn(resetPassword);
-	const { t, locale } = Route.useRouteContext();
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
+	});
 	const form = useForm({
 		defaultValues: {
 			password: "",
@@ -184,11 +197,11 @@ const PasswordForm = () => {
 				})}
 			>
 				<ArrowLeft size={20} />
-				{t.common.back} {t.admin.auth.login.title}
+				{t("common.back")} {t("admin.auth.login.title")}
 			</Link>
-			<h1>{t.admin.auth.resetPassword.title}</h1>
+			<h1>{t("admin.auth.resetPassword.title")}</h1>
 			<p className="text-sm text-muted-foreground">
-				{t.admin.auth.resetPassword.passwordDescription}
+				{t("admin.auth.resetPassword.passwordDescription")}
 			</p>
 			<form
 				onSubmit={(e) => {
@@ -205,7 +218,7 @@ const PasswordForm = () => {
 						name="password"
 						children={(field) => (
 							<Label>
-								{t.form.auth.password}
+								{t("form.auth.password")}
 								<Input
 									name={field.name}
 									value={field.state.value}
@@ -228,7 +241,7 @@ const PasswordForm = () => {
 						name="passwordConfirmation"
 						children={(field) => (
 							<Label>
-								{t.form.auth.passwordConfirmation}
+								{t("form.auth.passwordConfirmation")}
 								<Input
 									name={field.name}
 									value={field.state.value}
@@ -252,7 +265,7 @@ const PasswordForm = () => {
 									{isSubmitting && (
 										<Loader2 className="animate-spin" />
 									)}
-									{t.common.submit}
+									{t("common.submit")}
 								</Button>
 							</div>
 						)}

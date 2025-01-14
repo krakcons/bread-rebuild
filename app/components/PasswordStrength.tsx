@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useRouteContext } from "@tanstack/react-router";
+import { useTranslations } from "use-intl";
 import zxcvbn from "zxcvbn";
 
 export const PasswordStrength = ({
@@ -10,9 +10,7 @@ export const PasswordStrength = ({
 	locale: string;
 }) => {
 	const strength = zxcvbn(password);
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const t = useTranslations();
 
 	const strengthColors = [
 		"bg-red-400",
@@ -43,8 +41,8 @@ export const PasswordStrength = ({
 			</div>
 			<p className="self-end text-sm text-muted-foreground">
 				{!password
-					? t.form.auth.passwordStrength.title
-					: t.form.auth.passwordStrength[strength.score]}
+					? t("form.auth.passwordStrength.title")
+					: t(`form.auth.passwordStrength.${strength.score}`)}
 			</p>
 		</div>
 	);

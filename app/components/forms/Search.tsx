@@ -3,10 +3,10 @@ import { Search, SlidersHorizontal, Utensils } from "lucide-react";
 import { useDebounce } from "@/lib/debounce";
 import { filterIcons } from "@/lib/search";
 import { SearchFormSchema } from "@/server/actions/resource";
-import { DietaryOptionType } from "@/server/types";
+import { DietaryOptionSchema } from "@/server/types";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useRouteContext } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslations } from "use-intl";
 import { z } from "zod";
 import { Button } from "../ui/Button";
 import {
@@ -35,9 +35,7 @@ const SearchForm = ({
 	};
 	defaultValues?: z.infer<typeof SearchFormSchema>;
 }) => {
-	const { t } = useRouteContext({
-		from: "__root__",
-	});
+	const t = useTranslations();
 	const [dialogOpen, setDialogOpen] = useState(false);
 
 	const form = useForm({
@@ -109,13 +107,13 @@ const SearchForm = ({
 							className="justify-start"
 						>
 							{filterIcons[name as keyof typeof filterIcons]}
-							{t.filters[name]}
+							{t(`filters.${name as keyof typeof filterIcons}`)}
 						</Button>
 					)}
 				/>
 			))}
 			<p className="mt-2 text-lg font-semibold leading-none tracking-tight">
-				{t.dietaryOptions}
+				{t("dietaryOptions")}
 			</p>
 			<div className="flex flex-wrap gap-2">
 				<form.Field
@@ -129,9 +127,9 @@ const SearchForm = ({
 					}}
 					children={(field) => (
 						<div className="flex flex-wrap gap-2">
-							{Object.keys(t.dietaryOptionTypes)
+							{DietaryOptionSchema.options
 								.filter((type) => type !== "other")
-								.map((option: DietaryOptionType) => (
+								.map((option) => (
 									<Button
 										key={option}
 										onClick={(e) => {
@@ -160,7 +158,7 @@ const SearchForm = ({
 										className="flex-grow justify-start"
 									>
 										<Utensils size={18} />
-										{t.dietaryOptionTypes[option]}
+										{t(`dietaryOptionTypes.${option}`)}
 									</Button>
 								))}
 						</div>
@@ -188,7 +186,7 @@ const SearchForm = ({
 								type="text"
 								id={field.name}
 								name={field.name}
-								placeholder={t.search}
+								placeholder={t("search")}
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChange={(e) =>
@@ -215,7 +213,7 @@ const SearchForm = ({
 						>
 							<SlidersHorizontal size={18} />
 							{numberOfFiltersOn > 0 && (
-								<span className="bg-primary-red absolute left-[22px] top-0.5 flex h-4 w-4 items-center justify-center rounded-full border border-white text-xs text-white">
+								<span className="absolute left-[22px] top-0.5 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-primary-red text-xs text-white">
 									{numberOfFiltersOn}
 								</span>
 							)}
@@ -227,9 +225,9 @@ const SearchForm = ({
 				<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 					<DialogContent className="flex max-h-screen flex-col gap-2 overflow-y-auto sm:max-w-lg">
 						<DialogHeader className="flex flex-col items-start text-left">
-							<DialogTitle>{t.filters.title}</DialogTitle>
+							<DialogTitle>{t("filters.title")}</DialogTitle>
 							<DialogDescription>
-								{t.filters.description}
+								{t("filters.description")}
 							</DialogDescription>
 						</DialogHeader>
 						<FilterButtons />
@@ -240,7 +238,7 @@ const SearchForm = ({
 			)}
 			{!hide?.submit && (
 				<Button type="submit" className="mt-4" variant="secondary">
-					{t.search}
+					{t("search")}
 				</Button>
 			)}
 		</form>

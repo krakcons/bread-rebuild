@@ -1,5 +1,19 @@
 import { z } from "zod";
 
+export const PhoneNumberSchema = z.object({
+	phone: z
+		.string()
+		// Remove non-numeric characters
+		.transform((phone) => phone.replace(/\D/g, ""))
+		// Validate Canadian phone number
+		.refine(
+			(phone) => /^1?\d{10}$/.test(phone),
+			"Invalid Canadian phone number. Must be 10 digits, optionally starting with a +1",
+		),
+	type: z.enum(["phone", "fax", "toll-free", "tty"]),
+});
+export type PhoneNumberType = z.infer<typeof PhoneNumberSchema>;
+
 export const ContactSchema = z.object({
 	email: z.string().email().optional(),
 	website: z
@@ -7,21 +21,7 @@ export const ContactSchema = z.object({
 		.url()
 		.startsWith("https://", { message: "Must start with https://" })
 		.optional(),
-	phoneNumbers: z
-		.object({
-			phone: z
-				.string()
-				// Remove non-numeric characters
-				.transform((phone) => phone.replace(/\D/g, ""))
-				// Validate Canadian phone number
-				.refine(
-					(phone) => /^1?\d{10}$/.test(phone),
-					"Invalid Canadian phone number. Must be 10 digits, optionally starting with a +1",
-				),
-			type: z.enum(["phone", "fax", "toll-free", "tty"]),
-		})
-		.array()
-		.optional(),
+	phoneNumbers: PhoneNumberSchema.array().optional(),
 });
 export type ContactType = z.infer<typeof ContactSchema>;
 

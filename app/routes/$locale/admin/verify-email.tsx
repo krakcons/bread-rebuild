@@ -18,12 +18,14 @@ import { useForm, useStore } from "@tanstack/react-form";
 import {
 	createFileRoute,
 	ErrorComponent,
+	useParams,
 	useRouter,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "use-intl";
 import { z } from "zod";
 
 export const Route = createFileRoute("/$locale/admin/verify-email")({
@@ -49,7 +51,10 @@ function RouteComponent() {
 		resendPasswordResetVerification,
 	);
 	const [resendCodeSent, setResendCodeSent] = useState(false);
-	const { t, locale } = Route.useRouteContext();
+	const t = useTranslations();
+	const { locale } = useParams({
+		from: "/$locale",
+	});
 	const form = useForm({
 		defaultValues: {
 			code: "",
@@ -65,7 +70,7 @@ function RouteComponent() {
 				} else if (type === "password_reset") {
 					result = await verifyPasswordResetEmailMutation({ data });
 				}
-				if (result.error) {
+				if (result?.error) {
 					formApi.setErrorMap({
 						onServer: result.error,
 					});
@@ -114,11 +119,11 @@ function RouteComponent() {
 				onClick={() => router.history.back()}
 			>
 				<ArrowLeft size={16} />
-				{t.common.back}
+				{t("common.back")}
 			</Button>
-			<h1>{t.admin.auth.verifyEmail.title}</h1>
+			<h1>{t("admin.auth.verifyEmail.title")}</h1>
 			<p className="text-sm text-muted-foreground">
-				{t.admin.auth.verifyEmail.description[type]}
+				{t(`admin.auth.verifyEmail.description.${type}`)}
 			</p>
 
 			<form
@@ -136,7 +141,7 @@ function RouteComponent() {
 						name="code"
 						children={(field) => (
 							<Label>
-								{t.form.resetPassword.code}
+								{t("form.resetPassword.code")}
 								<InputOTP
 									maxLength={6}
 									pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
@@ -169,7 +174,7 @@ function RouteComponent() {
 									{isSubmitting && (
 										<Loader2 className="animate-spin" />
 									)}
-									{t.common.submit}
+									{t("common.submit")}
 								</Button>
 							</div>
 						)}
@@ -178,7 +183,7 @@ function RouteComponent() {
 			</form>
 			<div className="flex items-start justify-start gap-1">
 				<p className="text-sm text-muted-foreground">
-					{t.admin.auth.verifyEmail.resend.preface}
+					{t("admin.auth.verifyEmail.resend.preface")}
 				</p>
 				<Button
 					disabled={resendCodeSent}
@@ -197,7 +202,7 @@ function RouteComponent() {
 					{resendCodeSent && (
 						<Loader2 size={16} className="animate-spin" />
 					)}
-					{t.admin.auth.verifyEmail.resend.link}
+					{t("admin.auth.verifyEmail.resend.link")}
 				</Button>
 			</div>
 		</div>

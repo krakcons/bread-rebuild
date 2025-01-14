@@ -1,16 +1,17 @@
 import {
 	anonymousSessions,
+	anonymousSessionsToResources,
 	providerPhoneNumbers,
 	providers,
 	providerTranslations,
 	resourcePhoneNumbers,
+	resources,
 	resourceTranslations,
 } from "./tables";
 
 import { relations } from "drizzle-orm";
 
 import { users } from "./auth";
-import { anonymousSessionsToResources, resources } from "./tables";
 
 // Relations
 export const anonymousSessionsToResourcesRelations = relations(
