@@ -66,9 +66,14 @@ export function DataTable<TData, TValue>({
 		onSortingChange: (updater) => {
 			const newSorting =
 				typeof updater === "function" ? updater(sorting) : updater;
+			console.log(newSorting);
 			if (
 				sorting.length === newSorting.length &&
-				sorting.every((s, i) => s.id === newSorting[i]?.id)
+				sorting.every(
+					(s, i) =>
+						s.id === newSorting[i]?.id &&
+						s.desc === newSorting[i]?.desc,
+				)
 			) {
 				return;
 			}

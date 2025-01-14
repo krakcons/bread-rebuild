@@ -29,6 +29,7 @@ export function DataTableColumnHeader<TData, TValue>({
 	const { t } = useRouteContext({
 		from: "__root__",
 	});
+	console.log(column.getIsSorted());
 
 	return (
 		<div className={cn("flex items-center space-x-2", className)}>

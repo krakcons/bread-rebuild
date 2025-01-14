@@ -145,6 +145,7 @@ function RouteComponent() {
 				}}
 				setSorting={(sorting) => {
 					// Update sorting and reset page
+					console.log(sorting);
 					navigate({
 						params: (prev) => ({ ...prev }),
 						search: (search) => ({
