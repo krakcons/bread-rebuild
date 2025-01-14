@@ -27,14 +27,13 @@ import { z } from "zod";
 
 const SearchParamsSchema = z.object({
 	tab: z.enum(["map", "list"]).optional(),
-	day: z.boolean().optional(),
+	schedule: z.boolean().optional(),
 });
 
 export const Route = createFileRoute("/$locale/_app/saved")({
 	component: SavedPage,
 	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
-	ssr: false,
 	head: ({ params: { locale } }) => {
 		const translations = getTranslations(locale);
 		return {
@@ -74,7 +73,7 @@ function SavedPage() {
 	const navigate = useNavigate({
 		from: Route.fullPath,
 	});
-	const { tab = "list", day = true } = Route.useSearch();
+	const { tab = "list", schedule = true } = Route.useSearch();
 
 	const { t } = useRouteContext({
 		from: "__root__",
@@ -132,27 +131,34 @@ function SavedPage() {
 					<MapIcon size={18} />
 					<p className="hidden sm:block">{t.map}</p>
 				</Button>
-				<div className="h-6 w-px bg-gray-300" />
-				<Button
-					onClick={() =>
-						navigate({
-							search: (prev) => ({
-								...prev,
-								day: prev.day === undefined ? false : undefined,
-							}),
-						})
-					}
-					active={day}
-					size="lg"
-				>
-					<CalendarDays size={18} />
-					<p className="hidden sm:block">{t.day}</p>
-				</Button>
+				{tab === "list" && (
+					<>
+						<div className="h-6 w-px bg-gray-300" />
+						<Button
+							onClick={() =>
+								navigate({
+									search: (prev) => ({
+										...prev,
+										schedule:
+											prev.schedule === undefined
+												? false
+												: undefined,
+									}),
+								})
+							}
+							active={schedule}
+							size="lg"
+						>
+							<CalendarDays size={18} />
+							<p className="hidden sm:block">{t.day}</p>
+						</Button>
+					</>
+				)}
 			</div>
 
 			{tab === "list" && (
 				<>
-					{day ? (
+					{schedule ? (
 						<Accordion
 							type="multiple"
 							defaultValue={[
