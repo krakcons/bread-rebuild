@@ -47,7 +47,6 @@ export const Route = createRootRouteWithContext<
 				as: "font",
 				type: "font/ttf",
 				crossOrigin: "anonymous",
-				fetchPriority: "high",
 			},
 			{ rel: "stylesheet", href: globalStyles },
 			{
