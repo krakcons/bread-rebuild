@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "use-intl";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/$locale/admin/_admin/providers/$id")({
 	component: RouteComponent,
@@ -31,7 +32,18 @@ export const Route = createFileRoute("/$locale/admin/_admin/providers/$id")({
 		if (!provider) {
 			throw notFound();
 		}
-		return { provider, listings };
+		return {
+			provider,
+			listings,
+			seo: {
+				title: provider.name,
+				description: provider.description,
+			},
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
 	},
 });
 

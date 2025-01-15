@@ -11,6 +11,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { useTranslations } from "use-intl";
 import { z } from "zod";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/$locale/admin/_admin/providers/list")({
 	component: RouteComponent,
@@ -26,11 +27,21 @@ export const Route = createFileRoute("/$locale/admin/_admin/providers/list")({
 			.array(z.object({ id: z.string(), desc: z.boolean() }))
 			.optional(),
 	}),
-	loader: async ({ params }) => {
+	loader: async ({ params, context: { t } }) => {
 		const providers = await getProvidersFn({
 			data: { locale: params.locale as Locale },
 		});
-		return { providers };
+		return {
+			seo: {
+				title: t("admin.providers.title"),
+				description: t("admin.providers.description"),
+			},
+			providers,
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
 	},
 });
 

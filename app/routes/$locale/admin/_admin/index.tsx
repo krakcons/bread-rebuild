@@ -1,9 +1,21 @@
 import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
 import { useTranslations } from "use-intl";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/$locale/admin/_admin/")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
+	loader: ({ context: { t } }) => {
+		return {
+			seo: {
+				title: t("admin.dashboard.title"),
+			},
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
+	},
 });
 
 function RouteComponent() {

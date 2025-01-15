@@ -1,6 +1,7 @@
 import { ProviderForm } from "@/components/forms/Provider";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { Locale } from "@/lib/locale";
+import { seo } from "@/lib/seo";
 import { mutateProviderFn } from "@/server/actions/provider";
 import {
 	createFileRoute,
@@ -28,6 +29,18 @@ export const Route = createFileRoute("/$locale/admin/onboarding")({
 			});
 		}
 		return context;
+	},
+	loader: ({ context: { t } }) => {
+		return {
+			seo: {
+				title: t("admin.onboarding.title"),
+				description: t("admin.onboarding.description"),
+			},
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
 	},
 });
 

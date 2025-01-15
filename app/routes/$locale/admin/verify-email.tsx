@@ -7,6 +7,7 @@ import {
 	InputOTPSlot,
 } from "@/components/ui/InputOTP";
 import { Label } from "@/components/ui/Label";
+import { seo } from "@/lib/seo";
 import {
 	resendEmailVerification,
 	resendPasswordResetVerification,
@@ -34,6 +35,17 @@ export const Route = createFileRoute("/$locale/admin/verify-email")({
 	validateSearch: z.object({
 		type: z.enum(["email_verification", "password_reset"]).optional(),
 	}),
+	loader: ({ context: { t } }) => {
+		return {
+			seo: {
+				title: t("admin.auth.verifyEmail.title"),
+			},
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
+	},
 });
 
 function RouteComponent() {

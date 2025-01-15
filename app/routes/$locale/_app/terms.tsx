@@ -1,23 +1,20 @@
+import { seo } from "@/lib/seo";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/_app/terms")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
-	loader: async ({ context }) => {
+	loader: ({ context: { t } }) => {
 		return {
-			t: context.t,
+			seo: {
+				title: t("terms"),
+			},
 		};
 	},
 	head: ({ loaderData }) => {
 		if (!loaderData) return {};
-		return {
-			meta: [
-				{
-					title: loaderData.t("terms"),
-				},
-			],
-		};
+		return seo(loaderData.seo);
 	},
 });
 

@@ -52,7 +52,7 @@ function LayoutComponent() {
 					</Link>
 					<div className="no-print flex items-center gap-2">
 						<Link
-							to="/$locale/search"
+							to="/$locale"
 							params={{ locale }}
 							className={cn(buttonVariants(), "relative")}
 						>

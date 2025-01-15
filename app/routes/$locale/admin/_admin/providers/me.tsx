@@ -1,13 +1,15 @@
 import { ProviderForm } from "@/components/forms/Provider";
 import { getMyProviderFn, mutateProviderFn } from "@/server/actions/provider";
+import { seo } from "@/lib/seo";
 import { createFileRoute, useParams, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/start";
 import { useTranslations } from "use-intl";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/$locale/admin/_admin/providers/me")({
 	component: RouteComponent,
 	loaderDeps: ({ search }) => ({ editingLocale: search.editingLocale }),
-	loader: async ({ deps: { editingLocale } }) => {
+	loader: async ({ deps: { editingLocale }, context: { t } }) => {
 		const provider = await getMyProviderFn({
 			data: {
 				locale: editingLocale,
@@ -15,8 +17,16 @@ export const Route = createFileRoute("/$locale/admin/_admin/providers/me")({
 			},
 		});
 		return {
+			seo: {
+				title: t("admin.provider.title"),
+				description: t("admin.provider.description"),
+			},
 			provider,
 		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
 	},
 });
 
@@ -38,17 +48,17 @@ function RouteComponent() {
 			</div>
 			<ProviderForm
 				key={`${editingLocale}-${provider?.updatedAt.toString()}`}
-				// defaultValues={provider}
+				defaultValues={provider}
 				onSubmit={async (data) => {
-					// await editProvider({
-					// 	data: {
-					// 		...data,
-					// 		locale: editingLocale!,
-					// 		id: provider?.id,
-					// 	},
-					// });
-					// await toast.success(t("form.provider.success.update"));
-					// await router.invalidate();
+					await editProvider({
+						data: {
+							...data,
+							locale: editingLocale!,
+							id: provider?.id,
+						},
+					});
+					await toast.success(t("form.provider.success.update"));
+					await router.invalidate();
 				}}
 			/>
 		</div>

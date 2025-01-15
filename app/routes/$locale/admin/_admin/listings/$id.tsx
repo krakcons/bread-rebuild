@@ -25,12 +25,13 @@ import { useServerFn } from "@tanstack/start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslations } from "use-intl";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/$locale/admin/_admin/listings/$id")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
 	loaderDeps: ({ search }) => ({ editingLocale: search.editingLocale }),
-	loader: async ({ params, deps }) => {
+	loader: async ({ params, deps, context: { t } }) => {
 		const listing = await getResourceFn({
 			data: {
 				id: params.id,
@@ -41,7 +42,17 @@ export const Route = createFileRoute("/$locale/admin/_admin/listings/$id")({
 		if (!listing) {
 			throw notFound();
 		}
-		return { listing };
+		return {
+			listing,
+			seo: {
+				title: t("admin.listings.edit.title"),
+				description: t("admin.listings.edit.description"),
+			},
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
 	},
 });
 

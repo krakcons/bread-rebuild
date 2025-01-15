@@ -4,11 +4,23 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/Accordion";
+import { seo } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/_app/faq")({
 	component: RouteComponent,
+	loader: ({ context: { t } }) => {
+		return {
+			seo: {
+				title: t("faq.title"),
+			},
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
+	},
 });
 
 function RouteComponent() {

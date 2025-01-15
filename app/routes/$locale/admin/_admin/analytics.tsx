@@ -3,14 +3,23 @@ import { getAnalytics } from "@/server/actions/provider";
 import { createFileRoute } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 import { useTranslations } from "use-intl";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/$locale/admin/_admin/analytics")({
 	component: RouteComponent,
-	loader: async () => {
+	loader: async ({ context: { t } }) => {
 		const analytics = await getAnalytics();
 		return {
+			seo: {
+				title: t("admin.analytics.title"),
+				description: t("admin.analytics.description"),
+			},
 			analytics,
 		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
 	},
 });
 

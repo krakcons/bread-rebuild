@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { days } from "@/lib/hours";
 import { STYLE } from "@/lib/map";
+import { seo } from "@/lib/seo";
 import { queryClient } from "@/router";
 import { getResourcesFn } from "@/server/actions/resource";
 import { getSavedFn, resetSavedFn } from "@/server/actions/saved";
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/$locale/_app/saved")({
 	component: SavedPage,
 	errorComponent: ErrorComponent,
 	validateSearch: SearchParamsSchema,
-	loader: async ({ context }) => {
+	loader: async ({ context: { t } }) => {
 		const saved = await queryClient.ensureQueryData({
 			queryKey: ["saved"],
 			queryFn: () => getSavedFn(),
@@ -45,22 +46,15 @@ export const Route = createFileRoute("/$locale/_app/saved")({
 		});
 		return {
 			resources,
-			t: context.t,
+			seo: {
+				title: t("saved.title"),
+				description: t("saved.description"),
+			},
 		};
 	},
 	head: ({ loaderData }) => {
 		if (!loaderData) return {};
-		return {
-			meta: [
-				{
-					title: loaderData.t("saved.title"),
-				},
-				{
-					name: "description",
-					content: loaderData.t("saved.description"),
-				},
-			],
-		};
+		return seo(loaderData.seo);
 	},
 });
 

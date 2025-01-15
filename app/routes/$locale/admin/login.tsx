@@ -3,6 +3,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { FieldError } from "@/components/ui/FieldError";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { login, LoginSchema } from "@/server/auth/actions";
 import { useForm, useStore } from "@tanstack/react-form";
@@ -19,6 +20,17 @@ import { useTranslations } from "use-intl";
 export const Route = createFileRoute("/$locale/admin/login")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
+	loader: ({ context: { t } }) => {
+		return {
+			seo: {
+				title: t("admin.auth.login.title"),
+			},
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
+	},
 });
 
 function RouteComponent() {

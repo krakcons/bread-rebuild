@@ -6,6 +6,7 @@ import { formatAddress } from "@/lib/address";
 import { DayOfWeek, formatTime, useHours } from "@/lib/hours";
 import { STYLE } from "@/lib/map";
 import { formatPhoneNumber } from "@/lib/phone";
+import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { getResourceFn } from "@/server/actions/resource";
 import {
@@ -41,32 +42,22 @@ export const Route = createFileRoute("/$locale/_app/resources/$id")({
 		if (!resource) throw notFound();
 		return {
 			resource,
-			t: context.t,
+			seo: {
+				title: resource.name ?? resource.provider.name,
+				description:
+					formatAddress(resource) +
+					", " +
+					resource.phoneNumbers
+						.map((phone) => phone.phone)
+						.join(", ") +
+					", " +
+					Object.values(resource).join(", ").slice(0, 155),
+			},
 		};
 	},
 	head: ({ loaderData }) => {
 		if (!loaderData) return {};
-		const description =
-			formatAddress(loaderData.resource) +
-			", " +
-			loaderData.resource.phoneNumbers
-				.map((phone) => phone.phone)
-				.join(", ") +
-			", " +
-			Object.values(loaderData).join(", ").slice(0, 155);
-		return {
-			meta: [
-				{
-					title:
-						loaderData.resource.name ??
-						loaderData.resource.provider.name,
-				},
-				{
-					name: "description",
-					content: description,
-				},
-			],
-		};
+		return seo(loaderData.seo);
 	},
 });
 

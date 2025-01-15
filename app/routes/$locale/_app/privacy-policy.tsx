@@ -1,23 +1,20 @@
+import { seo } from "@/lib/seo";
 import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import { useTranslations } from "use-intl";
 
 export const Route = createFileRoute("/$locale/_app/privacy-policy")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
-	loader: async ({ context }) => {
+	loader: ({ context: { t } }) => {
 		return {
-			t: context.t,
+			seo: {
+				title: t("privacy"),
+			},
 		};
 	},
 	head: ({ loaderData }) => {
 		if (!loaderData) return {};
-		return {
-			meta: [
-				{
-					title: loaderData.t("privacy"),
-				},
-			],
-		};
+		return seo(loaderData.seo);
 	},
 });
 

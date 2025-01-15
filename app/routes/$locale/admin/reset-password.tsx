@@ -4,6 +4,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { FieldError } from "@/components/ui/FieldError";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { seo } from "@/lib/seo";
 import {
 	isPasswordResetVerified,
 	resetPassword,
@@ -21,7 +22,6 @@ import {
 import { useServerFn } from "@tanstack/start";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useTranslations } from "use-intl";
-
 export const Route = createFileRoute("/$locale/admin/reset-password")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
@@ -29,8 +29,17 @@ export const Route = createFileRoute("/$locale/admin/reset-password")({
 		const verified = await isPasswordResetVerified();
 		return { ...context, verified };
 	},
-	loader: async ({ context }) => {
-		return { verified: context.verified };
+	loader: ({ context: { t, verified } }) => {
+		return {
+			seo: {
+				title: t("admin.auth.resetPassword.title"),
+			},
+			verified,
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
 	},
 });
 

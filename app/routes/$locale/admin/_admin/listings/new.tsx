@@ -10,16 +10,27 @@ import {
 import { useServerFn } from "@tanstack/start";
 import { toast } from "sonner";
 import { useTranslations } from "use-intl";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/$locale/admin/_admin/listings/new")({
 	component: RouteComponent,
 	errorComponent: ErrorComponent,
-	loader: async () => {
+	loader: async ({ context: { t } }) => {
 		const provider = await getMyProviderFn();
 		if (!provider) {
 			throw new Error("Provider not found");
 		}
-		return { provider };
+		return {
+			provider,
+			seo: {
+				title: t("admin.listings.new.title"),
+				description: t("admin.listings.new.description"),
+			},
+		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
 	},
 });
 

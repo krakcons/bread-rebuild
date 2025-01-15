@@ -4,15 +4,24 @@ import { getListingsFn } from "@/server/actions/listings";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useTranslations } from "use-intl";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/$locale/admin/_admin/listings/list")({
 	component: RouteComponent,
 	loaderDeps: ({ search }) => search,
-	loader: async () => {
+	loader: async ({ context: { t } }) => {
 		const listings = await getListingsFn();
 		return {
 			listings,
+			seo: {
+				title: t("admin.listings.title"),
+				description: t("admin.listings.description"),
+			},
 		};
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) return {};
+		return seo(loaderData.seo);
 	},
 });
 
