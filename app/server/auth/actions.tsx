@@ -65,12 +65,7 @@ export const login = createServerFn({ method: "POST" })
 
 // Signup
 
-export const SignupSchema = LoginSchema.extend({
-	passwordConfirmation: z.string().min(8).max(64),
-}).refine((data) => data.password === data.passwordConfirmation, {
-	message: "Passwords do not match",
-	path: ["passwordConfirmation"],
-});
+export const SignupSchema = LoginSchema;
 export type SignupSchema = z.infer<typeof SignupSchema>;
 
 export const signup = createServerFn({ method: "POST" })

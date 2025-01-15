@@ -36,7 +36,9 @@ function RouteComponent() {
 			passwordConfirmation: "",
 		},
 		validators: {
-			onSubmit: SignupSchema,
+			onSubmit: SignupSchema.extend({
+				passwordConfirmation: SignupSchema.shape.password,
+			}),
 		},
 		onSubmit: async ({ value: data, formApi }) => {
 			try {
@@ -156,6 +158,29 @@ function RouteComponent() {
 					/>
 					<form.Field
 						name="passwordConfirmation"
+						validators={{
+							onBlurListenTo: ["password"],
+							// Re-validate on password blur (prevents user getting stuck after fixing password not confimation)
+							onBlur: ({ value, fieldApi }) => {
+								if (
+									value !== "" &&
+									value !==
+										fieldApi.form.getFieldValue("password")
+								) {
+									return "Passwords do not match";
+								}
+								return undefined;
+							},
+							onSubmit: ({ value, fieldApi }) => {
+								if (
+									value !==
+									fieldApi.form.getFieldValue("password")
+								) {
+									return "Passwords do not match";
+								}
+								return undefined;
+							},
+						}}
 						children={(field) => (
 							<Label>
 								{t("form.auth.passwordConfirmation")}
