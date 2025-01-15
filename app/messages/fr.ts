@@ -6,7 +6,7 @@ const fr: Messages = {
 		"Bread est un répertoire de ressources alimentaires dans la région de Calgary.",
 	common: {
 		name: "Nom",
-		email: "Email",
+		email: "Courriel",
 		optional: "Optionnel",
 		back: "Retour",
 		to: "à",
