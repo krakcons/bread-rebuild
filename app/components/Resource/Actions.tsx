@@ -132,13 +132,11 @@ export const ResourceActions = ({
 										)}
 									</SelectItem>
 								))}
+								<SelectSeparator />
 							</SelectGroup>
 						)}
 						{unavailableDays.length > 0 && (
 							<SelectGroup>
-								<SelectLabel>
-									{t("daysOfWeek.closed")}
-								</SelectLabel>
 								{unavailableDays.map((day) => (
 									<SelectItem
 										key={day}
